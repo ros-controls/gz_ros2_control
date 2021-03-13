@@ -1,0 +1,43 @@
+name: Ignition ros2 control CI
+
+on:
+  pull_request:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: osrf/ros:foxy-desktop
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup colcon workspace
+      id: configure
+      run: |
+        cd ..
+        mkdir -p /home/ros2_ws/src
+        cp -r ignition_ros2_control /home/ros2_ws/src/
+        apt-get update && apt-get upgrade -q -y
+        apt-get update && apt-get install -q -y --no-install-recommends \
+          dirmngr \
+          gnupg2 \
+          lsb-release \
+          python3-colcon-ros
+        cd /home/ros2_ws/src/
+        rosdep update
+        rosdep install --from-paths ./ -i -y --rosdistro foxy \
+          --ignore-src
+    - name: Build project
+      id: build
+      run: |
+        cd /home/ros2_ws/
+        . /opt/ros/foxy/local_setup.sh
+        colcon build --packages-up-to ignition_ros2_control_demos
+    - name: Run tests
+      id: test
+      run: |
+        cd /home/ros2_ws/
+        . /opt/ros/foxy/local_setup.sh
+        colcon test --event-handlers console_direct+ --packages-select ignition_ros2_control ignition_ros2_control_demos
+        colcon test-result

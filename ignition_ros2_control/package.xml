@@ -11,6 +11,9 @@
 
   <depend>angles</depend>
   <depend>ament_index_cpp</depend>
+  <depend>ignition-gazebo5</depend>
+  <depend>ignition-physics4</depend>
+  <depend>ignition-plugin1</depend>
   <depend>pluginlib</depend>
   <depend>rclcpp</depend>
   <depend>yaml_cpp_vendor</depend>
