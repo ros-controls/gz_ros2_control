@@ -25,6 +25,7 @@ jobs:
           lsb-release \
           python3-colcon-ros
         cd /home/ros2_ws/src/
+        sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
         rosdep update
         rosdep install --from-paths ./ -i -y --rosdistro foxy \
           --ignore-src
