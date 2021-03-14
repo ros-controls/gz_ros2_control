@@ -18,6 +18,7 @@ jobs:
         cd ..
         mkdir -p /home/ros2_ws/src
         cp -r ign_ros2_control /home/ros2_ws/src/
+        sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
         apt-get update && apt-get upgrade -q -y
         apt-get update && apt-get install -q -y --no-install-recommends \
           dirmngr \
@@ -25,7 +26,6 @@ jobs:
           lsb-release \
           python3-colcon-ros
         cd /home/ros2_ws/src/
-        sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
         rosdep update
         rosdep install --from-paths ./ -i -y --rosdistro foxy \
           --ignore-src
