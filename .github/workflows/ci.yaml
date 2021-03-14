@@ -9,18 +9,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: osrf/ros:foxy-desktop
+      image: ubuntu:20.04
     steps:
     - uses: actions/checkout@v2
     - name: Setup colcon workspace
       id: configure
       run: |
         apt update -qq
-        apt install -qq -y lsb-release wget
+        apt install -qq -y lsb-release wget curl
         cd ..
         mkdir -p /home/ros2_ws/src
         cp -r ign_ros2_control /home/ros2_ws/src/
         sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-nightly `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-nightly.list'
+        sh -c 'echo "deb http://packages.ros.org/ros2/ubuntu focal main" > /etc/apt/sources.list.d/ros2-latest.list'
+        curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
         wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
         IGN_DEPS="libignition-gazebo5-dev libignition-plugin-dev libignition-physics4-dev"
         apt-get update && apt-get upgrade -q -y
@@ -31,6 +33,7 @@ jobs:
           python3-colcon-ros \
           $IGN_DEPS
         cd /home/ros2_ws/src/
+        rosdep init
         rosdep update
         rosdep install --from-paths ./ -i -y --rosdistro foxy \
           --ignore-src
