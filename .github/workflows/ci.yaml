@@ -16,7 +16,7 @@ jobs:
       id: configure
       run: |
         apt update -qq
-        apt install -qq -y lsb-release wget curl
+        apt install -qq -y lsb-release wget curl gnupg2
         cd ..
         mkdir -p /home/ros2_ws/src
         cp -r ign_ros2_control /home/ros2_ws/src/
