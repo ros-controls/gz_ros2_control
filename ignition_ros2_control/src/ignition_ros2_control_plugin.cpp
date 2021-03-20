@@ -139,7 +139,6 @@ public:
 public:
   std::map<std::string, ignition::gazebo::Entity> GetEnabledJoints(
     const ignition::gazebo::Entity & _entity,
-    const std::shared_ptr<const sdf::Element> & _sdf,
     ignition::gazebo::EntityComponentManager & _ecm) const
   {
     std::map<std::string, ignition::gazebo::Entity> output;
@@ -261,7 +260,6 @@ void IgnitionROS2ControlPlugin::Configure(
   // Get list of enabled joints
   auto enabledJoints = this->dataPtr->GetEnabledJoints(
     _entity,
-    _sdf,
     _ecm);
 
   // Read urdf from ros parameter server then
@@ -375,7 +373,7 @@ void IgnitionROS2ControlPlugin::Configure(
 //////////////////////////////////////////////////
 void IgnitionROS2ControlPlugin::Update(
   const ignition::gazebo::UpdateInfo & _info,
-  ignition::gazebo::EntityComponentManager & _ecm)
+  ignition::gazebo::EntityComponentManager & /*_ecm*/)
 {
   // Get the simulation time and period
   rclcpp::Time sim_time_ros(std::chrono::duration_cast<std::chrono::nanoseconds>(

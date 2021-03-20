@@ -307,10 +307,11 @@ hardware_interface::return_type IgnitionSystem::read()
       this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocity>(
       this->dataPtr->sim_joints_[j]);
 
+    // TODO(ahcorde): Revisit this part
     // Get the joint force
-    const auto * jointForce =
-      this->dataPtr->ecm->Component<ignition::gazebo::components::JointForce>(
-      this->dataPtr->sim_joints_[j]);
+    // const auto * jointForce =
+    //   this->dataPtr->ecm->Component<ignition::gazebo::components::JointForce>(
+    //   this->dataPtr->sim_joints_[j]);
 
     // Get the joint position
     const auto * jointPositions =
