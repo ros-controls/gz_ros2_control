@@ -16,6 +16,7 @@
       </geometry>
       <origin xyz="0 0 0"/>
       <material name="green">
+        <color rgba="0 0.8 .8 1"/>
       </material>
     </visual>
     <inertial>

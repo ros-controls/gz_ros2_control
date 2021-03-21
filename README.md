@@ -4,6 +4,11 @@ This is a ROS 2 package for integrating the `ros2_control` controller architectu
 
 This package provides a Ignition Gazebo system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.
 
+Tested on:
+
+  - ROS 2 Foxy
+  - Ignition Edifice
+
 # Usage
 
 This repository contains the contents for testing ign_ros2_control
@@ -12,7 +17,7 @@ It is running Gazebo and some other ROS 2 nodes.
 
 ## Video + Pictures
 
-# TODO ADD picture
+![](img/ign_ros2_control.gif)
 
 ## Running
 
@@ -58,7 +63,6 @@ docker exec -it ignition_ros2_control_demo bash
 source /home/ros2_ws/install/setup.bash
 ros2 run ignition_ros2_control_demos example_position
 ```
-
 
 ## Add ros2_control tag to a URDF
 
@@ -106,8 +110,6 @@ robot hardware interfaces between `ros2_control` and Gazebo.
 
 The `ignition_ros2_control` `<plugin>` tag also has the following optional child elements:
 
- - `<robot_param>`: The location of the `robot_description` (URDF) on the parameter server, defaults to `robot_description`
- - `<robot_param_node>`: Name of the node where the `robot_param` is located, defauls to `robot_state_publisher`
  - `<parameters>`: YAML file with the configuration of the controllers
 
 #### Default ignition_ros2_control Behavior
