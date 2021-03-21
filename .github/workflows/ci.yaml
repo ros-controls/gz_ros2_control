@@ -15,6 +15,7 @@ jobs:
     - name: Setup colcon workspace
       id: configure
       run: |
+        export DEBIAN_FRONTEND=noninteractive
         apt update -qq
         apt install -qq -y lsb-release wget curl gnupg2
         cd ..
