@@ -4,10 +4,6 @@
 <!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
 <!-- =================================================================================== -->
 <robot name="cartopole">
-  <material name="green">
-    <color rgba="0 0.8 .8 1"/>
-  </material>
-
   <link name="world"/>
   <link name="slideBar">
     <visual>
@@ -15,9 +11,6 @@
         <box size="30 0.05 0.05"/>
       </geometry>
       <origin xyz="0 0 0"/>
-      <material name="green">
-        <color rgba="0 0.8 .8 1"/>
-      </material>
     </visual>
     <inertial>
       <mass value="100"/>
@@ -30,9 +23,6 @@
         <box size="0.5 0.5 0.2"/>
       </geometry>
       <origin xyz="0 0 0"/>
-      <material name="blue">
-        <color rgba="0 0 .8 1"/>
-      </material>
     </visual>
     <inertial>
       <mass value="1"/>
@@ -68,11 +58,30 @@
     </joint>
   </ros2_control>
 
+  <gazebo reference="slideBar">
+    <visual>
+      <material>
+        <ambient>0 0.8 0 1</ambient>
+        <diffuse>0 0.8 0 1</diffuse>
+        <specular>0 0.8 0 1</specular>
+      </material>
+    </visual>
+  </gazebo>
+
+  <gazebo reference="cart">
+    <visual>
+      <material>
+        <ambient>0 0 0.8 1</ambient>
+        <diffuse>0 0 0.8 1</diffuse>
+        <specular>0 0 0.8 1</specular>
+      </material>
+    </visual>
+  </gazebo>
+
   <gazebo>
     <!-- Joint state publisher -->
     <plugin filename="ignition_ros2_control-system" name="ignition::gazebo::systems::IgnitionROS2ControlPlugin">
       <parameters>$(find ignition_ros2_control_demos)/config/cartpole_controller_position.yaml</parameters>
     </plugin>
-
   </gazebo>
 </robot>
