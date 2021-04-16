@@ -55,7 +55,7 @@ def generate_launch_description():
         package='ros_ign_gazebo',
         executable='create',
         output='screen',
-        arguments=['-topic', 'robot_description',
+        arguments=['-string', doc.toxml(),
                    '-name', 'cartpole',
                    '-allow_renaming', 'true'],
     )
