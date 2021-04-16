@@ -1,19 +1,16 @@
 # ign_ros2_control
 
 This is a ROS 2 package for integrating the `ros2_control` controller architecture with the [Ignition Robotics Gazebo](http://ignitionrobotics.org/) simulator.
+More information about `ros2_control` can be found here: https://ros-controls.github.io/control.ros.org/
 
-This package provides a Ignition Gazebo system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.
+This package provides an Ignition Gazebo system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.
 
 Tested on:
 
-  - ROS 2 Foxy
-  - Ignition Edifice
+  - [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
+  - [Ignition Edifice](https://ignitionrobotics.org/docs/edifice)
 
 # Usage
-
-This repository contains the contents for testing ign_ros2_control
-
-It is running Gazebo and some other ROS 2 nodes.
 
 ## Video + Pictures
 
@@ -32,23 +29,23 @@ docker build -t ignition_ros2_control .
 
 #### Using Docker
 
-Docker allows us to run the demo without GUI if we don't configure it properly. The following command runs the demo without GUI:
+Docker allows us to run the demo without the GUI if configured properly. The following command runs the demo without the GUI:
 
 ```bash
 docker run -it --rm --name ignition_ros2_control_demo --net host ignition_ros2_control ros2 launch ignition_ros2_control_demos cart_example_position.launch.py gui:=false
 ```
 
-The in your local machine you can run the Gazebo client:
+Then on your local machine, you can run the Gazebo client:
 
 ```bash
-gzclient
+ign gazebo -g
 ```
 
 #### Using Rocker
 
-To run the demo with GUI we are going to use [rocker](https://github.com/osrf/rocker/) which is a tool to run docker
-images with customized local support injected for things like nvidia support. And user id specific files for cleaner
-mounting file permissions. You can install this tool with the following [instructions](https://github.com/osrf/rocker/#installation).
+To run the demo with the GUI, we are going to use [rocker](https://github.com/osrf/rocker/), which is a tool to run docker
+images with customized local support injected for things like nvidia support. Rocker also supports user id specific files for cleaner
+mounting file permissions. You can install this tool with the following [instructions](https://github.com/osrf/rocker/#installation) (make sure you meet all of the [prerequisites](https://github.com/osrf/rocker/#prerequisites)).
 
 The following command will launch Gazebo:
 
@@ -56,7 +53,7 @@ The following command will launch Gazebo:
 rocker --x11 --nvidia --name ignition_ros2_control_demo ignition_ros2_control:latest
 ```
 
-The following commands allow to move the cart in the rail:
+The following commands allow the cart to be moved along the rail:
 
 ```bash
 docker exec -it ignition_ros2_control_demo bash
@@ -68,7 +65,7 @@ ros2 run ignition_ros2_control_demos example_position
 
 To use `ros2_control` with your robot, you need to add some additional elements to your URDF.
 You should include the tag `<ros2_control>` to access and control the robot interfaces. We should
-include
+include:
 
  - a specific `<plugin>` for our robot
  - `<joint>` tag including the robot controllers: commands and states.
@@ -126,7 +123,7 @@ The default behavior provides the following ros2_control interfaces:
 
 The `ignition_ros2_control` Gazebo plugin also provides a pluginlib-based interface to implement custom interfaces between Gazebo and `ros2_control` for simulating more complex mechanisms (nonlinear springs, linkages, etc).
 
-These plugins must inherit `ignition_ros2_control::GazeboSystemInterface` which implements a simulated `ros2_control`
+These plugins must inherit the `ignition_ros2_control::GazeboSystemInterface`, which implements a simulated `ros2_control`
 `hardware_interface::SystemInterface`. SystemInterface provides API-level access to read and command joint properties.
 
 The respective GazeboSystemInterface sub-class is specified in a URDF model and is loaded when the
@@ -182,7 +179,7 @@ cart_pole_controller:
 
 There are some examples in the `ignition_ros2_control_demos` package. These examples allow to launch a cart in a 30 meter rail.
 
-You can run some of the configuration running the following commands:
+You can run some of the example configurations by running the following commands:
 
 ```bash
 ros2 launch ignition_ros2_control_demos cart_example_position.launch.py
@@ -192,7 +189,7 @@ ros2 launch ignition_ros2_control_demos cart_example_effort.launch.py
 
 Send example commands:
 
-When the Gazebo world is launched you can run some of the following commads to move the cart.
+When the Gazebo world is launched, you can run some of the following commands to move the cart.
 
 ```bash
 ros2 run ignition_ros2_control_demos example_position
