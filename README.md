@@ -1,6 +1,6 @@
 # ign_ros2_control
 
-This is a ROS 2 package for integrating the `ros2_control` controller architecture with the [Ignition Robotics Gazebo](http://ignitionrobotics.org/) simulator.
+This is a ROS 2 package for integrating the `ros2_control` controller architecture with the [Ignition Gazebo](http://ignitionrobotics.org/) simulator.
 More information about `ros2_control` can be found here: https://ros-controls.github.io/control.ros.org/
 
 This package provides an Ignition Gazebo system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.

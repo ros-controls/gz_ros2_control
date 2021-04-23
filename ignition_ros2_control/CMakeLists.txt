@@ -32,9 +32,6 @@ set(IGN_GAZEBO_VER ${ignition-gazebo5_VERSION_MAJOR})
 find_package(ignition-plugin1 REQUIRED)
 set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
 
-find_package(ignition-physics4 REQUIRED)
-set(IGN_PHYSICS_VER ${ignition-physics4_VERSION_MAJOR})
-
 include_directories(include)
 
 add_library(${PROJECT_NAME}-system SHARED
@@ -43,7 +40,6 @@ add_library(${PROJECT_NAME}-system SHARED
 
 target_link_libraries(${PROJECT_NAME}-system
   ignition-gazebo${IGN_GAZEBO_VER}::core
-  ignition-physics${IGN_PHYSICS_VER}::core
   ignition-plugin${IGN_PLUGIN_VER}::register
 )
 ament_target_dependencies(${PROJECT_NAME}-system

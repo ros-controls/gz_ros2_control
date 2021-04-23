@@ -120,14 +120,6 @@ bool IgnitionSystem::initSim(
   this->dataPtr->joint_vel_cmd_.resize(this->dataPtr->n_dof_);
   this->dataPtr->joint_eff_cmd_.resize(this->dataPtr->n_dof_);
 
-  // ignition::physics::PhysicsEnginePtr physics = ignition::physics::get_world()->Physics();
-  //
-  // std::string physics_type_ = physics->GetType();
-  // if (physics_type_.empty()) {
-  //   RCLCPP_ERROR(this->nh_->get_logger(), "No physics engine configured in Ignition.");
-  //   return false;
-  // }
-
   if (this->dataPtr->n_dof_ == 0) {
     RCLCPP_WARN_STREAM(this->nh_->get_logger(), "There is not joint available ");
     return false;

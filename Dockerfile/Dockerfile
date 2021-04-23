@@ -12,8 +12,6 @@ RUN apt-get update \
   && apt-get clean
 
 RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list' && \
-  sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list' && \
-  sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-nightly `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-nightly.list' && \
   wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add - && \
   sh -c 'echo "deb http://packages.ros.org/ros2/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list' && \
   curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - && \
@@ -23,7 +21,6 @@ RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb
     python3-rosdep \
     libignition-gazebo5-dev \
     libignition-plugin-dev \
-    libignition-physics4-dev \
     libignition-utils1-cli-dev \
     && apt-get clean
 
@@ -32,7 +29,7 @@ RUN mkdir -p /home/ros2_ws/src \
     && git clone https://github.com/ignitionrobotics/ign_ros2_control/ -b ahcorde/ign_ros2_control \
     && rosdep update \
     && rosdep install --from-paths ./ -i -y --rosdistro foxy \
-      --ignore-src --skip-keys "ignition-gazebo5 ignition-physics4 ignition-plugin1"
+      --ignore-src --skip-keys "ignition-gazebo5 ignition-plugin1"
 
 RUN cd /home/ros2_ws/ \
   && . /opt/ros/foxy/setup.sh \
