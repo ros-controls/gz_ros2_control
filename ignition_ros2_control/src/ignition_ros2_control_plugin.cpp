@@ -12,47 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <controller_manager/controller_manager.hpp>
+
+#include <hardware_interface/resource_manager.hpp>
+#include <hardware_interface/component_parser.hpp>
+#include <hardware_interface/types/hardware_interface_type_values.hpp>
+
+#include <ignition/gazebo/components/Joint.hh>
+#include <ignition/gazebo/components/JointType.hh>
+#include <ignition/gazebo/components/Name.hh>
+#include <ignition/gazebo/components/ParentEntity.hh>
+#include <ignition/gazebo/components/Physics.hh>
+#include <ignition/gazebo/components/World.hh>
+#include <ignition/gazebo/Model.hh>
+
+#include <ignition/plugin/Register.hh>
+
+#include <pluginlib/class_loader.hpp>
+
+#include <rclcpp/rclcpp.hpp>
+
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "controller_manager/controller_manager.hpp"
-
-#include "hardware_interface/resource_manager.hpp"
-#include "hardware_interface/component_parser.hpp"
-#include "hardware_interface/types/hardware_interface_type_values.hpp"
-
-
 #include "ignition_ros2_control/ignition_ros2_control_plugin.hpp"
 #include "ignition_ros2_control/ignition_system.hpp"
-
-#include "ignition/gazebo/components/Joint.hh"
-#include "ignition/gazebo/components/JointType.hh"
-#include "ignition/gazebo/components/Name.hh"
-#include "ignition/gazebo/components/ParentEntity.hh"
-#include "ignition/gazebo/components/Physics.hh"
-#include "ignition/gazebo/components/World.hh"
-#include "ignition/gazebo/Model.hh"
-
-#include "ignition/plugin/Register.hh"
-
-#include "pluginlib/class_loader.hpp"
-
-#include "rclcpp/rclcpp.hpp"
 
 namespace ignition_ros2_control
 {
 //////////////////////////////////////////////////
 class IgnitionROS2ControlPluginPrivate
 {
-  /// \brief Entity ID for sensor within Gazebo.
-
 public:
+  /// \brief Entity ID for sensor within Gazebo.
   ignition::gazebo::Entity entity_;
 
-public:
+  // Node Handles
   std::shared_ptr<rclcpp::Node> node;
 
   // Thread where the executor will sping
@@ -71,9 +69,10 @@ public:
   // Controller manager
   std::shared_ptr<controller_manager::ControllerManager> controller_manager_;
 
-  // String with the robot description
+  // String with the robot description param_name
   // TODO(ahcorde): Add param in plugin tag
   std::string robot_description_ = "robot_description";
+
   // String with the name of the node that contains the robot_description
   // TODO(ahcorde): Add param in plugin tag
   std::string robot_description_node_ = "robot_state_publisher";
@@ -107,7 +106,6 @@ public:
 
     // search and wait for robot_description on param server
     while (urdf_string.empty()) {
-      std::string search_param_name;
       RCLCPP_DEBUG(node->get_logger(), "param_name %s", param_name.c_str());
 
       try {
@@ -124,12 +122,11 @@ public:
       } else {
         RCLCPP_ERROR(
           node->get_logger(), "ignition_ros2_control plugin is waiting for model"
-          " URDF in parameter [%s] on the ROS param server.", search_param_name.c_str());
+          " URDF in parameter [%s] on the ROS param server.", param_name.c_str());
       }
       usleep(100000);
     }
-    RCLCPP_INFO(
-      node->get_logger(), "Recieved urdf from param server, parsing...");
+    RCLCPP_INFO(node->get_logger(), "Received URDF from param server");
 
     return urdf_string;
   }
@@ -146,8 +143,7 @@ public:
     std::vector<std::string> enabledJoints;
 
     // Get all available joints
-    std::vector<ignition::gazebo::Entity> jointEntities;
-    jointEntities = _ecm.ChildrenByComponents(_entity, ignition::gazebo::components::Joint());
+    auto jointEntities = _ecm.ChildrenByComponents(_entity, ignition::gazebo::components::Joint());
 
     // Iterate over all joints and verify whether they can be enabled or not
     for (const auto & jointEntity : jointEntities) {
@@ -224,7 +220,7 @@ void IgnitionROS2ControlPlugin::Configure(
   std::string paramFileName = _sdf->Get<std::string>("parameters");
 
   if (paramFileName.empty()) {
-    ignerr << "Ignition ros2 controle found an empty parameters file. " <<
+    ignerr << "Ignition ros2 control found an empty parameters file. " <<
       "Failed to initialize.";
     return;
   }
@@ -250,7 +246,7 @@ void IgnitionROS2ControlPlugin::Configure(
     };
   this->dataPtr->thread_executor_spin_ = std::thread(spin);
 
-  RCLCPP_ERROR_STREAM(
+  RCLCPP_DEBUG_STREAM(
     this->dataPtr->node->get_logger(), "[Ignition ROS 2 Control] Setting up controller for [" <<
       "(Entity=" << _entity << ")].\n");
 
@@ -277,9 +273,6 @@ void IgnitionROS2ControlPlugin::Configure(
     return;
   }
 
-  RCLCPP_ERROR_STREAM(
-    this->dataPtr->node->get_logger(), "getURFD\n");
-
   std::unique_ptr<hardware_interface::ResourceManager> resource_manager_ =
     std::make_unique<hardware_interface::ResourceManager>();
 
@@ -292,12 +285,10 @@ void IgnitionROS2ControlPlugin::Configure(
     RCLCPP_ERROR(
       this->dataPtr->node->get_logger(), "Failed to create robot simulation interface loader: %s ",
       ex.what());
+    return;
   }
 
-  RCLCPP_ERROR_STREAM(
-    this->dataPtr->node->get_logger(), "pluginlib\n");
-
-  for (unsigned int i = 0; i < control_hardware.size(); i++) {
+  for (unsigned int i = 0; i < control_hardware.size(); ++i) {
     std::string robot_hw_sim_type_str_ = control_hardware[i].hardware_class_type;
     auto gazeboSystem = std::unique_ptr<ignition_ros2_control::IgnitionSystemInterface>(
       this->dataPtr->robot_hw_sim_loader_->createUnmanagedInstance(robot_hw_sim_type_str_));
@@ -315,9 +306,6 @@ void IgnitionROS2ControlPlugin::Configure(
 
     resource_manager_->import_component(std::move(gazeboSystem));
   }
-  RCLCPP_ERROR_STREAM(
-    this->dataPtr->node->get_logger(), "initSim\n");
-
   // Create the controller manager
   RCLCPP_INFO(this->dataPtr->node->get_logger(), "Loading controller_manager");
   this->dataPtr->controller_manager_.reset(

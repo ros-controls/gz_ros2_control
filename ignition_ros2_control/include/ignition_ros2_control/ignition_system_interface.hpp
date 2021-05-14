@@ -16,21 +16,38 @@
 #ifndef IGNITION_ROS2_CONTROL__IGNITION_SYSTEM_INTERFACE_HPP_
 #define IGNITION_ROS2_CONTROL__IGNITION_SYSTEM_INTERFACE_HPP_
 
+#include <ignition/gazebo/System.hh>
+
+#include <hardware_interface/base_interface.hpp>
+#include <hardware_interface/system_interface.hpp>
+#include <hardware_interface/types/hardware_interface_type_values.hpp>
+
+#include <rclcpp/rclcpp.hpp>
+
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "ignition/gazebo/System.hh"
-
-#include "hardware_interface/base_interface.hpp"
-#include "hardware_interface/system_interface.hpp"
-#include "hardware_interface/types/hardware_interface_type_values.hpp"
-
-#include "rclcpp/rclcpp.hpp"
-
 namespace ignition_ros2_control
 {
+
+/// \brief This class allows us to handle flags easily, instead of using strings
+///
+/// For example
+/// enum ControlMethod_
+/// {
+///   NONE      = 0,
+///   POSITION  = (1 << 0),
+///   VELOCITY  = (1 << 1),
+///   EFFORT    = (1 << 2),
+/// };
+/// typedef SafeEnum<enum ControlMethod_> ControlMethod;
+///
+/// ControlMethod foo;
+/// foo |= POSITION  // Foo has the position flag active
+/// foo & POSITION -> True  // Check if position is active in the flag
+/// foo & VELOCITY -> False  // Check if velocity is active in the flag
 
 template<class ENUM, class UNDERLYING = typename std::underlying_type<ENUM>::type>
 class SafeEnum
@@ -60,10 +77,11 @@ class IgnitionSystemInterface
 {
 public:
   /// \brief Initilize the system interface
-  /// param[in] model_nh
-  /// param[in] joints
-  /// param[in] hardware_info
-  /// param[in] _ecm
+  /// param[in] model_nh Pointer to the ros2 node
+  /// param[in] joints Map with the name of the joint as the key and the value is
+  /// related with the entity in Gazebo
+  /// param[in] hardware_info structure with data from URDF.
+  /// param[in] _ecm Entity-component manager.
   virtual bool initSim(
     rclcpp::Node::SharedPtr & model_nh,
     std::map<std::string, ignition::gazebo::Entity> & joints,

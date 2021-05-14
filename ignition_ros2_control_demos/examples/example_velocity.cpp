@@ -1,4 +1,4 @@
-// Copyright 2020 Open Source Robotics Foundation, Inc.
+// Copyright 2021 Open Source Robotics Foundation, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,21 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <rclcpp/rclcpp.hpp>
+
+#include <std_msgs/msg/float64_multi_array.hpp>
+
 #include <memory>
-#include <string>
-#include <vector>
-
-#include "rclcpp/rclcpp.hpp"
-
-#include "std_msgs/msg/float64_multi_array.hpp"
-
-std::shared_ptr<rclcpp::Node> node;
 
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
 
-  node = std::make_shared<rclcpp::Node>("velocity_test_node");
+  auto node = std::make_shared<rclcpp::Node>("velocity_test_node");
 
   auto publisher = node->create_publisher<std_msgs::msg::Float64MultiArray>(
     "/velocity_controller/commands", 10);

@@ -15,9 +15,9 @@
 #ifndef IGNITION_ROS2_CONTROL__IGNITION_ROS2_CONTROL_PLUGIN_HPP_
 #define IGNITION_ROS2_CONTROL__IGNITION_ROS2_CONTROL_PLUGIN_HPP_
 
-#include <memory>
+#include <ignition/gazebo/System.hh>
 
-#include "ignition/gazebo/System.hh"
+#include <memory>
 
 namespace ignition_ros2_control
 {
@@ -29,19 +29,14 @@ class IgnitionROS2ControlPlugin
   public ignition::gazebo::ISystemConfigure,
   public ignition::gazebo::ISystemUpdate
 {
-  /// \brief Constructor
-
 public:
+  /// \brief Constructor
   IgnitionROS2ControlPlugin();
 
   /// \brief Destructor
-
-public:
   ~IgnitionROS2ControlPlugin() override = default;
 
   // Documentation inherited
-
-public:
   void Configure(
     const ignition::gazebo::Entity & _entity,
     const std::shared_ptr<const sdf::Element> & _sdf,
@@ -49,15 +44,12 @@ public:
     ignition::gazebo::EventManager & _eventMgr) override;
 
   // Documentation inherited
-
-public:
   void Update(
     const ignition::gazebo::UpdateInfo & _info,
     ignition::gazebo::EntityComponentManager & _ecm) override;
 
-  /// \brief Private data pointer.
-
 private:
+  /// \brief Private data pointer.
   std::unique_ptr<IgnitionROS2ControlPluginPrivate> dataPtr;
 };
 }  // namespace ignition_ros2_control

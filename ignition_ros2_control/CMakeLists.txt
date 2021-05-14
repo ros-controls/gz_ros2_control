@@ -18,7 +18,6 @@ endif()
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
-find_package(angles REQUIRED)
 find_package(controller_manager REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
@@ -26,8 +25,17 @@ find_package(rclcpp REQUIRED)
 find_package(urdf REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
 
-find_package(ignition-gazebo5 REQUIRED)
-set(IGN_GAZEBO_VER ${ignition-gazebo5_VERSION_MAJOR})
+if("$ENV{IGNITION_VERSION}" STREQUAL "citadel")
+  find_package(ignition-gazebo3 REQUIRED)
+  set(IGN_GAZEBO_VER ${ignition-gazebo3_VERSION_MAJOR})
+
+  message(STATUS "Compiling against Ignition Citadel")
+else()
+  find_package(ignition-gazebo5 REQUIRED)
+  set(IGN_GAZEBO_VER ${ignition-gazebo5_VERSION_MAJOR})
+
+  message(STATUS "Compiling against Ignition Edifice")
+endif()
 
 find_package(ignition-plugin1 REQUIRED)
 set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
@@ -58,7 +66,6 @@ add_library(ignition_hardware_plugins SHARED
   src/ignition_system.cpp
 )
 ament_target_dependencies(ignition_hardware_plugins
-  angles
   hardware_interface
   rclcpp
 )

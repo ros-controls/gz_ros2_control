@@ -21,8 +21,6 @@
 #include <string>
 #include <vector>
 
-#include "angles/angles.h"
-
 #include "ignition_ros2_control/ignition_system_interface.hpp"
 
 namespace ignition_ros2_control

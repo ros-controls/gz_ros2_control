@@ -12,6 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <ignition/gazebo/components/JointForce.hh>
+#include <ignition/gazebo/components/JointForceCmd.hh>
+#include <ignition/gazebo/components/JointPosition.hh>
+#include <ignition/gazebo/components/JointPositionReset.hh>
+#include <ignition/gazebo/components/JointVelocity.hh>
+#include <ignition/gazebo/components/JointVelocityCmd.hh>
+
 #include <map>
 #include <memory>
 #include <string>
@@ -19,13 +26,6 @@
 #include <vector>
 
 #include "ignition_ros2_control/ignition_system.hpp"
-
-#include "ignition/gazebo/components/JointForce.hh"
-#include "ignition/gazebo/components/JointForceCmd.hh"
-#include "ignition/gazebo/components/JointPosition.hh"
-#include "ignition/gazebo/components/JointPositionReset.hh"
-#include "ignition/gazebo/components/JointVelocity.hh"
-#include "ignition/gazebo/components/JointVelocityCmd.hh"
 
 class ignition_ros2_control::IgnitionSystemPrivate
 {
@@ -167,20 +167,18 @@ bool IgnitionSystem::initSim(
     RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\tCommand:");
 
     // register the command handles
-    for (unsigned int i = 0; i < hardware_info.joints[j].command_interfaces.size(); i++) {
+    for (unsigned int i = 0; i < hardware_info.joints[j].command_interfaces.size(); ++i) {
       if (hardware_info.joints[j].command_interfaces[i].name == "position") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t position");
         this->dataPtr->joint_control_methods_[j] |= POSITION;
         this->dataPtr->joint_pos_cmd_[j] = std::make_shared<hardware_interface::CommandInterface>(
           joint_name, hardware_interface::HW_IF_POSITION, &this->dataPtr->joint_position_cmd_[j]);
-      }
-      if (hardware_info.joints[j].command_interfaces[i].name == "velocity") {
+      } else if (hardware_info.joints[j].command_interfaces[i].name == "velocity") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
         this->dataPtr->joint_control_methods_[j] |= VELOCITY;
         this->dataPtr->joint_vel_cmd_[j] = std::make_shared<hardware_interface::CommandInterface>(
           joint_name, hardware_interface::HW_IF_VELOCITY, &this->dataPtr->joint_velocity_cmd_[j]);
-      }
-      if (hardware_info.joints[j].command_interfaces[i].name == "effort") {
+      } else if (hardware_info.joints[j].command_interfaces[i].name == "effort") {
         this->dataPtr->joint_control_methods_[j] |= EFFORT;
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
         this->dataPtr->joint_eff_cmd_[j] = std::make_shared<hardware_interface::CommandInterface>(
@@ -191,7 +189,7 @@ bool IgnitionSystem::initSim(
     RCLCPP_INFO_STREAM(
       this->nh_->get_logger(), "\tState:");
     // register the state handles
-    for (unsigned int i = 0; i < hardware_info.joints[j].state_interfaces.size(); i++) {
+    for (unsigned int i = 0; i < hardware_info.joints[j].state_interfaces.size(); ++i) {
       if (hardware_info.joints[j].state_interfaces[i].name == "position") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t position");
         this->dataPtr->joint_pos_state_[j] = std::make_shared<hardware_interface::StateInterface>(
@@ -226,21 +224,21 @@ IgnitionSystem::export_state_interfaces()
 {
   std::vector<hardware_interface::StateInterface> state_interfaces;
 
-  for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); i++) {
+  for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); ++i) {
     state_interfaces.emplace_back(
       hardware_interface::StateInterface(
         this->dataPtr->joint_names_[i],
         hardware_interface::HW_IF_POSITION,
         &this->dataPtr->joint_position_[i]));
   }
-  for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); i++) {
+  for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); ++i) {
     state_interfaces.emplace_back(
       hardware_interface::StateInterface(
         this->dataPtr->joint_names_[i],
         hardware_interface::HW_IF_VELOCITY,
         &this->dataPtr->joint_velocity_[i]));
   }
-  for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); i++) {
+  for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); ++i) {
     state_interfaces.emplace_back(
       hardware_interface::StateInterface(
         this->dataPtr->joint_names_[i],
@@ -255,21 +253,21 @@ IgnitionSystem::export_command_interfaces()
 {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
 
-  for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); i++) {
+  for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); ++i) {
     command_interfaces.emplace_back(
       hardware_interface::CommandInterface(
         this->dataPtr->joint_names_[i],
         hardware_interface::HW_IF_POSITION,
         &this->dataPtr->joint_position_cmd_[i]));
   }
-  for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); i++) {
+  for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); ++i) {
     command_interfaces.emplace_back(
       hardware_interface::CommandInterface(
         this->dataPtr->joint_names_[i],
         hardware_interface::HW_IF_VELOCITY,
         &this->dataPtr->joint_velocity_cmd_[i]));
   }
-  for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); i++) {
+  for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); ++i) {
     command_interfaces.emplace_back(
       hardware_interface::CommandInterface(
         this->dataPtr->joint_names_[i],
@@ -368,7 +366,7 @@ hardware_interface::return_type IgnitionSystem::write()
     }
   }
 
-  // // Get the simulation time and period
+  // Get the simulation time and period
   // ignition::common::Time gz_time_now = this->dataPtr->parent_model_->GetWorld()->SimTime();
   // rclcpp::Time sim_time_ros(gz_time_now.sec, gz_time_now.nsec);
   // rclcpp::Duration sim_period = sim_time_ros - this->dataPtr->last_update_sim_time_ros_;
