@@ -372,8 +372,10 @@ void IgnitionROS2ControlPlugin::Update(
     this->dataPtr->last_update_sim_time_ros_ = sim_time_ros;
     this->dataPtr->controller_manager_->read();
     this->dataPtr->controller_manager_->update();
-    this->dataPtr->controller_manager_->write();
   }
+  // Always set commands on joints, otherwise at low control frequencies the joints tremble
+  // as they are updated at a fraction of gazebo sim time
+  this->dataPtr->controller_manager_->write();
 }
 }  // namespace ignition_ros2_control
 
