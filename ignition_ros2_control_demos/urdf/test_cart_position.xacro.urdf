@@ -80,7 +80,7 @@
 
   <gazebo>
     <!-- Joint state publisher -->
-    <plugin filename="ignition_ros2_control-system" name="ignition::gazebo::systems::IgnitionROS2ControlPlugin">
+    <plugin filename="ignition_ros2_control-system" name="ignition_ros2_control::IgnitionROS2ControlPlugin">
       <parameters>$(find ignition_ros2_control_demos)/config/cartpole_controller_position.yaml</parameters>
     </plugin>
   </gazebo>

@@ -46,155 +46,178 @@ namespace ignition_ros2_control
 //////////////////////////////////////////////////
 class IgnitionROS2ControlPluginPrivate
 {
-public:
+
+  /// \brief Get the URDF XML from the parameter server
+  public: std::string getURDF() const;
+
+  /// \brief Get a list of enabled, unique, 1-axis joints of the model. If no
+  /// joint names are specified in the plugin configuration, all valid 1-axis
+  /// joints are returned
+  /// \param[in] _entity Entity of the model that the plugin is being
+  /// configured for
+  /// \param[in] _ecm Ignition Entity Component Manager
+  /// \return List of entities containinig all enabled joints
+  public: std::map<std::string, ignition::gazebo::Entity> GetEnabledJoints(
+    const ignition::gazebo::Entity & _entity,
+    ignition::gazebo::EntityComponentManager & _ecm) const;
+
   /// \brief Entity ID for sensor within Gazebo.
-  ignition::gazebo::Entity entity_;
+  public: ignition::gazebo::Entity entity_;
 
-  // Node Handles
-  std::shared_ptr<rclcpp::Node> node;
+  /// \brief Node Handles
+  public: std::shared_ptr<rclcpp::Node> node;
 
-  // Thread where the executor will sping
-  std::thread thread_executor_spin_;
+  /// \brief Thread where the executor will sping
+  public: std::thread thread_executor_spin_;
 
-  // Flag to stop the executor thread when this plugin is exiting
-  bool stop_;
+  /// \brief Flag to stop the executor thread when this plugin is exiting
+  public: bool stop_;
 
-  // Executor to spin the controller
-  rclcpp::executors::MultiThreadedExecutor::SharedPtr executor_;
+  /// \brief Executor to spin the controller
+  public: rclcpp::executors::MultiThreadedExecutor::SharedPtr executor_;
 
-  // Timing
-  rclcpp::Duration control_period_ = rclcpp::Duration(1, 0);
+  /// \brief Timing
+  public: rclcpp::Duration control_period_ = rclcpp::Duration(1, 0);
 
-  // Interface loader
-  boost::shared_ptr<pluginlib::ClassLoader<
+  /// \brief Interface loader
+  public: boost::shared_ptr<pluginlib::ClassLoader<
       ignition_ros2_control::IgnitionSystemInterface>> robot_hw_sim_loader_;
 
-  // Controller manager
-  std::shared_ptr<controller_manager::ControllerManager> controller_manager_;
+  /// \brief Controller manager
+  public: std::shared_ptr<controller_manager::ControllerManager> controller_manager_;
 
-  // String with the robot description param_name
+  /// \brief String with the robot description param_name
   // TODO(ahcorde): Add param in plugin tag
-  std::string robot_description_ = "robot_description";
+  public: std::string robot_description_ = "robot_description";
 
-  // String with the name of the node that contains the robot_description
+  /// \brief String with the name of the node that contains the robot_description
   // TODO(ahcorde): Add param in plugin tag
-  std::string robot_description_node_ = "robot_state_publisher";
+  public: std::string robot_description_node_ = "robot_state_publisher";
 
-  // Last time the update method was called
-  rclcpp::Time last_update_sim_time_ros_;
+  /// \brief Last time the update method was called
+  public: rclcpp::Time last_update_sim_time_ros_;
 
-  std::string getURDF(std::string param_name) const
-  {
-    std::string urdf_string;
+  ignition::gazebo::EntityComponentManager * ecm;
+};
 
-    using namespace std::chrono_literals;
-    auto parameters_client = std::make_shared<rclcpp::AsyncParametersClient>(
-      node, robot_description_node_);
-    while (!parameters_client->wait_for_service(0.5s)) {
-      if (!rclcpp::ok()) {
-        RCLCPP_ERROR(
-          node->get_logger(), "Interrupted while waiting for %s service. Exiting.",
-          robot_description_node_.c_str());
-        return 0;
-      }
-      RCLCPP_ERROR(
-        node->get_logger(), "%s service not available, waiting again...",
-        robot_description_node_.c_str());
-    }
-
-    RCLCPP_INFO(
-      node->get_logger(), "connected to service!! %s asking for %s",
-      robot_description_node_.c_str(),
-      param_name.c_str());
-
-    // search and wait for robot_description on param server
-    while (urdf_string.empty()) {
-      RCLCPP_DEBUG(node->get_logger(), "param_name %s", param_name.c_str());
-
-      try {
-        auto f = parameters_client->get_parameters({param_name});
-        f.wait();
-        std::vector<rclcpp::Parameter> values = f.get();
-        urdf_string = values[0].as_string();
-      } catch (const std::exception & e) {
-        RCLCPP_ERROR(node->get_logger(), "%s", e.what());
-      }
-
-      if (!urdf_string.empty()) {
-        break;
-      } else {
-        RCLCPP_ERROR(
-          node->get_logger(), "ignition_ros2_control plugin is waiting for model"
-          " URDF in parameter [%s] on the ROS param server.", param_name.c_str());
-      }
-      usleep(100000);
-    }
-    RCLCPP_INFO(node->get_logger(), "Received URDF from param server");
-
-    return urdf_string;
-  }
-
-  //////////////////////////////////////////////////
-
-public:
-  std::map<std::string, ignition::gazebo::Entity> GetEnabledJoints(
+//////////////////////////////////////////////////
+std::map<std::string, ignition::gazebo::Entity>
+  IgnitionROS2ControlPluginPrivate::GetEnabledJoints(
     const ignition::gazebo::Entity & _entity,
     ignition::gazebo::EntityComponentManager & _ecm) const
-  {
-    std::map<std::string, ignition::gazebo::Entity> output;
+{
+  std::map<std::string, ignition::gazebo::Entity> output;
 
-    std::vector<std::string> enabledJoints;
+  std::vector<std::string> enabledJoints;
 
-    // Get all available joints
-    auto jointEntities = _ecm.ChildrenByComponents(_entity, ignition::gazebo::components::Joint());
+  // Get all available joints
+  auto jointEntities = _ecm.ChildrenByComponents(_entity, ignition::gazebo::components::Joint());
 
-    // Iterate over all joints and verify whether they can be enabled or not
-    for (const auto & jointEntity : jointEntities) {
-      const auto jointName = _ecm.Component<ignition::gazebo::components::Name>(
-        jointEntity)->Data();
+  // Iterate over all joints and verify whether they can be enabled or not
+  for (const auto & jointEntity : jointEntities) {
+    const auto jointName = _ecm.Component<ignition::gazebo::components::Name>(
+      jointEntity)->Data();
 
-      // Make sure the joint type is supported, i.e. it has exactly one
-      // actuated axis
-      const auto * jointType = _ecm.Component<ignition::gazebo::components::JointType>(jointEntity);
-      switch (jointType->Data()) {
-        case sdf::JointType::PRISMATIC:
-        case sdf::JointType::REVOLUTE:
-        case sdf::JointType::CONTINUOUS:
-        case sdf::JointType::GEARBOX:
-          {
-            // Supported joint type
-            break;
-          }
-        case sdf::JointType::FIXED:
-          {
-            igndbg << "[ignition_ros2_control] Fixed joint [" << jointName <<
-              "(Entity=" << jointEntity << ")] is skipped.\n";
-            continue;
-          }
-        case sdf::JointType::REVOLUTE2:
-        case sdf::JointType::SCREW:
-        case sdf::JointType::BALL:
-        case sdf::JointType::UNIVERSAL:
-          {
-            ignwarn << "[ignition_ros2_control] Joint [" << jointName <<
-              "(Entity=" << jointEntity <<
-              ")] is of unsupported type. Only joints with a single axis"
-              " are supported.\n";
-            continue;
-          }
-        default:
-          {
-            ignwarn << "[ignition_ros2_control] Joint [" << jointName <<
-              "(Entity=" << jointEntity << ")] is of unknown type.\n";
-            continue;
-          }
-      }
-      output[jointName] = jointEntity;
+    // Make sure the joint type is supported, i.e. it has exactly one
+    // actuated axis
+    const auto * jointType = _ecm.Component<ignition::gazebo::components::JointType>(jointEntity);
+    switch (jointType->Data()) {
+      case sdf::JointType::PRISMATIC:
+      case sdf::JointType::REVOLUTE:
+      case sdf::JointType::CONTINUOUS:
+      case sdf::JointType::GEARBOX:
+        {
+          // Supported joint type
+          break;
+        }
+      case sdf::JointType::FIXED:
+        {
+          RCLCPP_INFO(
+            node->get_logger(),
+            "[ignition_ros2_control] Fixed joint [%s] (Entity=%d)] is skipped",
+            jointName.c_str(), jointEntity);
+          continue;
+        }
+      case sdf::JointType::REVOLUTE2:
+      case sdf::JointType::SCREW:
+      case sdf::JointType::BALL:
+      case sdf::JointType::UNIVERSAL:
+        {
+          RCLCPP_WARN(
+            node->get_logger(),
+            "[ignition_ros2_control] Joint [%s] (Entity=%d)] is of unsupported type."
+            " Only joints with a single axis are supported.",
+            jointName.c_str(), jointEntity);
+          continue;
+        }
+      default:
+        {
+          RCLCPP_WARN(
+            node->get_logger(),
+            "[ignition_ros2_control] Joint [%s] (Entity=%d)] is of unknown type",
+            jointName.c_str(), jointEntity);
+          continue;
+        }
+    }
+    output[jointName] = jointEntity;
+  }
+
+  return output;
+}
+
+//////////////////////////////////////////////////
+std::string IgnitionROS2ControlPluginPrivate::getURDF() const
+{
+  std::string urdf_string;
+
+  using namespace std::chrono_literals;
+  auto parameters_client = std::make_shared<rclcpp::AsyncParametersClient>(
+    node, robot_description_node_);
+  while (!parameters_client->wait_for_service(0.5s)) {
+    if (!rclcpp::ok()) {
+      RCLCPP_ERROR(
+        node->get_logger(), "Interrupted while waiting for %s service. Exiting.",
+        robot_description_node_.c_str());
+      return 0;
+    }
+    RCLCPP_ERROR(
+      node->get_logger(), "%s service not available, waiting again...",
+      robot_description_node_.c_str());
+  }
+
+  RCLCPP_INFO(
+    node->get_logger(), "connected to service!! %s asking for %s",
+    robot_description_node_.c_str(),
+    this->robot_description_.c_str());
+
+  // search and wait for robot_description on param server
+  while (urdf_string.empty()) {
+    RCLCPP_DEBUG(node->get_logger(), "param_name %s",
+      this->robot_description_.c_str());
+
+    try {
+      auto f = parameters_client->get_parameters({this->robot_description_});
+      f.wait();
+      std::vector<rclcpp::Parameter> values = f.get();
+      urdf_string = values[0].as_string();
+    } catch (const std::exception & e) {
+      RCLCPP_ERROR(node->get_logger(), "%s", e.what());
     }
 
-    return output;
+    if (!urdf_string.empty()) {
+      break;
+    } else {
+      RCLCPP_ERROR(
+        node->get_logger(), "ignition_ros2_control plugin is waiting for model"
+        " URDF in parameter [%s] on the ROS param server.",
+        this->robot_description_.c_str());
+    }
+    usleep(100000);
   }
-};
+  RCLCPP_INFO(node->get_logger(), "Received URDF from param server");
+
+  return urdf_string;
+}
 
 //////////////////////////////////////////////////
 IgnitionROS2ControlPlugin::IgnitionROS2ControlPlugin()
@@ -222,10 +245,11 @@ void IgnitionROS2ControlPlugin::Configure(
   // Make sure the controller is attached to a valid model
   const auto model = ignition::gazebo::Model(_entity);
   if (!model.Valid(_ecm)) {
-    ignerr << "[Ignition ROS 2 Control] Failed to initialize because [" <<
-      model.Name(_ecm) << "(Entity=" << _entity <<
-      ")] is not a model. Please make sure that"
-      " Ignition ROS 2 Control is attached to a valid model.\n";
+    RCLCPP_ERROR(
+      this->dataPtr->node->get_logger(),
+      "[Ignition ROS 2 Control] Failed to initialize because [%s] (Entity=%u)] is not a model."
+      "Please make sure that Ignition ROS 2 Control is attached to a valid model.",
+      model.Name(_ecm).c_str(), _entity);
     return;
   }
 
@@ -233,8 +257,9 @@ void IgnitionROS2ControlPlugin::Configure(
   std::string paramFileName = _sdf->Get<std::string>("parameters");
 
   if (paramFileName.empty()) {
-    ignerr << "Ignition ros2 control found an empty parameters file. " <<
-      "Failed to initialize.";
+    RCLCPP_ERROR(
+      this->dataPtr->node->get_logger(),
+      "Ignition ros2 control found an empty parameters file. Failed to initialize.");
     return;
   }
 
@@ -292,15 +317,19 @@ void IgnitionROS2ControlPlugin::Configure(
 
   RCLCPP_DEBUG_STREAM(
     this->dataPtr->node->get_logger(), "[Ignition ROS 2 Control] Setting up controller for [" <<
-      "(Entity=" << _entity << ")].\n");
-
-  ignmsg << "[Ignition ROS 2 Control] Setting up controller for [" <<
-    model.Name(_ecm) << "(Entity=" << _entity << ")].\n";
+    model.Name(_ecm) << "] (Entity=" << _entity << ")].");
 
   // Get list of enabled joints
   auto enabledJoints = this->dataPtr->GetEnabledJoints(
     _entity,
     _ecm);
+
+  if (enabledJoints.size() == 0)
+  {
+    RCLCPP_DEBUG_STREAM(
+      this->dataPtr->node->get_logger(), "[Ignition ROS 2 Control] There are no available Joints.");
+    return;
+  }
 
   // Read urdf from ros parameter server then
   // setup actuators and mechanism control node.
@@ -308,7 +337,7 @@ void IgnitionROS2ControlPlugin::Configure(
   std::string urdf_string;
   std::vector<hardware_interface::HardwareInfo> control_hardware;
   try {
-    urdf_string = this->dataPtr->getURDF(this->dataPtr->robot_description_);
+    urdf_string = this->dataPtr->getURDF();
     control_hardware = hardware_interface::parse_control_resources_from_urdf(urdf_string);
   } catch (const std::runtime_error & ex) {
     RCLCPP_ERROR_STREAM(
@@ -403,9 +432,19 @@ void IgnitionROS2ControlPlugin::Configure(
 }
 
 //////////////////////////////////////////////////
-void IgnitionROS2ControlPlugin::Update(
-  const ignition::gazebo::UpdateInfo & _info,
+void IgnitionROS2ControlPlugin::PreUpdate(
+  const ignition::gazebo::UpdateInfo & /*_info*/,
   ignition::gazebo::EntityComponentManager & /*_ecm*/)
+{
+  // Always set commands on joints, otherwise at low control frequencies the joints tremble
+  // as they are updated at a fraction of gazebo sim time
+  this->dataPtr->controller_manager_->write();
+}
+
+//////////////////////////////////////////////////
+void IgnitionROS2ControlPlugin::PostUpdate(
+  const ignition::gazebo::UpdateInfo & _info,
+  const ignition::gazebo::EntityComponentManager & /*_ecm*/)
 {
   // Get the simulation time and period
   rclcpp::Time sim_time_ros(std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -414,12 +453,12 @@ void IgnitionROS2ControlPlugin::Update(
 
   if (sim_period >= this->dataPtr->control_period_) {
     this->dataPtr->last_update_sim_time_ros_ = sim_time_ros;
+    auto ign_controller_manager =
+      std::dynamic_pointer_cast<ignition_ros2_control::IgnitionSystemInterface>(
+        this->dataPtr->controller_manager_);
     this->dataPtr->controller_manager_->read();
     this->dataPtr->controller_manager_->update();
   }
-  // Always set commands on joints, otherwise at low control frequencies the joints tremble
-  // as they are updated at a fraction of gazebo sim time
-  this->dataPtr->controller_manager_->write();
 }
 }  // namespace ignition_ros2_control
 
@@ -427,8 +466,9 @@ IGNITION_ADD_PLUGIN(
   ignition_ros2_control::IgnitionROS2ControlPlugin,
   ignition::gazebo::System,
   ignition_ros2_control::IgnitionROS2ControlPlugin::ISystemConfigure,
-  ignition_ros2_control::IgnitionROS2ControlPlugin::ISystemUpdate)
+  ignition_ros2_control::IgnitionROS2ControlPlugin::ISystemPreUpdate,
+  ignition_ros2_control::IgnitionROS2ControlPlugin::ISystemPostUpdate)
 
 IGNITION_ADD_PLUGIN_ALIAS(
   ignition_ros2_control::IgnitionROS2ControlPlugin,
-  "ignition::gazebo::systems::IgnitionROS2ControlPlugin")
+  "ignition_ros2_control::IgnitionROS2ControlPlugin")

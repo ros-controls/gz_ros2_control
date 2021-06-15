@@ -27,7 +27,8 @@ class IgnitionROS2ControlPluginPrivate;
 class IgnitionROS2ControlPlugin
   : public ignition::gazebo::System,
   public ignition::gazebo::ISystemConfigure,
-  public ignition::gazebo::ISystemUpdate
+  public ignition::gazebo::ISystemPreUpdate,
+  public ignition::gazebo::ISystemPostUpdate
 {
 public:
   /// \brief Constructor
@@ -44,9 +45,13 @@ public:
     ignition::gazebo::EventManager & _eventMgr) override;
 
   // Documentation inherited
-  void Update(
+  void PreUpdate(
     const ignition::gazebo::UpdateInfo & _info,
     ignition::gazebo::EntityComponentManager & _ecm) override;
+
+  void PostUpdate(
+    const ignition::gazebo::UpdateInfo &_info,
+    const ignition::gazebo::EntityComponentManager &_ecm) override;
 
 private:
   /// \brief Private data pointer.
