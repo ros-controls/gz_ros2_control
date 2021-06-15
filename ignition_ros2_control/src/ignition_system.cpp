@@ -158,18 +158,24 @@ bool IgnitionSystem::initSim(
       if (hardware_info.joints[j].command_interfaces[i].name == "position") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t position");
         this->dataPtr->joints_[j].joint_control_method |= POSITION;
-        this->dataPtr->joints_[j].joint_pos_cmd = std::make_shared<hardware_interface::CommandInterface>(
-          joint_name, hardware_interface::HW_IF_POSITION, &this->dataPtr->joints_[j].joint_position_cmd);
+        this->dataPtr->joints_[j].joint_pos_cmd =
+          std::make_shared<hardware_interface::CommandInterface>(
+          joint_name, hardware_interface::HW_IF_POSITION,
+          &this->dataPtr->joints_[j].joint_position_cmd);
       } else if (hardware_info.joints[j].command_interfaces[i].name == "velocity") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
         this->dataPtr->joints_[j].joint_control_method |= VELOCITY;
-        this->dataPtr->joints_[j].joint_vel_cmd = std::make_shared<hardware_interface::CommandInterface>(
-          joint_name, hardware_interface::HW_IF_VELOCITY, &this->dataPtr->joints_[j].joint_velocity_cmd);
+        this->dataPtr->joints_[j].joint_vel_cmd =
+          std::make_shared<hardware_interface::CommandInterface>(
+          joint_name, hardware_interface::HW_IF_VELOCITY,
+          &this->dataPtr->joints_[j].joint_velocity_cmd);
       } else if (hardware_info.joints[j].command_interfaces[i].name == "effort") {
         this->dataPtr->joints_[j].joint_control_method |= EFFORT;
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
-        this->dataPtr->joints_[j].joint_eff_cmd = std::make_shared<hardware_interface::CommandInterface>(
-          joint_name, hardware_interface::HW_IF_EFFORT, &this->dataPtr->joints_[j].joint_effort_cmd);
+        this->dataPtr->joints_[j].joint_eff_cmd =
+          std::make_shared<hardware_interface::CommandInterface>(
+          joint_name, hardware_interface::HW_IF_EFFORT,
+          &this->dataPtr->joints_[j].joint_effort_cmd);
       }
     }
 
@@ -178,17 +184,22 @@ bool IgnitionSystem::initSim(
     for (unsigned int i = 0; i < hardware_info.joints[j].state_interfaces.size(); ++i) {
       if (hardware_info.joints[j].state_interfaces[i].name == "position") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t position");
-        this->dataPtr->joints_[j].joint_pos_state = std::make_shared<hardware_interface::StateInterface>(
-          joint_name, hardware_interface::HW_IF_POSITION, &this->dataPtr->joints_[j].joint_position);
+        this->dataPtr->joints_[j].joint_pos_state =
+          std::make_shared<hardware_interface::StateInterface>(
+          joint_name, hardware_interface::HW_IF_POSITION,
+          &this->dataPtr->joints_[j].joint_position);
       }
       if (hardware_info.joints[j].state_interfaces[i].name == "velocity") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
-        this->dataPtr->joints_[j].joint_vel_state = std::make_shared<hardware_interface::StateInterface>(
-          joint_name, hardware_interface::HW_IF_VELOCITY, &this->dataPtr->joints_[j].joint_velocity);
+        this->dataPtr->joints_[j].joint_vel_state =
+          std::make_shared<hardware_interface::StateInterface>(
+          joint_name, hardware_interface::HW_IF_VELOCITY,
+          &this->dataPtr->joints_[j].joint_velocity);
       }
       if (hardware_info.joints[j].state_interfaces[i].name == "effort") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
-        this->dataPtr->joints_[j].joint_eff_state = std::make_shared<hardware_interface::StateInterface>(
+        this->dataPtr->joints_[j].joint_eff_state =
+          std::make_shared<hardware_interface::StateInterface>(
           joint_name, hardware_interface::HW_IF_EFFORT, &this->dataPtr->joints_[j].joint_effort);
       }
     }
@@ -326,7 +337,8 @@ hardware_interface::return_type IgnitionSystem::write()
       {
         this->dataPtr->ecm->CreateComponent(
           this->dataPtr->joints_[i].sim_joint,
-          ignition::gazebo::components::JointPositionReset({this->dataPtr->joints_[i].joint_position}));
+          ignition::gazebo::components::JointPositionReset(
+            {this->dataPtr->joints_[i].joint_position}));
         const auto jointPosCmd =
           this->dataPtr->ecm->Component<ignition::gazebo::components::JointPositionReset>(
           this->dataPtr->joints_[i].sim_joint);

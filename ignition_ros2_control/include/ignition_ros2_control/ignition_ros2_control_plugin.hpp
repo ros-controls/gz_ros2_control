@@ -50,8 +50,8 @@ public:
     ignition::gazebo::EntityComponentManager & _ecm) override;
 
   void PostUpdate(
-    const ignition::gazebo::UpdateInfo &_info,
-    const ignition::gazebo::EntityComponentManager &_ecm) override;
+    const ignition::gazebo::UpdateInfo & _info,
+    const ignition::gazebo::EntityComponentManager & _ecm) override;
 
 private:
   /// \brief Private data pointer.

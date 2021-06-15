@@ -46,9 +46,8 @@ namespace ignition_ros2_control
 //////////////////////////////////////////////////
 class IgnitionROS2ControlPluginPrivate
 {
-
   /// \brief Get the URDF XML from the parameter server
-  public: std::string getURDF() const;
+  std::string getURDF() const;
 
   /// \brief Get a list of enabled, unique, 1-axis joints of the model. If no
   /// joint names are specified in the plugin configuration, all valid 1-axis
@@ -57,54 +56,55 @@ class IgnitionROS2ControlPluginPrivate
   /// configured for
   /// \param[in] _ecm Ignition Entity Component Manager
   /// \return List of entities containinig all enabled joints
-  public: std::map<std::string, ignition::gazebo::Entity> GetEnabledJoints(
+  std::map<std::string, ignition::gazebo::Entity> GetEnabledJoints(
     const ignition::gazebo::Entity & _entity,
     ignition::gazebo::EntityComponentManager & _ecm) const;
 
   /// \brief Entity ID for sensor within Gazebo.
-  public: ignition::gazebo::Entity entity_;
+  ignition::gazebo::Entity entity_;
 
   /// \brief Node Handles
-  public: std::shared_ptr<rclcpp::Node> node;
+  std::shared_ptr<rclcpp::Node> node;
 
   /// \brief Thread where the executor will sping
-  public: std::thread thread_executor_spin_;
+  std::thread thread_executor_spin_;
 
   /// \brief Flag to stop the executor thread when this plugin is exiting
-  public: bool stop_;
+  bool stop_;
 
   /// \brief Executor to spin the controller
-  public: rclcpp::executors::MultiThreadedExecutor::SharedPtr executor_;
+  rclcpp::executors::MultiThreadedExecutor::SharedPtr executor_;
 
   /// \brief Timing
-  public: rclcpp::Duration control_period_ = rclcpp::Duration(1, 0);
+  rclcpp::Duration control_period_ = rclcpp::Duration(1, 0);
 
   /// \brief Interface loader
-  public: boost::shared_ptr<pluginlib::ClassLoader<
+  boost::shared_ptr<pluginlib::ClassLoader<
       ignition_ros2_control::IgnitionSystemInterface>> robot_hw_sim_loader_;
 
   /// \brief Controller manager
-  public: std::shared_ptr<controller_manager::ControllerManager> controller_manager_;
+  std::shared_ptr<controller_manager::ControllerManager> controller_manager_;
 
   /// \brief String with the robot description param_name
   // TODO(ahcorde): Add param in plugin tag
-  public: std::string robot_description_ = "robot_description";
+  std::string robot_description_ = "robot_description";
 
   /// \brief String with the name of the node that contains the robot_description
   // TODO(ahcorde): Add param in plugin tag
-  public: std::string robot_description_node_ = "robot_state_publisher";
+  std::string robot_description_node_ = "robot_state_publisher";
 
   /// \brief Last time the update method was called
-  public: rclcpp::Time last_update_sim_time_ros_;
+  rclcpp::Time last_update_sim_time_ros_;
 
+  /// \brief ECM pointer
   ignition::gazebo::EntityComponentManager * ecm;
 };
 
 //////////////////////////////////////////////////
 std::map<std::string, ignition::gazebo::Entity>
-  IgnitionROS2ControlPluginPrivate::GetEnabledJoints(
-    const ignition::gazebo::Entity & _entity,
-    ignition::gazebo::EntityComponentManager & _ecm) const
+IgnitionROS2ControlPluginPrivate::GetEnabledJoints(
+  const ignition::gazebo::Entity & _entity,
+  ignition::gazebo::EntityComponentManager & _ecm) const
 {
   std::map<std::string, ignition::gazebo::Entity> output;
 
@@ -192,7 +192,8 @@ std::string IgnitionROS2ControlPluginPrivate::getURDF() const
 
   // search and wait for robot_description on param server
   while (urdf_string.empty()) {
-    RCLCPP_DEBUG(node->get_logger(), "param_name %s",
+    RCLCPP_DEBUG(
+      node->get_logger(), "param_name %s",
       this->robot_description_.c_str());
 
     try {
@@ -267,33 +268,33 @@ void IgnitionROS2ControlPlugin::Configure(
   auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
 
   if (sdfPtr->HasElement("ros")) {
-     sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
+    sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
 
-     // Set namespace if tag is present
-     if (sdfRos->HasElement("namespace")) {
-       std::string ns = sdfRos->GetElement("namespace")->Get<std::string>();
-       // prevent exception: namespace must be absolute, it must lead with a '/'
-       if (ns.empty() || ns[0] != '/') {
-         ns = '/' + ns;
-       }
-       std::string ns_arg = std::string("__ns:=") + ns;
-       arguments.push_back(RCL_REMAP_FLAG);
-       arguments.push_back(ns_arg);
-     }
+    // Set namespace if tag is present
+    if (sdfRos->HasElement("namespace")) {
+      std::string ns = sdfRos->GetElement("namespace")->Get<std::string>();
+      // prevent exception: namespace must be absolute, it must lead with a '/'
+      if (ns.empty() || ns[0] != '/') {
+        ns = '/' + ns;
+      }
+      std::string ns_arg = std::string("__ns:=") + ns;
+      arguments.push_back(RCL_REMAP_FLAG);
+      arguments.push_back(ns_arg);
+    }
 
-     // Get list of remapping rules from SDF
-     if (sdfRos->HasElement("remapping")) {
-       sdf::ElementPtr argument_sdf = sdfRos->GetElement("remapping");
+    // Get list of remapping rules from SDF
+    if (sdfRos->HasElement("remapping")) {
+      sdf::ElementPtr argument_sdf = sdfRos->GetElement("remapping");
 
-       arguments.push_back(RCL_ROS_ARGS_FLAG);
-       while (argument_sdf) {
-         std::string argument = argument_sdf->Get<std::string>();
-         arguments.push_back(RCL_REMAP_FLAG);
-         arguments.push_back(argument);
-         argument_sdf = argument_sdf->GetNextElement("remapping");
-       }
-     }
-   }
+      arguments.push_back(RCL_ROS_ARGS_FLAG);
+      while (argument_sdf) {
+        std::string argument = argument_sdf->Get<std::string>();
+        arguments.push_back(RCL_REMAP_FLAG);
+        arguments.push_back(argument);
+        argument_sdf = argument_sdf->GetNextElement("remapping");
+      }
+    }
+  }
 
   std::vector<const char *> argv;
   for (const auto & arg : arguments) {
@@ -317,15 +318,14 @@ void IgnitionROS2ControlPlugin::Configure(
 
   RCLCPP_DEBUG_STREAM(
     this->dataPtr->node->get_logger(), "[Ignition ROS 2 Control] Setting up controller for [" <<
-    model.Name(_ecm) << "] (Entity=" << _entity << ")].");
+      model.Name(_ecm) << "] (Entity=" << _entity << ")].");
 
   // Get list of enabled joints
   auto enabledJoints = this->dataPtr->GetEnabledJoints(
     _entity,
     _ecm);
 
-  if (enabledJoints.size() == 0)
-  {
+  if (enabledJoints.size() == 0) {
     RCLCPP_DEBUG_STREAM(
       this->dataPtr->node->get_logger(), "[Ignition ROS 2 Control] There are no available Joints.");
     return;
@@ -455,7 +455,7 @@ void IgnitionROS2ControlPlugin::PostUpdate(
     this->dataPtr->last_update_sim_time_ros_ = sim_time_ros;
     auto ign_controller_manager =
       std::dynamic_pointer_cast<ignition_ros2_control::IgnitionSystemInterface>(
-        this->dataPtr->controller_manager_);
+      this->dataPtr->controller_manager_);
     this->dataPtr->controller_manager_->read();
     this->dataPtr->controller_manager_->update();
   }
