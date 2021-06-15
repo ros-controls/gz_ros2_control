@@ -56,6 +56,9 @@ public:
   // Thread where the executor will sping
   std::thread thread_executor_spin_;
 
+  // Flag to stop the executor thread when this plugin is exiting
+  bool stop_;
+
   // Executor to spin the controller
   rclcpp::executors::MultiThreadedExecutor::SharedPtr executor_;
 
@@ -200,6 +203,16 @@ IgnitionROS2ControlPlugin::IgnitionROS2ControlPlugin()
 }
 
 //////////////////////////////////////////////////
+IgnitionROS2ControlPlugin::~IgnitionROS2ControlPlugin()
+{
+  // Stop controller manager thread
+  this->dataPtr->stop_ = true;
+  this->dataPtr->executor_->remove_node(this->dataPtr->controller_manager_);
+  this->dataPtr->executor_->cancel();
+  this->dataPtr->thread_executor_spin_.join();
+}
+
+//////////////////////////////////////////////////
 void IgnitionROS2ControlPlugin::Configure(
   const ignition::gazebo::Entity & _entity,
   const std::shared_ptr<const sdf::Element> & _sdf,
@@ -238,9 +251,10 @@ void IgnitionROS2ControlPlugin::Configure(
   }
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   this->dataPtr->executor_->add_node(this->dataPtr->node);
+  this->dataPtr->stop_ = false;
   auto spin = [this]()
     {
-      while (rclcpp::ok()) {
+      while (rclcpp::ok() && !this->dataPtr->stop_) {
         this->dataPtr->executor_->spin_once();
       }
     };

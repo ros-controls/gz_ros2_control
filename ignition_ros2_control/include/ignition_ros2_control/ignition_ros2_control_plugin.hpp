@@ -34,7 +34,7 @@ public:
   IgnitionROS2ControlPlugin();
 
   /// \brief Destructor
-  ~IgnitionROS2ControlPlugin() override = default;
+  ~IgnitionROS2ControlPlugin() override;
 
   // Documentation inherited
   void Configure(
