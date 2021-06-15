@@ -129,13 +129,13 @@ bool IgnitionSystem::initSim(
     std::string joint_name = this->dataPtr->joint_names_[j] = hardware_info.joints[j].name;
 
     ignition::gazebo::Entity simjoint = enableJoints[joint_name];
+    this->dataPtr->sim_joints_.push_back(simjoint);
     if (!simjoint) {
       RCLCPP_WARN_STREAM(
         this->nh_->get_logger(), "Skipping joint in the URDF named '" << joint_name <<
           "' which is not in the ignition model.");
       continue;
     }
-    this->dataPtr->sim_joints_.push_back(simjoint);
 
     // Create joint position component if one doesn't exist
     if (!_ecm.EntityHasComponentType(
@@ -225,25 +225,31 @@ IgnitionSystem::export_state_interfaces()
   std::vector<hardware_interface::StateInterface> state_interfaces;
 
   for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); ++i) {
-    state_interfaces.emplace_back(
-      hardware_interface::StateInterface(
-        this->dataPtr->joint_names_[i],
-        hardware_interface::HW_IF_POSITION,
-        &this->dataPtr->joint_position_[i]));
+    if (this->dataPtr->sim_joints_[i]) {
+      state_interfaces.emplace_back(
+        hardware_interface::StateInterface(
+          this->dataPtr->joint_names_[i],
+          hardware_interface::HW_IF_POSITION,
+          &this->dataPtr->joint_position_[i]));
+    }
   }
   for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); ++i) {
-    state_interfaces.emplace_back(
-      hardware_interface::StateInterface(
-        this->dataPtr->joint_names_[i],
-        hardware_interface::HW_IF_VELOCITY,
-        &this->dataPtr->joint_velocity_[i]));
+    if (this->dataPtr->sim_joints_[i]) {
+      state_interfaces.emplace_back(
+        hardware_interface::StateInterface(
+          this->dataPtr->joint_names_[i],
+          hardware_interface::HW_IF_VELOCITY,
+          &this->dataPtr->joint_velocity_[i]));
+    }
   }
   for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); ++i) {
-    state_interfaces.emplace_back(
-      hardware_interface::StateInterface(
-        this->dataPtr->joint_names_[i],
-        hardware_interface::HW_IF_EFFORT,
-        &this->dataPtr->joint_effort_[i]));
+    if (this->dataPtr->sim_joints_[i]) {
+      state_interfaces.emplace_back(
+        hardware_interface::StateInterface(
+          this->dataPtr->joint_names_[i],
+          hardware_interface::HW_IF_EFFORT,
+          &this->dataPtr->joint_effort_[i]));
+    }
   }
   return state_interfaces;
 }
@@ -254,25 +260,31 @@ IgnitionSystem::export_command_interfaces()
   std::vector<hardware_interface::CommandInterface> command_interfaces;
 
   for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); ++i) {
-    command_interfaces.emplace_back(
-      hardware_interface::CommandInterface(
-        this->dataPtr->joint_names_[i],
-        hardware_interface::HW_IF_POSITION,
-        &this->dataPtr->joint_position_cmd_[i]));
+    if (this->dataPtr->sim_joints_[i]) {
+      command_interfaces.emplace_back(
+        hardware_interface::CommandInterface(
+          this->dataPtr->joint_names_[i],
+          hardware_interface::HW_IF_POSITION,
+          &this->dataPtr->joint_position_cmd_[i]));
+    }
   }
   for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); ++i) {
-    command_interfaces.emplace_back(
-      hardware_interface::CommandInterface(
-        this->dataPtr->joint_names_[i],
-        hardware_interface::HW_IF_VELOCITY,
-        &this->dataPtr->joint_velocity_cmd_[i]));
+    if (this->dataPtr->sim_joints_[i]) {
+      command_interfaces.emplace_back(
+        hardware_interface::CommandInterface(
+          this->dataPtr->joint_names_[i],
+          hardware_interface::HW_IF_VELOCITY,
+          &this->dataPtr->joint_velocity_cmd_[i]));
+    }
   }
   for (unsigned int i = 0; i < this->dataPtr->joint_names_.size(); ++i) {
-    command_interfaces.emplace_back(
-      hardware_interface::CommandInterface(
-        this->dataPtr->joint_names_[i],
-        hardware_interface::HW_IF_EFFORT,
-        &this->dataPtr->joint_effort_cmd_[i]));
+    if (this->dataPtr->sim_joints_[i]) {
+      command_interfaces.emplace_back(
+        hardware_interface::CommandInterface(
+          this->dataPtr->joint_names_[i],
+          hardware_interface::HW_IF_EFFORT,
+          &this->dataPtr->joint_effort_cmd_[i]));
+    }
   }
   return command_interfaces;
 }
@@ -292,25 +304,27 @@ hardware_interface::return_type IgnitionSystem::stop()
 hardware_interface::return_type IgnitionSystem::read()
 {
   for (unsigned int j = 0; j < this->dataPtr->joint_names_.size(); j++) {
-    // Get the joint velocity
-    const auto * jointVelocity =
-      this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocity>(
-      this->dataPtr->sim_joints_[j]);
+    if (this->dataPtr->sim_joints_[j]) {
+      // Get the joint velocity
+      const auto * jointVelocity =
+        this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocity>(
+        this->dataPtr->sim_joints_[j]);
 
-    // TODO(ahcorde): Revisit this part
-    // Get the joint force
-    // const auto * jointForce =
-    //   this->dataPtr->ecm->Component<ignition::gazebo::components::JointForce>(
-    //   this->dataPtr->sim_joints_[j]);
+      // TODO(ahcorde): Revisit this part
+      // Get the joint force
+      // const auto * jointForce =
+      //   this->dataPtr->ecm->Component<ignition::gazebo::components::JointForce>(
+      //   this->dataPtr->sim_joints_[j]);
 
-    // Get the joint position
-    const auto * jointPositions =
-      this->dataPtr->ecm->Component<ignition::gazebo::components::JointPosition>(
-      this->dataPtr->sim_joints_[j]);
+      // Get the joint position
+      const auto * jointPositions =
+        this->dataPtr->ecm->Component<ignition::gazebo::components::JointPosition>(
+        this->dataPtr->sim_joints_[j]);
 
-    this->dataPtr->joint_position_[j] = jointPositions->Data()[0];
-    this->dataPtr->joint_velocity_[j] = jointVelocity->Data()[0];
-    // this->dataPtr->joint_effort_[j] = jointForce->Data()[0];
+      this->dataPtr->joint_position_[j] = jointPositions->Data()[0];
+      this->dataPtr->joint_velocity_[j] = jointVelocity->Data()[0];
+      // this->dataPtr->joint_effort_[j] = jointForce->Data()[0];
+    }
   }
   return hardware_interface::return_type::OK;
 }
@@ -318,6 +332,8 @@ hardware_interface::return_type IgnitionSystem::read()
 hardware_interface::return_type IgnitionSystem::write()
 {
   for (unsigned int j = 0; j < this->dataPtr->joint_names_.size(); j++) {
+    if (!this->dataPtr->sim_joints_[j])
+      continue;
     if (this->dataPtr->joint_control_methods_[j] & VELOCITY) {
       if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
           this->dataPtr->sim_joints_[j]))
