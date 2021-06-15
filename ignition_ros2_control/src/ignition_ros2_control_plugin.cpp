@@ -46,6 +46,7 @@ namespace ignition_ros2_control
 //////////////////////////////////////////////////
 class IgnitionROS2ControlPluginPrivate
 {
+public:
   /// \brief Get the URDF XML from the parameter server
   std::string getURDF() const;
 
