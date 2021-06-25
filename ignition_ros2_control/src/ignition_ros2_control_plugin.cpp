@@ -405,7 +405,7 @@ void IgnitionROS2ControlPlugin::Configure(
 
 //////////////////////////////////////////////////
 void IgnitionROS2ControlPlugin::PreUpdate(
-  const ignition::gazebo::UpdateInfo &_info,
+  const ignition::gazebo::UpdateInfo & _info,
   ignition::gazebo::EntityComponentManager & /*_ecm*/)
 {
   static bool warned{false};
