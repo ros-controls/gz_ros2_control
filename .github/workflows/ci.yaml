@@ -40,7 +40,7 @@ jobs:
         rosdep init
         rosdep update
         rosdep install --from-paths ./ -i -y --rosdistro foxy \
-          --ignore-src --skip-keys "ignition-gazebo5 ignition-plugin1"
+          --ignore-src --skip-keys "ignition-gazebo5"
     - name: Build project
       id: build
       run: |

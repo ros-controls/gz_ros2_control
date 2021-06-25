@@ -29,7 +29,7 @@ RUN mkdir -p /home/ros2_ws/src \
     && git clone https://github.com/ignitionrobotics/ign_ros2_control/ -b ahcorde/ign_ros2_control \
     && rosdep update \
     && rosdep install --from-paths ./ -i -y --rosdistro foxy \
-      --ignore-src --skip-keys "ignition-gazebo5 ignition-plugin1"
+      --ignore-src --skip-keys "ignition-gazebo5"
 
 RUN cd /home/ros2_ws/ \
   && . /opt/ros/foxy/setup.sh \
