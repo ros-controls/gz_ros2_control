@@ -409,8 +409,7 @@ void IgnitionROS2ControlPlugin::PreUpdate(
   ignition::gazebo::EntityComponentManager & /*_ecm*/)
 {
   static bool warned{false};
-  if (!warned)
-  {
+  if (!warned) {
     rclcpp::Duration gazebo_period(_info.dt);
 
     // Check the period against the simulation period
