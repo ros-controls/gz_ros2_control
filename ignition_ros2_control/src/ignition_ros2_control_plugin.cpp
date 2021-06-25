@@ -408,21 +408,26 @@ void IgnitionROS2ControlPlugin::PreUpdate(
   const ignition::gazebo::UpdateInfo &_info,
   ignition::gazebo::EntityComponentManager & /*_ecm*/)
 {
-  rclcpp::Duration gazebo_period(_info.dt);
+  static bool warned{false};
+  if (!warned)
+  {
+    rclcpp::Duration gazebo_period(_info.dt);
 
-  // Check the period against the simulation period
-  if (this->dataPtr->control_period_ < _info.dt) {
-    RCLCPP_ERROR_STREAM(
-      this->dataPtr->node->get_logger(),
-      "Desired controller update period (" << this->dataPtr->control_period_.seconds() <<
-        " s) is faster than the gazebo simulation period (" <<
-        gazebo_period.seconds() << " s).");
-  } else if (this->dataPtr->control_period_ > gazebo_period) {
-    RCLCPP_WARN_STREAM(
-      this->dataPtr->node->get_logger(),
-      " Desired controller update period (" << this->dataPtr->control_period_.seconds() <<
-        " s) is slower than the gazebo simulation period (" <<
-        gazebo_period.seconds() << " s).");
+    // Check the period against the simulation period
+    if (this->dataPtr->control_period_ < _info.dt) {
+      RCLCPP_ERROR_STREAM(
+        this->dataPtr->node->get_logger(),
+        "Desired controller update period (" << this->dataPtr->control_period_.seconds() <<
+          " s) is faster than the gazebo simulation period (" <<
+          gazebo_period.seconds() << " s).");
+    } else if (this->dataPtr->control_period_ > gazebo_period) {
+      RCLCPP_WARN_STREAM(
+        this->dataPtr->node->get_logger(),
+        " Desired controller update period (" << this->dataPtr->control_period_.seconds() <<
+          " s) is slower than the gazebo simulation period (" <<
+          gazebo_period.seconds() << " s).");
+    }
+    warned = true;
   }
 
   // Always set commands on joints, otherwise at low control frequencies the joints tremble

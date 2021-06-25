@@ -79,18 +79,18 @@ def generate_launch_description():
                 [os.path.join(get_package_share_directory('ros_ign_gazebo'),
                               'launch', 'ign_gazebo.launch.py')]),
             launch_arguments=[('ign_args', [' -r -v 3 empty.sdf'])]),
-        #RegisterEventHandler(
-        #    event_handler=OnProcessExit(
-        #        target_action=ignition_spawn_entity,
-        #        on_exit=[load_joint_state_controller],
-        #    )
-        #),
-        #RegisterEventHandler(
-        #    event_handler=OnProcessExit(
-        #        target_action=load_joint_state_controller,
-        #        on_exit=[load_joint_trajectory_controller],
-        #    )
-        #),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=ignition_spawn_entity,
+                on_exit=[load_joint_state_controller],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_joint_state_controller,
+                on_exit=[load_joint_trajectory_controller],
+            )
+        ),
         node_robot_state_publisher,
         ignition_spawn_entity,
         # Launch Arguments
