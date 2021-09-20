@@ -64,6 +64,9 @@ public:
     ignition::gazebo::EntityComponentManager & _ecm) override;
 
 private:
+  void registerSensors(
+    const hardware_interface::HardwareInfo & hardware_info);
+
   /// \brief Private data class
   std::unique_ptr<IgnitionSystemPrivate> dataPtr;
 };
