@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "ignition_ros2_control/ignition_system.hpp"
+
+#include <ignition/msgs/imu.pb.h>
+
 #include <ignition/gazebo/components/AngularVelocity.hh>
 #include <ignition/gazebo/components/Imu.hh>
 #include <ignition/gazebo/components/JointForce.hh>
@@ -24,14 +28,15 @@
 #include <ignition/gazebo/components/Name.hh>
 #include <ignition/gazebo/components/ParentEntity.hh>
 #include <ignition/gazebo/components/Pose.hh>
+#include <ignition/gazebo/components/Sensor.hh>
+
+#include <ignition/transport/Node.hh>
 
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "ignition_ros2_control/ignition_system.hpp"
 
 struct jointData
 {
@@ -61,42 +66,40 @@ struct jointData
 
   /// \brief vector with the control method defined in the URDF for each joint.
   ignition_ros2_control::IgnitionSystemInterface::ControlMethod joint_control_method;
-
-  /// \brief The current positions of the joints
-  std::shared_ptr<hardware_interface::StateInterface> joint_pos_state;
-
-  /// \brief The current velocities of the joints
-  std::shared_ptr<hardware_interface::StateInterface> joint_vel_state;
-
-  /// \brief The current effort forces applied to the joints
-  std::shared_ptr<hardware_interface::StateInterface> joint_eff_state;
-
-  /// \brief The position command interfaces of the joints
-  std::shared_ptr<hardware_interface::CommandInterface> joint_pos_cmd;
-
-  /// \brief The velocity command interfaces of the joints
-  std::shared_ptr<hardware_interface::CommandInterface> joint_vel_cmd;
-
-  /// \brief The effort command interfaces of the joints
-  std::shared_ptr<hardware_interface::CommandInterface> joint_eff_cmd;
 };
 
-struct ImuData
+class ImuData
 {
+public:
   /// \brief imu's name.
-  std::string name;
+  std::string name{};
 
-  std::string state_interface;
+  /// \brief imu's topic name.
+  std::string topicName{};
 
   /// \brief handles to the imu from within Gazebo
-  ignition::gazebo::Entity sim_imu_sensors_;
+  ignition::gazebo::Entity sim_imu_sensors_ = ignition::gazebo::kNullEntity;
 
   /// \brief An array per IMU with 4 orientation, 3 angular velocity and 3 linear acceleration
   std::array<double, 10> imu_sensor_data_;
 
-  /// \brief The ROS2 Control state interface for the current imu readings
-  std::vector<std::shared_ptr<hardware_interface::StateInterface>> imu_state_;
+  /// \brief callback to get the IMU topic values
+  void OnIMU(const ignition::msgs::IMU & _msg);
 };
+
+void ImuData::OnIMU(const ignition::msgs::IMU & _msg)
+{
+  this->imu_sensor_data_[0] = _msg.orientation().x();
+  this->imu_sensor_data_[1] = _msg.orientation().y();
+  this->imu_sensor_data_[2] = _msg.orientation().z();
+  this->imu_sensor_data_[3] = _msg.orientation().w();
+  this->imu_sensor_data_[4] = _msg.angular_velocity().x();
+  this->imu_sensor_data_[5] = _msg.angular_velocity().y();
+  this->imu_sensor_data_[6] = _msg.angular_velocity().z();
+  this->imu_sensor_data_[7] = _msg.linear_acceleration().x();
+  this->imu_sensor_data_[8] = _msg.linear_acceleration().y();
+  this->imu_sensor_data_[9] = _msg.linear_acceleration().z();
+}
 
 class ignition_ros2_control::IgnitionSystemPrivate
 {
@@ -114,18 +117,20 @@ public:
   std::vector<struct jointData> joints_;
 
   /// \brief vector with the imus .
-  std::vector<struct ImuData> imus_;
+  std::vector<std::shared_ptr<ImuData>> imus_;
 
-  /// \brief handles to the FT sensors from within Gazebo
-  std::vector<ignition::gazebo::Entity> sim_ft_sensors_;
+  /// \brief state interfaces that will be exported to the Resource Manager
+  std::vector<hardware_interface::StateInterface> state_interfaces_;
 
-  /// \brief An array per FT sensor for 3D force and torquee
-  std::vector<std::array<double, 6>> ft_sensor_data_;
-
-  /// \brief The ROS2 Control state interface for the current FT sensor readings
-  std::vector<std::shared_ptr<hardware_interface::StateInterface>> ft_sensor_state_;
+  /// \brief command interfaces that will be exported to the Resource Manager
+  std::vector<hardware_interface::CommandInterface> command_interfaces_;
 
   ignition::gazebo::EntityComponentManager * ecm;
+
+  /// \brief Ignition communication node.
+
+public:
+  ignition::transport::Node node;
 };
 
 namespace ignition_ros2_control
@@ -193,23 +198,23 @@ bool IgnitionSystem::initSim(
       if (hardware_info.joints[j].command_interfaces[i].name == "position") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t position");
         this->dataPtr->joints_[j].joint_control_method |= POSITION;
-        this->dataPtr->joints_[j].joint_pos_cmd =
-          std::make_shared<hardware_interface::CommandInterface>(
-          joint_name, hardware_interface::HW_IF_POSITION,
+        this->dataPtr->command_interfaces_.emplace_back(
+          joint_name,
+          hardware_interface::HW_IF_POSITION,
           &this->dataPtr->joints_[j].joint_position_cmd);
       } else if (hardware_info.joints[j].command_interfaces[i].name == "velocity") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
         this->dataPtr->joints_[j].joint_control_method |= VELOCITY;
-        this->dataPtr->joints_[j].joint_vel_cmd =
-          std::make_shared<hardware_interface::CommandInterface>(
-          joint_name, hardware_interface::HW_IF_VELOCITY,
+        this->dataPtr->command_interfaces_.emplace_back(
+          joint_name,
+          hardware_interface::HW_IF_VELOCITY,
           &this->dataPtr->joints_[j].joint_velocity_cmd);
       } else if (hardware_info.joints[j].command_interfaces[i].name == "effort") {
         this->dataPtr->joints_[j].joint_control_method |= EFFORT;
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
-        this->dataPtr->joints_[j].joint_eff_cmd =
-          std::make_shared<hardware_interface::CommandInterface>(
-          joint_name, hardware_interface::HW_IF_EFFORT,
+        this->dataPtr->command_interfaces_.emplace_back(
+          joint_name,
+          hardware_interface::HW_IF_EFFORT,
           &this->dataPtr->joints_[j].joint_effort_cmd);
       }
     }
@@ -219,23 +224,24 @@ bool IgnitionSystem::initSim(
     for (unsigned int i = 0; i < hardware_info.joints[j].state_interfaces.size(); ++i) {
       if (hardware_info.joints[j].state_interfaces[i].name == "position") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t position");
-        this->dataPtr->joints_[j].joint_pos_state =
-          std::make_shared<hardware_interface::StateInterface>(
-          joint_name, hardware_interface::HW_IF_POSITION,
+        this->dataPtr->state_interfaces_.emplace_back(
+          joint_name,
+          hardware_interface::HW_IF_POSITION,
           &this->dataPtr->joints_[j].joint_position);
       }
       if (hardware_info.joints[j].state_interfaces[i].name == "velocity") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
-        this->dataPtr->joints_[j].joint_vel_state =
-          std::make_shared<hardware_interface::StateInterface>(
-          joint_name, hardware_interface::HW_IF_VELOCITY,
+        this->dataPtr->state_interfaces_.emplace_back(
+          joint_name,
+          hardware_interface::HW_IF_VELOCITY,
           &this->dataPtr->joints_[j].joint_velocity);
       }
       if (hardware_info.joints[j].state_interfaces[i].name == "effort") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
-        this->dataPtr->joints_[j].joint_eff_state =
-          std::make_shared<hardware_interface::StateInterface>(
-          joint_name, hardware_interface::HW_IF_EFFORT, &this->dataPtr->joints_[j].joint_effort);
+        this->dataPtr->state_interfaces_.emplace_back(
+          joint_name,
+          hardware_interface::HW_IF_EFFORT,
+          &this->dataPtr->joints_[j].joint_effort);
       }
     }
   }
@@ -260,29 +266,29 @@ void IgnitionSystem::registerSensors(
   // So we have resize only once the structures where the data will be stored, and we can safely
   // use pointers to the structures
 
-  this->dataPtr->imus_.resize(n_sensors);
-
-  int imuIndex = 0;
-
   this->dataPtr->ecm->Each<ignition::gazebo::components::Imu,
-            ignition::gazebo::components::Name>(
-    [&](const ignition::gazebo::Entity &_entity,
-        const ignition::gazebo::components::Imu *,
-        const ignition::gazebo::components::Name *_name) -> bool
+    ignition::gazebo::components::Name>(
+    [&](const ignition::gazebo::Entity & _entity,
+    const ignition::gazebo::components::Imu *,
+    const ignition::gazebo::components::Name * _name) -> bool
     {
-      if (imuIndex > 0 )
-        return true;
+      auto imuData = std::make_shared<ImuData>();
       RCLCPP_INFO_STREAM(this->nh_->get_logger(), "Loading sensor: " << _name->Data());
+
+      auto sensorTopicComp = this->dataPtr->ecm->Component<
+        ignition::gazebo::components::SensorTopic>(_entity);
+      if (sensorTopicComp) {
+        RCLCPP_INFO_STREAM(this->nh_->get_logger(), "Topic name: " << sensorTopicComp->Data());
+      }
+
       RCLCPP_INFO_STREAM(
         this->nh_->get_logger(), "\tState:");
-      this->dataPtr->imus_[imuIndex].name = _name->Data();
-      this->dataPtr->imus_[imuIndex].sim_imu_sensors_ = _entity;
+      imuData->name = _name->Data();
+      imuData->sim_imu_sensors_ = _entity;
 
       hardware_interface::ComponentInfo component;
-      for (auto & comp: sensor_components_)
-      {
-        if (comp.name == _name->Data())
-        {
+      for (auto & comp : sensor_components_) {
+        if (comp.name == _name->Data()) {
           component = comp;
         }
       }
@@ -299,17 +305,17 @@ void IgnitionSystem::registerSensors(
         {"linear_acceleration.y", 8},
         {"linear_acceleration.z", 9},
       };
+
       for (const auto & state_interface : component.state_interfaces) {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t " << state_interface.name);
 
         size_t data_index = interface_name_map.at(state_interface.name);
-        this->dataPtr->imus_[imuIndex].imu_state_.push_back(
-          std::make_shared<hardware_interface::StateInterface>(
-            this->dataPtr->imus_[imuIndex].name,
-            state_interface.name,
-            &this->dataPtr->imus_[imuIndex].imu_sensor_data_[data_index]));
+        this->dataPtr->state_interfaces_.emplace_back(
+          imuData->name,
+          state_interface.name,
+          &imuData->imu_sensor_data_[data_index]);
       }
-      imuIndex++;
+      this->dataPtr->imus_.push_back(imuData);
       return true;
     });
 }
@@ -326,82 +332,13 @@ IgnitionSystem::configure(const hardware_interface::HardwareInfo & actuator_info
 std::vector<hardware_interface::StateInterface>
 IgnitionSystem::export_state_interfaces()
 {
-  std::vector<hardware_interface::StateInterface> state_interfaces;
-
-  for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
-    state_interfaces.emplace_back(
-      hardware_interface::StateInterface(
-        this->dataPtr->joints_[i].name,
-        hardware_interface::HW_IF_POSITION,
-        &this->dataPtr->joints_[i].joint_position));
-  }
-  for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
-    state_interfaces.emplace_back(
-      hardware_interface::StateInterface(
-        this->dataPtr->joints_[i].name,
-        hardware_interface::HW_IF_VELOCITY,
-        &this->dataPtr->joints_[i].joint_velocity));
-  }
-  for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
-    state_interfaces.emplace_back(
-      hardware_interface::StateInterface(
-        this->dataPtr->joints_[i].name,
-        hardware_interface::HW_IF_EFFORT,
-        &this->dataPtr->joints_[i].joint_effort));
-  }
-
-  static const std::vector<std::string> interface_names = {
-    "orientation.x",
-    "orientation.y",
-    "orientation.z",
-    "orientation.w",
-    "angular_velocity.x",
-    "angular_velocity.y",
-    "angular_velocity.z",
-    "linear_acceleration.x",
-    "linear_acceleration.y",
-    "linear_acceleration.z"
-  };
-
-  for (unsigned int i = 0; i < this->dataPtr->imus_.size(); ++i) {
-    for (unsigned int j = 0; j < this->dataPtr->imus_[i].imu_state_.size(); ++j) {
-      state_interfaces.emplace_back(
-        hardware_interface::StateInterface(
-          this->dataPtr->imus_[i].name,
-          interface_names[j],
-          &this->dataPtr->imus_[i].imu_sensor_data_[j]));
-    }
-  }
-  return state_interfaces;
+  return std::move(this->dataPtr->state_interfaces_);
 }
 
 std::vector<hardware_interface::CommandInterface>
 IgnitionSystem::export_command_interfaces()
 {
-  std::vector<hardware_interface::CommandInterface> command_interfaces;
-
-  for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
-    command_interfaces.emplace_back(
-      hardware_interface::CommandInterface(
-        this->dataPtr->joints_[i].name,
-        hardware_interface::HW_IF_POSITION,
-        &this->dataPtr->joints_[i].joint_position_cmd));
-  }
-  for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
-    command_interfaces.emplace_back(
-      hardware_interface::CommandInterface(
-        this->dataPtr->joints_[i].name,
-        hardware_interface::HW_IF_VELOCITY,
-        &this->dataPtr->joints_[i].joint_velocity_cmd));
-  }
-  for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
-    command_interfaces.emplace_back(
-      hardware_interface::CommandInterface(
-        this->dataPtr->joints_[i].name,
-        hardware_interface::HW_IF_EFFORT,
-        &this->dataPtr->joints_[i].joint_effort_cmd));
-  }
-  return command_interfaces;
+  return std::move(this->dataPtr->command_interfaces_);
 }
 
 hardware_interface::return_type IgnitionSystem::start()
@@ -422,8 +359,7 @@ hardware_interface::return_type IgnitionSystem::read()
     // Get the joint velocity
     const auto * jointVelocity =
       this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocity>(
-        this->dataPtr->joints_[i].sim_joint);
-    // std::cerr << "this->dataPtr->joints_[i].sim_joint " << this->dataPtr->joints_[i].sim_joint << '\n';
+      this->dataPtr->joints_[i].sim_joint);
 
     // TODO(ahcorde): Revisit this part ignitionrobotics/ign-physics#124
     // Get the joint force
@@ -434,7 +370,7 @@ hardware_interface::return_type IgnitionSystem::read()
     // Get the joint position
     const auto * jointPositions =
       this->dataPtr->ecm->Component<ignition::gazebo::components::JointPosition>(
-        this->dataPtr->joints_[i].sim_joint);
+      this->dataPtr->joints_[i].sim_joint);
 
     this->dataPtr->joints_[i].joint_position = jointPositions->Data()[0];
     this->dataPtr->joints_[i].joint_velocity = jointVelocity->Data()[0];
@@ -442,104 +378,21 @@ hardware_interface::return_type IgnitionSystem::read()
   }
 
   for (unsigned int i = 0; i < this->dataPtr->imus_.size(); ++i) {
-    std::cerr << "this->dataPtr->imus_[i].sim_imu_sensors_ " << this->dataPtr->imus_[i].sim_imu_sensors_ << '\n';
-    const auto * worldPose = this->dataPtr->ecm->Component<ignition::gazebo::components::WorldPose>(
-        this->dataPtr->imus_[i].sim_imu_sensors_);
-    if (!worldPose)
-    {
-      std::cerr << "fail! worldPose" << '\n';
-      continue;
-    }
-    this->dataPtr->imus_[i].imu_sensor_data_[0] = worldPose->Data().Rot().X();
-    this->dataPtr->imus_[i].imu_sensor_data_[1] = worldPose->Data().Rot().Y();
-    this->dataPtr->imus_[i].imu_sensor_data_[2] = worldPose->Data().Rot().Z();
-    this->dataPtr->imus_[i].imu_sensor_data_[3] = worldPose->Data().Rot().W();
+    if (this->dataPtr->imus_[i]->topicName.empty()) {
+      auto sensorTopicComp = this->dataPtr->ecm->Component<
+        ignition::gazebo::components::SensorTopic>(this->dataPtr->imus_[i]->sim_imu_sensors_);
+      if (sensorTopicComp) {
+        this->dataPtr->imus_[i]->topicName = sensorTopicComp->Data();
+        RCLCPP_INFO_STREAM(
+          this->nh_->get_logger(), "IMU " << this->dataPtr->imus_[i]->name <<
+            " has a topic name: " << sensorTopicComp->Data());
 
-    // std::cerr << "worldPose->Data() " << std::setprecision(5) << worldPose->Data().Rot().X() << "\t" << worldPose->Data().Rot().X() << "\t" << worldPose->Data().Rot().Z() << "\t" << worldPose->Data().Rot().W() << '\n';
-
-    const auto * angularVel = this->dataPtr->ecm->Component<ignition::gazebo::components::AngularVelocity>(
-        this->dataPtr->imus_[i].sim_imu_sensors_);
-    if (!angularVel)
-    {
-      std::cerr << "fail! angularVel" << '\n';
-      continue;
+        this->dataPtr->node.Subscribe(
+          this->dataPtr->imus_[i]->topicName, &ImuData::OnIMU,
+          this->dataPtr->imus_[i].get());
+      }
     }
-    this->dataPtr->imus_[i].imu_sensor_data_[4] = angularVel->Data().X();
-    this->dataPtr->imus_[i].imu_sensor_data_[5] = angularVel->Data().Y();
-    this->dataPtr->imus_[i].imu_sensor_data_[6] = angularVel->Data().Z();
-    // std::cerr << "angularVel->Data() " << std::setprecision(5)  << angularVel->Data().X() << "\t" << angularVel->Data().X() << "\t" << angularVel->Data().Z() << '\n';
-
-    const auto * _linearAcc = this->dataPtr->ecm->Component<ignition::gazebo::components::LinearAcceleration>(
-        this->dataPtr->imus_[i].sim_imu_sensors_);
-    if (!_linearAcc)
-    {
-      std::cerr << "fail!" << '\n';
-      continue;
-    }
-    this->dataPtr->imus_[i].imu_sensor_data_[7] = _linearAcc->Data().X();
-    this->dataPtr->imus_[i].imu_sensor_data_[8] = _linearAcc->Data().Y();
-    this->dataPtr->imus_[i].imu_sensor_data_[9] = _linearAcc->Data().Z();
-    std::cerr << "linearAcc->Data() " << std::setprecision(5)  << _linearAcc->Data().X() << "\t" << _linearAcc->Data().X() << "\t" << _linearAcc->Data().Z() << '\n';
   }
-  // this->dataPtr->ecm->Each<ignition::gazebo::components::Imu,
-  //           ignition::gazebo::components::Name,
-  //           ignition::gazebo::components::WorldPose,
-  //           ignition::gazebo::components::AngularVelocity,
-  //           ignition::gazebo::components::LinearAcceleration>(
-  //   [&](const ignition::gazebo::Entity &_entity,
-  //       const ignition::gazebo::components::Imu *,
-  //       const ignition::gazebo::components::Name *_name,
-  //       const ignition::gazebo::components::WorldPose *_worldPose,
-  //       const ignition::gazebo::components::AngularVelocity *_angularVel,
-  //       const ignition::gazebo::components::LinearAcceleration *_linearAcc) -> bool
-  //   {
-  //     std::cerr << "worldPose->Data() " << std::setprecision(5) << _entity << "\t" << _name->Data()
-  //               << "\t" << _worldPose->Data().Rot().X() << "\t" << _worldPose->Data().Rot().X()
-  //               << "\t" << _worldPose->Data().Rot().Z() << "\t" << _worldPose->Data().Rot().W() << '\n';
-  //
-  //     const auto * parentEntity = this->dataPtr->ecm->Component<ignition::gazebo::components::ParentEntity>(
-  //         _entity);
-  //     if (parentEntity)
-  //     {
-  //       const auto * worldPoseParent = this->dataPtr->ecm->Component<ignition::gazebo::components::Pose>(
-  //         parentEntity->Data());
-  //       if (worldPoseParent)
-  //       {
-  //         std::cerr << "worldPose->Data() Parent " << std::setprecision(5) << parentEntity->Data()
-  //                   << "\t" << worldPoseParent->Data().Rot().X() << "\t" << worldPoseParent->Data().Rot().X()
-  //                   << "\t" << worldPoseParent->Data().Rot().Z() << "\t" << worldPoseParent->Data().Rot().W() << '\n';
-  //       }
-  //       const auto * nameParent = this->dataPtr->ecm->Component<ignition::gazebo::components::Name>(
-  //         parentEntity->Data());
-  //       if (nameParent)
-  //       {
-  //         std::cerr << "nameParent " << std::setprecision(5) << parentEntity->Data() << "\t" << nameParent->Data() << "\n";
-  //       }
-  //     }
-  //
-  //     std::cerr << "_linearAcc->Data() " << std::setprecision(5) << _entity << "\t" << _name->Data() << "\t" << _linearAcc->Data().X() << "\t" << _linearAcc->Data().X() << "\t" << _linearAcc->Data().Z() << '\n';
-  //     std::cerr << "_angularVel->Data() " << std::setprecision(5) << _entity << "\t" << _name->Data() << "\t" << _angularVel->Data().X() << "\t" << _angularVel->Data().X() << "\t" << _angularVel->Data().Z() << '\n';
-  //     // unsigned int index = 0;
-  //     // for (unsigned int i = 0; i < this->dataPtr->imus_.size(); ++i) {
-  //     //   if (this->dataPtr->imus_[i].name == _name->Data()) {
-  //     //     index = i;
-  //     //     break;
-  //     //   }
-  //     // }
-  //     // this->dataPtr->imus_[index].imu_sensor_data_[0] = _worldPose->Data().Rot().X();
-  //     // this->dataPtr->imus_[index].imu_sensor_data_[1] = _worldPose->Data().Rot().Y();
-  //     // this->dataPtr->imus_[index].imu_sensor_data_[2] = _worldPose->Data().Rot().Z();
-  //     // this->dataPtr->imus_[index].imu_sensor_data_[3] = _worldPose->Data().Rot().W();
-  //     //
-  //     // this->dataPtr->imus_[index].imu_sensor_data_[4] = _angularVel->Data().X();
-  //     // this->dataPtr->imus_[index].imu_sensor_data_[5] = _angularVel->Data().Y();
-  //     // this->dataPtr->imus_[index].imu_sensor_data_[6] = _angularVel->Data().Z();
-  //     //
-  //     // this->dataPtr->imus_[index].imu_sensor_data_[7] = _linearAcc->Data().X();
-  //     // this->dataPtr->imus_[index].imu_sensor_data_[8] = _linearAcc->Data().Y();
-  //     // this->dataPtr->imus_[index].imu_sensor_data_[9] = _linearAcc->Data().Z();
-  //     return true;
-  //   });
   return hardware_interface::return_type::OK;
 }
 

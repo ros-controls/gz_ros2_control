@@ -39,11 +39,11 @@ int main(int argc, char * argv[])
 
   commands.data[0] = 1;
   publisher->publish(commands);
-  std::this_thread::sleep_for(5s);
+  std::this_thread::sleep_for(1s);
 
   commands.data[0] = -1;
   publisher->publish(commands);
-  std::this_thread::sleep_for(5s);
+  std::this_thread::sleep_for(1s);
 
   commands.data[0] = 0;
   publisher->publish(commands);
