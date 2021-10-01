@@ -23,6 +23,7 @@
 
 #include "ignition_ros2_control/ignition_system_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
+#include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 
 namespace ignition_ros2_control
 {

@@ -24,6 +24,7 @@ find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(urdf REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
 
 if("$ENV{IGNITION_VERSION}" STREQUAL "citadel")
   find_package(ignition-gazebo3 REQUIRED)
@@ -58,6 +59,7 @@ ament_target_dependencies(${PROJECT_NAME}-system
   rclcpp
   urdf
   yaml_cpp_vendor
+  rclcpp_lifecycle
 )
 
 #########
