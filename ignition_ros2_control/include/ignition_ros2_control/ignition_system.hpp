@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "ignition_ros2_control/ignition_system_interface.hpp"
+#include "rclcpp_lifecycle/state.hpp"
 
 namespace ignition_ros2_control
 {
@@ -35,7 +36,7 @@ class IgnitionSystem : public IgnitionSystemInterface
 {
 public:
   // Documentation Inherited
-  hardware_interface::return_type configure(const hardware_interface::HardwareInfo & system_info)
+  CallbackReturn on_init(const hardware_interface::HardwareInfo & system_info)
   override;
 
   // Documentation Inherited
@@ -45,10 +46,10 @@ public:
   std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
   // Documentation Inherited
-  hardware_interface::return_type start() override;
+  CallbackReturn on_activate(const rclcpp_lifecycle::State & previous_state) override;
 
   // Documentation Inherited
-  hardware_interface::return_type stop() override;
+  CallbackReturn on_deactivate(const rclcpp_lifecycle::State & previous_state) override;
 
   // Documentation Inherited
   hardware_interface::return_type read() override;

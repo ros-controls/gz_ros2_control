@@ -36,6 +36,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <boost/shared_ptr.hpp>
 
 #include "ignition_ros2_control/ignition_ros2_control_plugin.hpp"
 #include "ignition_ros2_control/ignition_system.hpp"
@@ -450,7 +451,7 @@ void IgnitionROS2ControlPlugin::PostUpdate(
       std::dynamic_pointer_cast<ignition_ros2_control::IgnitionSystemInterface>(
       this->dataPtr->controller_manager_);
     this->dataPtr->controller_manager_->read();
-    this->dataPtr->controller_manager_->update();
+    this->dataPtr->controller_manager_->update(sim_time_ros, sim_period);
   }
 }
 }  // namespace ignition_ros2_control
