@@ -68,6 +68,7 @@ add_library(ignition_hardware_plugins SHARED
   src/ignition_system.cpp
 )
 ament_target_dependencies(ignition_hardware_plugins
+    rclcpp_lifecycle
   hardware_interface
   rclcpp
 )
