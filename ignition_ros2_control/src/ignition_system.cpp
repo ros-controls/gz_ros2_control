@@ -345,11 +345,13 @@ IgnitionSystem::export_command_interfaces()
 CallbackReturn IgnitionSystem::on_activate(const rclcpp_lifecycle::State & previous_state)
 {
   return CallbackReturn::SUCCESS;
+  return hardware_interface::SystemInterface::on_activate(previous_state);
 }
 
 CallbackReturn IgnitionSystem::on_deactivate(const rclcpp_lifecycle::State & previous_state)
 {
   return CallbackReturn::SUCCESS;
+  return hardware_interface::SystemInterface::on_deactivate(previous_state);
 }
 
 hardware_interface::return_type IgnitionSystem::read()
