@@ -40,6 +40,8 @@ public:
   CallbackReturn on_init(const hardware_interface::HardwareInfo & system_info)
   override;
 
+  CallbackReturn on_configure(const rclcpp_lifecycle::State & previous_state) override;
+
   // Documentation Inherited
   std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
 

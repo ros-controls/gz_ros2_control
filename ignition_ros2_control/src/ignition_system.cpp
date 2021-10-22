@@ -149,6 +149,7 @@ bool IgnitionSystem::initSim(
   this->dataPtr->ecm = &_ecm;
   this->dataPtr->n_dof_ = hardware_info.joints.size();
 
+  RCLCPP_WARN(this->nh_->get_logger(), "Init sime");
   RCLCPP_DEBUG(this->nh_->get_logger(), "n_dof_ %d", this->dataPtr->n_dof_);
 
   this->dataPtr->joints_.resize(this->dataPtr->n_dof_);
@@ -323,10 +324,24 @@ void IgnitionSystem::registerSensors(
 CallbackReturn
 IgnitionSystem::on_init(const hardware_interface::HardwareInfo & actuator_info)
 {
+  RCLCPP_WARN(this->nh_->get_logger(), "On init...");
   if (hardware_interface::SystemInterface::on_init(actuator_info) != CallbackReturn::SUCCESS)
   {
     return CallbackReturn::ERROR;
   }
+  return CallbackReturn::SUCCESS;
+}
+
+CallbackReturn IgnitionSystem::on_configure(
+  const rclcpp_lifecycle::State & /*previous_state*/)
+{
+  RCLCPP_INFO(
+    this->nh_->get_logger(), "Configuring ...please wait...");
+
+
+  RCLCPP_INFO(
+    this->nh_->get_logger(), "System Successfully configured!");
+
   return CallbackReturn::SUCCESS;
 }
 
