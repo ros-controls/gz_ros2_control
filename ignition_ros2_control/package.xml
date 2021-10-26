@@ -26,6 +26,5 @@
 
   <export>
       <build_type>ament_cmake</build_type>
-      <ignition_ros2_control plugin="${prefix}/ignition_hardware_plugins.xml"/>
   </export>
 </package>

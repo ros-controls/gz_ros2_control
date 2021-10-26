@@ -470,4 +470,4 @@ hardware_interface::return_type IgnitionSystem::write()
 
 #include "pluginlib/class_list_macros.hpp"  // NOLINT
 PLUGINLIB_EXPORT_CLASS(
-  ignition_ros2_control::IgnitionSystem, ignition_ros2_control::IgnitionSystemInterface)
+  ignition_ros2_control::IgnitionSystem, hardware_interface::SystemInterface)

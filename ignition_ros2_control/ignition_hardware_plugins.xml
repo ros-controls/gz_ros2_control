@@ -2,7 +2,7 @@
   <class
     name="ignition_ros2_control/IgnitionSystem"
     type="ignition_ros2_control::IgnitionSystem"
-    base_class_type="ignition_ros2_control::IgnitionSystemInterface">
+    base_class_type="hardware_interface::SystemInterface">
     <description>
       GazeboPositionJoint
     </description>
