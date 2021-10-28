@@ -378,7 +378,7 @@ void IgnitionROS2ControlPlugin::Configure(
       return;
     }
 
-    resource_manager_->import_component(std::move(gazeboSystem));
+    resource_manager_->import_component(std::move(gazeboSystem), control_hardware[i]);
   }
   // Create the controller manager
   RCLCPP_INFO(this->dataPtr->node->get_logger(), "Loading controller_manager");
