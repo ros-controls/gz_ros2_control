@@ -16,7 +16,7 @@
   <depend>pluginlib</depend>
   <depend>rclcpp</depend>
   <depend>yaml_cpp_vendor</depend>
-  <depend>rclcpp_lifecyle</depend>
+  <depend>rclcpp_lifecycle</depend>
   <depend>urdf</depend>
   <depend>hardware_interface</depend>
   <depend>controller_manager</depend>
