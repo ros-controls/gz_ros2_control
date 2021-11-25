@@ -79,7 +79,7 @@ public:
   rclcpp::Duration control_period_ = rclcpp::Duration(1, 0);
 
   /// \brief Interface loader
-  boost::shared_ptr<pluginlib::ClassLoader<
+  std::shared_ptr<pluginlib::ClassLoader<
       ignition_ros2_control::IgnitionSystemInterface>> robot_hw_sim_loader_;
 
   /// \brief Controller manager
