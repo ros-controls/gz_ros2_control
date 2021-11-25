@@ -334,9 +334,6 @@ IgnitionSystem::on_init(const hardware_interface::HardwareInfo & actuator_info)
 CallbackReturn IgnitionSystem::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  RCLCPP_INFO(
-    this->nh_->get_logger(), "Configuring ...please wait...");
-
 
   RCLCPP_INFO(
     this->nh_->get_logger(), "System Successfully configured!");
