@@ -36,7 +36,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <boost/shared_ptr.hpp>
 
 #include "ignition_ros2_control/ignition_ros2_control_plugin.hpp"
 #include "ignition_ros2_control/ignition_system.hpp"
