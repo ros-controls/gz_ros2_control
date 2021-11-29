@@ -110,9 +110,6 @@ public:
   /// \brief Degrees od freedom.
   size_t n_dof_;
 
-  /// \brief last time the write method was called.
-  rclcpp::Time last_update_sim_time_ros_;
-
   /// \brief vector with the joint's names.
   std::vector<struct jointData> joints_;
 
@@ -128,8 +125,6 @@ public:
   ignition::gazebo::EntityComponentManager * ecm;
 
   /// \brief Ignition communication node.
-
-public:
   ignition::transport::Node node;
 };
 
@@ -143,7 +138,6 @@ bool IgnitionSystem::initSim(
   ignition::gazebo::EntityComponentManager & _ecm)
 {
   this->dataPtr = std::make_unique<IgnitionSystemPrivate>();
-  this->dataPtr->last_update_sim_time_ros_ = rclcpp::Time();
 
   this->nh_ = model_nh;
   this->dataPtr->ecm = &_ecm;

@@ -94,7 +94,8 @@ public:
   std::string robot_description_node_ = "robot_state_publisher";
 
   /// \brief Last time the update method was called
-  rclcpp::Time last_update_sim_time_ros_;
+  rclcpp::Time last_update_sim_time_ros_ =
+    rclcpp::Time((int64_t)0, RCL_ROS_TIME);
 
   /// \brief ECM pointer
   ignition::gazebo::EntityComponentManager * ecm;
@@ -441,7 +442,7 @@ void IgnitionROS2ControlPlugin::PostUpdate(
 {
   // Get the simulation time and period
   rclcpp::Time sim_time_ros(std::chrono::duration_cast<std::chrono::nanoseconds>(
-      _info.simTime).count());
+      _info.simTime).count(), RCL_ROS_TIME);
   rclcpp::Duration sim_period = sim_time_ros - this->dataPtr->last_update_sim_time_ros_;
 
   if (sim_period >= this->dataPtr->control_period_) {
