@@ -28,18 +28,22 @@ find_package(yaml_cpp_vendor REQUIRED)
 if("$ENV{IGNITION_VERSION}" STREQUAL "citadel")
   find_package(ignition-gazebo3 REQUIRED)
   set(IGN_GAZEBO_VER ${ignition-gazebo3_VERSION_MAJOR})
-
   message(STATUS "Compiling against Ignition Citadel")
+
+elseif("$ENV{IGNITION_VERSION}" STREQUAL "edifice")
+  find_package(ignition-gazebo5 REQUIRED)
+  set(IGN_GAZEBO_VER ${ignition-gazebo5_VERSION_MAJOR})
+  message(STATUS "Compiling against Ignition Edifice")
+
 elseif("$ENV{IGNITION_VERSION}" STREQUAL "fortress")
   find_package(ignition-gazebo6 REQUIRED)
   set(IGN_GAZEBO_VER ${ignition-gazebo6_VERSION_MAJOR})
-
   message(STATUS "Compiling against Ignition Fortress")
-else()
-  find_package(ignition-gazebo5 REQUIRED)
-  set(IGN_GAZEBO_VER ${ignition-gazebo5_VERSION_MAJOR})
 
-  message(STATUS "Compiling against Ignition Edifice")
+else()
+  find_package(ignition-gazebo3 REQUIRED)
+  set(IGN_GAZEBO_VER ${ignition-gazebo3_VERSION_MAJOR})
+  message(STATUS "Compiling against Ignition Citadel")
 endif()
 
 find_package(ignition-plugin1 REQUIRED)

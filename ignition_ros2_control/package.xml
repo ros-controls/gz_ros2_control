@@ -10,6 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>ament_index_cpp</depend>
+  <depend condition="$IGNITION_VERSION == ''">ignition-gazebo3</depend>
   <depend condition="$IGNITION_VERSION == cidadel">ignition-gazebo3</depend>
   <depend condition="$IGNITION_VERSION == edifice">ignition-gazebo5</depend>
   <depend>ignition-plugin</depend>
