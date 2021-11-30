@@ -47,7 +47,7 @@ To run the demo with the GUI, we are going to use [rocker](https://github.com/os
 images with customized local support injected for things like nvidia support. Rocker also supports user id specific files for cleaner
 mounting file permissions. You can install this tool with the following [instructions](https://github.com/osrf/rocker/#installation) (make sure you meet all of the [prerequisites](https://github.com/osrf/rocker/#prerequisites)).
 
-The following command will launch Gazebo:
+The following command will launch Ignition:
 
 ```bash
 rocker --x11 --nvidia --name ignition_ros2_control_demo ignition_ros2_control:latest
