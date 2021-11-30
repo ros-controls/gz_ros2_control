@@ -266,9 +266,12 @@ void IgnitionROS2ControlPlugin::Configure(
   }
 
   // Get controller manager node name
-  std::string controllerManagerNodeName = _sdf->Get<std::string>("controller_manager_node_name");
-  if (controllerManagerNodeName.empty()) {
-    controllerManagerNodeName = "controller_manager";
+  std::string controllerManagerNodeName{"controller_manager"};
+
+  std::string controllerManagerPrefixNodeName =
+    _sdf->Get<std::string>("controller_manager_prefix_node_name");
+  if (!controllerManagerPrefixNodeName.empty()) {
+    controllerManagerNodeName = controllerManagerPrefixNodeName + "_" + controllerManagerNodeName;
   }
 
   std::vector<std::string> arguments = {"--ros-args", "--params-file", paramFileName};

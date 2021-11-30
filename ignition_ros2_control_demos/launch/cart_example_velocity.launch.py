@@ -31,7 +31,7 @@ import xacro
 
 def generate_launch_description():
     # Launch Arguments
-    use_sim_time = LaunchConfiguration('use_sim_time', default=False)
+    use_sim_time = LaunchConfiguration('use_sim_time', default=True)
 
     ignition_ros2_control_demos_path = os.path.join(
         get_package_share_directory('ignition_ros2_control_demos'))

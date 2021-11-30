@@ -43,7 +43,7 @@
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
 
-  <ros2_control name="GazeboSystem" type="system">
+  <ros2_control name="IgnitionSystem" type="system">
     <hardware>
       <plugin>ignition_ros2_control/IgnitionSystem</plugin>
     </hardware>
