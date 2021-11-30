@@ -1,7 +1,7 @@
 # ign_ros2_control
 
 This is a ROS 2 package for integrating the `ros2_control` controller architecture with the [Ignition Gazebo](http://ignitionrobotics.org/) simulator.
-More information about `ros2_control` can be found here: https://ros-controls.github.io/control.ros.org/
+More information about `ros2_control` can be found here: https://control.ros.org/
 
 This package provides an Ignition Gazebo system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.
 
@@ -73,7 +73,7 @@ include:
 ```xml
 <ros2_control name="GazeboSystem" type="system">
   <hardware>
-    <plugin>ignition_ros2_control/GazeboSystem</plugin>
+    <plugin>ignition_ros2_control/IgnitionSystem</plugin>
   </hardware>
   <joint name="slider_to_cart">
     <command_interface name="effort">
@@ -131,7 +131,7 @@ robot model is loaded. For example, the following XML will load the default plug
 ```xml
 <ros2_control name="GazeboSystem" type="system">
   <hardware>
-    <plugin>ignition_ros2_control/GazeboSystem</plugin>
+    <plugin>ignition_ros2_control/IgnitionSystem</plugin>
   </hardware>
   ...
 <ros2_control>
@@ -144,12 +144,14 @@ robot model is loaded. For example, the following XML will load the default plug
 
 #### Set up controllers
 
-Use the tag `<parameters>` inside `<plugin>` to set the YAML file with the controller configuration.
+Use the tag `<parameters>` inside `<plugin>` to set the YAML file with the controller configuration
+and use the tag `<controller_manager_node_name>` to set the controller manager node name.
 
 ```xml
 <gazebo>
   <plugin name="ignition_ros2_control" filename="libignition_ros2_control.so">
     <parameters>$(find ignition_ros2_control_demos)/config/cartpole_controller.yaml</parameters>
+    <controller_manager_node_name>controller_manager</controller_manager_node_name>
   </plugin>
 <gazebo>
 ```

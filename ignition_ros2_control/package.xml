@@ -2,7 +2,7 @@
 <package format="3">
   <name>ignition_ros2_control</name>
   <version>0.0.0</version>
-  <description>Ignition ROS2 control package. It allows to control joint using ROS 2</description>
+  <description>Ignition ros2_control package allows to control simulated robots using ros2_control framework.</description>
   <maintainer email="alejandro@openrobotics.com">Alejandro Hernández</maintainer>
   <author>Alejandro Hernández</author>
   <license>Apache 2</license>

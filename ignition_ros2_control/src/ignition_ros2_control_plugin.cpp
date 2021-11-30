@@ -265,6 +265,12 @@ void IgnitionROS2ControlPlugin::Configure(
     return;
   }
 
+  // Get controller manager node name
+  std::string controllerManagerNodeName = _sdf->Get<std::string>("controller_manager_node_name");
+  if (controllerManagerNodeName.empty()) {
+    controllerManagerNodeName = "controller_manager";
+  }
+
   std::vector<std::string> arguments = {"--ros-args", "--params-file", paramFileName};
   auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
 
@@ -304,7 +310,7 @@ void IgnitionROS2ControlPlugin::Configure(
 
   if (!rclcpp::ok()) {
     rclcpp::init(static_cast<int>(argv.size()), argv.data());
-    this->dataPtr->node = rclcpp::Node::make_shared("ignition_ros2_control");
+    this->dataPtr->node = rclcpp::Node::make_shared("controller_manager_ignition_ros2_control");
   }
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   this->dataPtr->executor_->add_node(this->dataPtr->node);
@@ -364,10 +370,10 @@ void IgnitionROS2ControlPlugin::Configure(
 
   for (unsigned int i = 0; i < control_hardware.size(); ++i) {
     std::string robot_hw_sim_type_str_ = control_hardware[i].hardware_class_type;
-    auto gazeboSystem = std::unique_ptr<ignition_ros2_control::IgnitionSystemInterface>(
+    auto ignitionSystem = std::unique_ptr<ignition_ros2_control::IgnitionSystemInterface>(
       this->dataPtr->robot_hw_sim_loader_->createUnmanagedInstance(robot_hw_sim_type_str_));
 
-    if (!gazeboSystem->initSim(
+    if (!ignitionSystem->initSim(
         this->dataPtr->node,
         enabledJoints,
         control_hardware[i],
@@ -378,7 +384,7 @@ void IgnitionROS2ControlPlugin::Configure(
       return;
     }
 
-    resource_manager_->import_component(std::move(gazeboSystem));
+    resource_manager_->import_component(std::move(ignitionSystem));
   }
   // Create the controller manager
   RCLCPP_INFO(this->dataPtr->node->get_logger(), "Loading controller_manager");
@@ -386,7 +392,7 @@ void IgnitionROS2ControlPlugin::Configure(
     new controller_manager::ControllerManager(
       std::move(resource_manager_),
       this->dataPtr->executor_,
-      "controller_manager"));
+      controllerManagerNodeName));
   this->dataPtr->executor_->add_node(this->dataPtr->controller_manager_);
 
   if (!this->dataPtr->controller_manager_->has_parameter("update_rate")) {
