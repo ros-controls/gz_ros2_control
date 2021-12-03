@@ -11,6 +11,8 @@ Tested on:
   - [Ignition Edifice](https://ignitionrobotics.org/docs/edifice) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
   - [Ignition Fortress](https://ignitionrobotics.org/docs/fortress) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
 
+If you want to run this with `ROS 2 Foxy` please check the branch `foxy`.
+
 # Usage
 
 ## Video + Pictures
