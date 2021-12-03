@@ -81,11 +81,11 @@ public:
   /// \brief Interface loader
   std::shared_ptr<pluginlib::ClassLoader<
       ignition_ros2_control::IgnitionSystemInterface>>
-        robot_hw_sim_loader_{nullptr};
+  robot_hw_sim_loader_{nullptr};
 
   /// \brief Controller manager
   std::shared_ptr<controller_manager::ControllerManager>
-    controller_manager_{nullptr};
+  controller_manager_{nullptr};
 
   /// \brief String with the robot description param_name
   // TODO(ahcorde): Add param in plugin tag
@@ -272,7 +272,8 @@ void IgnitionROS2ControlPlugin::Configure(
 
   std::string controllerManagerPrefixNodeName =
     _sdf->Get<std::string>("controller_manager_prefix_node_name");
-  if (!controllerManagerPrefixNodeName.empty()) {
+  if (!controllerManagerPrefixNodeName.empty())
+  {
     controllerManagerNodeName = controllerManagerPrefixNodeName + "_" + controllerManagerNodeName;
   }
 
@@ -344,7 +345,8 @@ void IgnitionROS2ControlPlugin::Configure(
 
   if (enabledJoints.size() == 0) {
     RCLCPP_DEBUG_STREAM(
-      this->dataPtr->node_->get_logger(), "[Ignition ROS 2 Control] There are no available Joints.");
+      this->dataPtr->node_->get_logger(),
+      "[Ignition ROS 2 Control] There are no available Joints.");
     return;
   }
 
