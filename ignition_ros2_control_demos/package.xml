@@ -8,9 +8,9 @@
 
   <license>Apache License 2.0</license>
 
-  <url type="website">http://ros.org/wiki/gazebo_ros_control</url>
+  <url type="website">https://github.com/ignitionrobotics/ign_ros2_control/blob/main/README.md</url>
   <url type="bugtracker">https://github.com/ros-simulation/gazebo_ros2_control/issues</url>
-  <url type="repository">https://github.com/ros-simulation/gazebo_ros2_control</url>
+  <url type="repository">https://github.com/ignitionrobotics/ign_ros2_control</url>
 
   <author>Alejandro Hernández</author>
 

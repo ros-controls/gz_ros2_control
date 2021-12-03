@@ -7,8 +7,9 @@ This package provides an Ignition Gazebo system plugin which instantiates a `ros
 
 Tested on:
 
-  - [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
-  - [Ignition Edifice](https://ignitionrobotics.org/docs/edifice)
+  - [Ignition Citadel](https://ignitionrobotics.org/docs/citadel) + [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
+  - [Ignition Edifice](https://ignitionrobotics.org/docs/edifice) + [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
+  - [Ignition Edifice](https://ignitionrobotics.org/docs/fortress) + [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
 
 # Usage
 
@@ -21,7 +22,7 @@ Tested on:
 ### Modifying or building your own
 
 ```bash
-cd Docker
+cd Dockerfile
 docker build -t ignition_ros2_control .
 ```
 

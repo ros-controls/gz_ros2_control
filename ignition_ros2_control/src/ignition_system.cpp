@@ -40,31 +40,31 @@
 
 struct jointData
 {
-  /// \brief vector with the joint's names.
+  /// \brief Joint's names.
   std::string name;
 
-  /// \brief vector with the current joint position
+  /// \brief Current joint position
   double joint_position;
 
-  /// \brief vector with the current joint velocity
+  /// \brief Current joint velocity
   double joint_velocity;
 
-  /// \brief vector with the current joint effort
+  /// \brief Current joint effort
   double joint_effort;
 
-  /// \brief vector with the current cmd joint position
+  /// \brief Current cmd joint position
   double joint_position_cmd;
 
-  /// \brief vector with the current cmd joint velocity
+  /// \brief Current cmd joint velocity
   double joint_velocity_cmd;
 
-  /// \brief vector with the current cmd joint effort
+  /// \brief Current cmd joint effort
   double joint_effort_cmd;
 
   /// \brief handles to the joints from within Gazebo
   ignition::gazebo::Entity sim_joint;
 
-  /// \brief vector with the control method defined in the URDF for each joint.
+  /// \brief Control method defined in the URDF for each joint.
   ignition_ros2_control::IgnitionSystemInterface::ControlMethod joint_control_method;
 };
 
@@ -122,6 +122,8 @@ public:
   /// \brief command interfaces that will be exported to the Resource Manager
   std::vector<hardware_interface::CommandInterface> command_interfaces_;
 
+  /// \brief Entity component manager, ECM shouldn't be accessed outside those
+  /// methods, otherwise the app will crash
   ignition::gazebo::EntityComponentManager * ecm;
 
   /// \brief Ignition communication node.
