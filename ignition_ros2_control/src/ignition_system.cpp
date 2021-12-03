@@ -324,8 +324,7 @@ CallbackReturn
 IgnitionSystem::on_init(const hardware_interface::HardwareInfo & actuator_info)
 {
   RCLCPP_WARN(this->nh_->get_logger(), "On init...");
-  if (hardware_interface::SystemInterface::on_init(actuator_info) != CallbackReturn::SUCCESS)
-  {
+  if (hardware_interface::SystemInterface::on_init(actuator_info) != CallbackReturn::SUCCESS) {
     return CallbackReturn::ERROR;
   }
   return CallbackReturn::SUCCESS;
@@ -334,7 +333,6 @@ IgnitionSystem::on_init(const hardware_interface::HardwareInfo & actuator_info)
 CallbackReturn IgnitionSystem::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-
   RCLCPP_INFO(
     this->nh_->get_logger(), "System Successfully configured!");
 
