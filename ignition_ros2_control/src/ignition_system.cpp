@@ -149,7 +149,7 @@ bool IgnitionSystem::initSim(
   this->dataPtr->ecm = &_ecm;
   this->dataPtr->n_dof_ = hardware_info.joints.size();
 
-  RCLCPP_DEBUG(this->nh_->get_logger(), "n_dof_ %d", this->dataPtr->n_dof_);
+  RCLCPP_DEBUG(this->nh_->get_logger(), "n_dof_ %lu", this->dataPtr->n_dof_);
 
   this->dataPtr->joints_.resize(this->dataPtr->n_dof_);
 
