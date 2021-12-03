@@ -68,6 +68,9 @@ public:
     ignition::gazebo::EntityComponentManager & _ecm) override;
 
 private:
+  // Register a sensor (for now just IMUs)
+  // \param[in] hardware_info hardware information where the data of
+  // the sensors is extract.
   void registerSensors(
     const hardware_interface::HardwareInfo & hardware_info);
 

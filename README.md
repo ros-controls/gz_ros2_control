@@ -1,14 +1,15 @@
 # ign_ros2_control
 
 This is a ROS 2 package for integrating the `ros2_control` controller architecture with the [Ignition Gazebo](http://ignitionrobotics.org/) simulator.
-More information about `ros2_control` can be found here: https://ros-controls.github.io/control.ros.org/
+More information about `ros2_control` can be found here: https://control.ros.org/
 
 This package provides an Ignition Gazebo system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.
 
 Tested on:
 
-  - [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
-  - [Ignition Edifice](https://ignitionrobotics.org/docs/edifice)
+  - [Ignition Citadel](https://ignitionrobotics.org/docs/citadel) + [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
+  - [Ignition Edifice](https://ignitionrobotics.org/docs/edifice) + [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
+  - [Ignition Edifice](https://ignitionrobotics.org/docs/fortress) + [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
 
 # Usage
 
@@ -21,7 +22,7 @@ Tested on:
 ### Modifying or building your own
 
 ```bash
-cd Docker
+cd Dockerfile
 docker build -t ignition_ros2_control .
 ```
 
@@ -47,7 +48,7 @@ To run the demo with the GUI, we are going to use [rocker](https://github.com/os
 images with customized local support injected for things like nvidia support. Rocker also supports user id specific files for cleaner
 mounting file permissions. You can install this tool with the following [instructions](https://github.com/osrf/rocker/#installation) (make sure you meet all of the [prerequisites](https://github.com/osrf/rocker/#prerequisites)).
 
-The following command will launch Gazebo:
+The following command will launch Ignition:
 
 ```bash
 rocker --x11 --nvidia --name ignition_ros2_control_demo ignition_ros2_control:latest
@@ -71,9 +72,9 @@ include:
  - `<joint>` tag including the robot controllers: commands and states.
 
 ```xml
-<ros2_control name="GazeboSystem" type="system">
+<ros2_control name="IgnitionSystem" type="system">
   <hardware>
-    <plugin>ignition_ros2_control/GazeboSystem</plugin>
+    <plugin>ignition_ros2_control/IgnitionSystem</plugin>
   </hardware>
   <joint name="slider_to_cart">
     <command_interface name="effort">
@@ -123,15 +124,15 @@ The default behavior provides the following ros2_control interfaces:
 
 The `ignition_ros2_control` Gazebo plugin also provides a pluginlib-based interface to implement custom interfaces between Gazebo and `ros2_control` for simulating more complex mechanisms (nonlinear springs, linkages, etc).
 
-These plugins must inherit the `ignition_ros2_control::GazeboSystemInterface`, which implements a simulated `ros2_control`
+These plugins must inherit the `ignition_ros2_control::IgnitionSystemInterface`, which implements a simulated `ros2_control`
 `hardware_interface::SystemInterface`. SystemInterface provides API-level access to read and command joint properties.
 
-The respective GazeboSystemInterface sub-class is specified in a URDF model and is loaded when the
+The respective IgnitionSystemInterface sub-class is specified in a URDF model and is loaded when the
 robot model is loaded. For example, the following XML will load the default plugin:
 ```xml
-<ros2_control name="GazeboSystem" type="system">
+<ros2_control name="IgnitionSystem" type="system">
   <hardware>
-    <plugin>ignition_ros2_control/GazeboSystem</plugin>
+    <plugin>ignition_ros2_control/IgnitionSystem</plugin>
   </hardware>
   ...
 <ros2_control>
@@ -144,12 +145,14 @@ robot model is loaded. For example, the following XML will load the default plug
 
 #### Set up controllers
 
-Use the tag `<parameters>` inside `<plugin>` to set the YAML file with the controller configuration.
+Use the tag `<parameters>` inside `<plugin>` to set the YAML file with the controller configuration
+and use the tag `<controller_manager_prefix_node_name>` to set the controller manager node name.
 
 ```xml
 <gazebo>
   <plugin name="ignition_ros2_control" filename="libignition_ros2_control.so">
     <parameters>$(find ignition_ros2_control_demos)/config/cartpole_controller.yaml</parameters>
+    <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
   </plugin>
 <gazebo>
 ```

@@ -1,4 +1,4 @@
-# Copyright 2020 Open Source Robotics Foundation, Inc.
+# Copyright 2021 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import xacro
 
 def generate_launch_description():
     # Launch Arguments
-    use_sim_time = LaunchConfiguration('use_sim_time', default=False)
+    use_sim_time = LaunchConfiguration('use_sim_time', default=True)
 
     ignition_ros2_control_demos_path = os.path.join(
         get_package_share_directory('ignition_ros2_control_demos'))

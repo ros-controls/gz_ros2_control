@@ -19,13 +19,12 @@
 
 #include <memory>
 
-std::shared_ptr<rclcpp::Node> node;
-
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
 
-  node = std::make_shared<rclcpp::Node>("effort_test_node");
+  std::shared_ptr<rclcpp::Node> node =
+    std::make_shared<rclcpp::Node>("effort_test_node");
 
   auto publisher = node->create_publisher<std_msgs::msg::Float64MultiArray>(
     "/effort_controllers/commands", 10);
