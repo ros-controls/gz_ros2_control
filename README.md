@@ -11,6 +11,27 @@ Tested on:
   - [Ignition Edifice](https://ignitionrobotics.org/docs/edifice) + [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
   - [Ignition Edifice](https://ignitionrobotics.org/docs/fortress) + [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
 
+# Compile from source
+
+If you want compile this from source, you should choose the Ignition version. The default one is `citadel`:
+
+```bash
+export IGNITION_VERSION=citadel
+export IGNITION_VERSION=edifice
+export IGNITION_VERSION=fortress
+```
+
+Then create a workspace, clone the repo and compile it:
+
+```bash
+mkdir -p ~/ros_ign/src
+cd ~/ros_ign/src
+git clone https://github.com/ignitionrobotics/ign_ros2_control
+rosdep install --from-paths ./ -i -y --rosdistro foxy
+cd ~/ros2_ign
+colcon build
+```
+
 # Usage
 
 ## Video + Pictures
