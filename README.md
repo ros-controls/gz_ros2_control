@@ -15,6 +15,27 @@ Tested on:
 
 If you want to run this with `ROS 2 Foxy` please check the branch `foxy`.
 
+# Compile from source
+
+If you want compile this from source, you should choose the Ignition version. The default one is `citadel`:
+
+```bash
+export IGNITION_VERSION=citadel
+export IGNITION_VERSION=edifice
+export IGNITION_VERSION=fortress
+```
+
+Then create a workspace, clone the repo and compile it:
+
+```bash
+mkdir -p ~/ros_ign/src
+cd ~/ros_ign/src
+git clone https://github.com/ignitionrobotics/ign_ros2_control
+rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
+cd ~/ros2_ign
+colcon build
+```
+
 # Usage
 
 ## Video + Pictures
