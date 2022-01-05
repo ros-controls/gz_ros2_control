@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: [citadel, edifice]
+        version: [edifice]
     env:
       IGNITION_VERSION: ${{ matrix.version }}
     container:
@@ -41,17 +41,17 @@ jobs:
         cd /home/ros2_ws/src/
         rosdep init
         rosdep update
-        rosdep install --from-paths ./ -i -y --rosdistro foxy
+        rosdep install --from-paths ./ -i -y --rosdistro galactic
     - name: Build project
       id: build
       run: |
         cd /home/ros2_ws/
-        . /opt/ros/foxy/local_setup.sh
+        . /opt/ros/galactic/local_setup.sh
         colcon build --packages-up-to ignition_ros2_control_demos
     - name: Run tests
       id: test
       run: |
         cd /home/ros2_ws/
-        . /opt/ros/foxy/local_setup.sh
+        . /opt/ros/galactic/local_setup.sh
         colcon test --event-handlers console_direct+ --packages-select ignition_ros2_control ignition_ros2_control_demos
         colcon test-result

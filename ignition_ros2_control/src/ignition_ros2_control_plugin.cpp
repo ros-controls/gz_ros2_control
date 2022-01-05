@@ -137,7 +137,7 @@ IgnitionROS2ControlPluginPrivate::GetEnabledJoints(
         {
           RCLCPP_INFO(
             node_->get_logger(),
-            "[ignition_ros2_control] Fixed joint [%s] (Entity=%d)] is skipped",
+            "[ignition_ros2_control] Fixed joint [%s] (Entity=%lu)] is skipped",
             jointName.c_str(), jointEntity);
           continue;
         }
@@ -148,7 +148,7 @@ IgnitionROS2ControlPluginPrivate::GetEnabledJoints(
         {
           RCLCPP_WARN(
             node_->get_logger(),
-            "[ignition_ros2_control] Joint [%s] (Entity=%d)] is of unsupported type."
+            "[ignition_ros2_control] Joint [%s] (Entity=%lu)] is of unsupported type."
             " Only joints with a single axis are supported.",
             jointName.c_str(), jointEntity);
           continue;
@@ -157,7 +157,7 @@ IgnitionROS2ControlPluginPrivate::GetEnabledJoints(
         {
           RCLCPP_WARN(
             node_->get_logger(),
-            "[ignition_ros2_control] Joint [%s] (Entity=%d)] is of unknown type",
+            "[ignition_ros2_control] Joint [%s] (Entity=%lu)] is of unknown type",
             jointName.c_str(), jointEntity);
           continue;
         }
@@ -251,7 +251,7 @@ void IgnitionROS2ControlPlugin::Configure(
   if (!model.Valid(_ecm)) {
     RCLCPP_ERROR(
       this->dataPtr->node_->get_logger(),
-      "[Ignition ROS 2 Control] Failed to initialize because [%s] (Entity=%u)] is not a model."
+      "[Ignition ROS 2 Control] Failed to initialize because [%s] (Entity=%lu)] is not a model."
       "Please make sure that Ignition ROS 2 Control is attached to a valid model.",
       model.Name(_ecm).c_str(), _entity);
     return;
@@ -394,7 +394,7 @@ void IgnitionROS2ControlPlugin::Configure(
       return;
     }
 
-    resource_manager_->import_component(std::move(ignitionSystem));
+    resource_manager_->import_component(std::move(ignitionSystem), control_hardware[i]);
   }
   // Create the controller manager
   RCLCPP_INFO(this->dataPtr->node_->get_logger(), "Loading controller_manager");
@@ -467,7 +467,7 @@ void IgnitionROS2ControlPlugin::PostUpdate(
       std::dynamic_pointer_cast<ignition_ros2_control::IgnitionSystemInterface>(
       this->dataPtr->controller_manager_);
     this->dataPtr->controller_manager_->read();
-    this->dataPtr->controller_manager_->update();
+    this->dataPtr->controller_manager_->update(sim_time_ros, sim_period);
   }
 }
 }  // namespace ignition_ros2_control
