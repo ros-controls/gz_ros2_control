@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "ignition_ros2_control/ignition_system.hpp"
+#include "ign_ros2_control/ign_system.hpp"
 
 #include <ignition/msgs/imu.pb.h>
 
@@ -65,7 +65,7 @@ struct jointData
   ignition::gazebo::Entity sim_joint;
 
   /// \brief Control method defined in the URDF for each joint.
-  ignition_ros2_control::IgnitionSystemInterface::ControlMethod joint_control_method;
+  ign_ros2_control::IgnitionSystemInterface::ControlMethod joint_control_method;
 };
 
 class ImuData
@@ -101,7 +101,7 @@ void ImuData::OnIMU(const ignition::msgs::IMU & _msg)
   this->imu_sensor_data_[9] = _msg.linear_acceleration().z();
 }
 
-class ignition_ros2_control::IgnitionSystemPrivate
+class ign_ros2_control::IgnitionSystemPrivate
 {
 public:
   IgnitionSystemPrivate() = default;
@@ -130,7 +130,7 @@ public:
   ignition::transport::Node node;
 };
 
-namespace ignition_ros2_control
+namespace ign_ros2_control
 {
 
 bool IgnitionSystem::initSim(
@@ -446,8 +446,8 @@ hardware_interface::return_type IgnitionSystem::write()
 
   return hardware_interface::return_type::OK;
 }
-}  // namespace ignition_ros2_control
+}  // namespace ign_ros2_control
 
 #include "pluginlib/class_list_macros.hpp"  // NOLINT
 PLUGINLIB_EXPORT_CLASS(
-  ignition_ros2_control::IgnitionSystem, ignition_ros2_control::IgnitionSystemInterface)
+  ign_ros2_control::IgnitionSystem, ign_ros2_control::IgnitionSystemInterface)

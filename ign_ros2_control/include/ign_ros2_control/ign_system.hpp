@@ -21,14 +21,14 @@
 #include <string>
 #include <vector>
 
-#include "ignition_ros2_control/ignition_system_interface.hpp"
+#include "ign_ros2_control/ign_system_interface.hpp"
 
-namespace ignition_ros2_control
+namespace ign_ros2_control
 {
 // Forward declaration
 class IgnitionSystemPrivate;
 
-// These class must inherit `ignition_ros2_control::IgnitionSystemInterface` which implements a
+// These class must inherit `ign_ros2_control::IgnitionSystemInterface` which implements a
 // simulated `ros2_control` `hardware_interface::SystemInterface`.
 
 class IgnitionSystem : public IgnitionSystemInterface
@@ -74,6 +74,6 @@ private:
   std::unique_ptr<IgnitionSystemPrivate> dataPtr;
 };
 
-}  // namespace ignition_ros2_control
+}  // namespace ign_ros2_control
 
 #endif  // IGNITION_ROS2_CONTROL__IGNITION_SYSTEM_HPP_

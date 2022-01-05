@@ -19,7 +19,7 @@
 
 #include <memory>
 
-namespace ignition_ros2_control
+namespace ign_ros2_control
 {
 // Forward declarations.
 class IgnitionROS2ControlPluginPrivate;
@@ -57,6 +57,6 @@ private:
   /// \brief Private data pointer.
   std::unique_ptr<IgnitionROS2ControlPluginPrivate> dataPtr;
 };
-}  // namespace ignition_ros2_control
+}  // namespace ign_ros2_control
 
 #endif  // IGNITION_ROS2_CONTROL__IGNITION_ROS2_CONTROL_PLUGIN_HPP_
