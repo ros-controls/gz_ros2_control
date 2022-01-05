@@ -7,9 +7,11 @@ This package provides an Ignition Gazebo system plugin which instantiates a `ros
 
 Tested on:
 
-  - [Ignition Citadel](https://ignitionrobotics.org/docs/citadel) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
-  - [Ignition Edifice](https://ignitionrobotics.org/docs/edifice) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
-  - [Ignition Fortress](https://ignitionrobotics.org/docs/fortress) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
+ - Debs:
+   - [Ignition Edifice](https://ignitionrobotics.org/docs/edifice) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
+ - From source:
+   - [Ignition Citadel](https://ignitionrobotics.org/docs/citadel) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
+   - [Ignition Fortress](https://ignitionrobotics.org/docs/fortress) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
 
 If you want to run this with `ROS 2 Foxy` please check the branch `foxy`.
 
