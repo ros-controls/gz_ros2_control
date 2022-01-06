@@ -27,7 +27,7 @@ If you want to run this with `ROS 2 Foxy` please check the branch `foxy`.
 
 ```bash
 cd Dockerfile
-docker build -t ignition_ros2_control .
+docker build -t ign_ros2_control .
 ```
 
 ### To run the demo
@@ -37,7 +37,7 @@ docker build -t ignition_ros2_control .
 Docker allows us to run the demo without the GUI if configured properly. The following command runs the demo without the GUI:
 
 ```bash
-docker run -it --rm --name ignition_ros2_control_demo --net host ignition_ros2_control ros2 launch ignition_ros2_control_demos cart_example_position.launch.py gui:=false
+docker run -it --rm --name ignition_ros2_control_demo --net host ign_ros2_control ros2 launch ign_ros2_control_demos cart_example_position.launch.py gui:=false
 ```
 
 Then on your local machine, you can run the Gazebo client:
@@ -55,7 +55,7 @@ mounting file permissions. You can install this tool with the following [instruc
 The following command will launch Ignition:
 
 ```bash
-rocker --x11 --nvidia --name ignition_ros2_control_demo ignition_ros2_control:latest
+rocker --x11 --nvidia --name ignition_ros2_control_demo ign_ros2_control:latest
 ```
 
 The following commands allow the cart to be moved along the rail:
@@ -63,7 +63,7 @@ The following commands allow the cart to be moved along the rail:
 ```bash
 docker exec -it ignition_ros2_control_demo bash
 source /home/ros2_ws/install/setup.bash
-ros2 run ignition_ros2_control_demos example_position
+ros2 run ign_ros2_control_demos example_position
 ```
 
 ## Add ros2_control tag to a URDF
@@ -78,7 +78,7 @@ include:
 ```xml
 <ros2_control name="IgnitionSystem" type="system">
   <hardware>
-    <plugin>ignition_ros2_control/IgnitionSystem</plugin>
+    <plugin>ign_ros2_control/IgnitionSystem</plugin>
   </hardware>
   <joint name="slider_to_cart">
     <command_interface name="effort">
@@ -92,31 +92,31 @@ include:
 </ros2_control>
 ```
 
-## Add the ignition_ros2_control plugin
+## Add the ign_ros2_control plugin
 
 In addition to the `ros2_control` tags, a Gazebo plugin needs to be added to your URDF that
 actually parses the `ros2_control` tags and loads the appropriate hardware interfaces and
-controller manager. By default the `ignition_ros2_control` plugin is very simple, though it is also
+controller manager. By default the `ign_ros2_control` plugin is very simple, though it is also
 extensible via an additional plugin architecture to allow power users to create their own custom
 robot hardware interfaces between `ros2_control` and Gazebo.
 
 ```xml
 <gazebo>
-    <plugin filename="libignition_ros2_control.so" name="ignition_ros2_control">
+    <plugin filename="libignition_ros2_control.so" name="ign_ros2_control">
       <robot_param>robot_description</robot_param>
       <robot_param_node>robot_state_publisher</robot_param_node>
-      <parameters>$(find ignition_ros2_control_demos)/config/cartpole_controller.yaml</parameters>
+      <parameters>$(find ign_ros2_control_demos)/config/cartpole_controller.yaml</parameters>
     </plugin>
 </gazebo>
 ```
 
-The `ignition_ros2_control` `<plugin>` tag also has the following optional child elements:
+The `ign_ros2_control` `<plugin>` tag also has the following optional child elements:
 
  - `<parameters>`: YAML file with the configuration of the controllers
 
-#### Default ignition_ros2_control Behavior
+#### Default ign_ros2_control Behavior
 
-By default, without a `<plugin>` tag, `ignition_ros2_control` will attempt to get all of the information it needs to interface with a ros2_control-based controller out of the URDF. This is sufficient for most cases, and good for at least getting started.
+By default, without a `<plugin>` tag, `ign_ros2_control` will attempt to get all of the information it needs to interface with a ros2_control-based controller out of the URDF. This is sufficient for most cases, and good for at least getting started.
 
 The default behavior provides the following ros2_control interfaces:
 
@@ -124,11 +124,11 @@ The default behavior provides the following ros2_control interfaces:
  - hardware_interface::EffortJointInterface
  - hardware_interface::VelocityJointInterface
 
-#### Advanced: custom ignition_ros2_control Simulation Plugins
+#### Advanced: custom ign_ros2_control Simulation Plugins
 
-The `ignition_ros2_control` Gazebo plugin also provides a pluginlib-based interface to implement custom interfaces between Gazebo and `ros2_control` for simulating more complex mechanisms (nonlinear springs, linkages, etc).
+The `ign_ros2_control` Gazebo plugin also provides a pluginlib-based interface to implement custom interfaces between Gazebo and `ros2_control` for simulating more complex mechanisms (nonlinear springs, linkages, etc).
 
-These plugins must inherit the `ignition_ros2_control::IgnitionSystemInterface`, which implements a simulated `ros2_control`
+These plugins must inherit the `ign_ros2_control::IgnitionSystemInterface`, which implements a simulated `ros2_control`
 `hardware_interface::SystemInterface`. SystemInterface provides API-level access to read and command joint properties.
 
 The respective IgnitionSystemInterface sub-class is specified in a URDF model and is loaded when the
@@ -136,12 +136,12 @@ robot model is loaded. For example, the following XML will load the default plug
 ```xml
 <ros2_control name="IgnitionSystem" type="system">
   <hardware>
-    <plugin>ignition_ros2_control/IgnitionSystem</plugin>
+    <plugin>ign_ros2_control/IgnitionSystem</plugin>
   </hardware>
   ...
 <ros2_control>
 <gazebo>
-  <plugin name="ignition_ros2_control" filename="libignition_ros2_control.so">
+  <plugin name="ign_ros2_control" filename="libignition_ros2_control.so">
     ...
   </plugin>
 </gazebo>
@@ -154,8 +154,8 @@ and use the tag `<controller_manager_prefix_node_name>` to set the controller ma
 
 ```xml
 <gazebo>
-  <plugin name="ignition_ros2_control" filename="libignition_ros2_control.so">
-    <parameters>$(find ignition_ros2_control_demos)/config/cartpole_controller.yaml</parameters>
+  <plugin name="ign_ros2_control" filename="libignition_ros2_control.so">
+    <parameters>$(find ign_ros2_control_demos)/config/cartpole_controller.yaml</parameters>
     <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
   </plugin>
 <gazebo>
@@ -184,14 +184,14 @@ cart_pole_controller:
 ```
 #### Executing the examples
 
-There are some examples in the `ignition_ros2_control_demos` package. These examples allow to launch a cart in a 30 meter rail.
+There are some examples in the `ign_ros2_control_demos` package. These examples allow to launch a cart in a 30 meter rail.
 
 You can run some of the example configurations by running the following commands:
 
 ```bash
-ros2 launch ignition_ros2_control_demos cart_example_position.launch.py
-ros2 launch ignition_ros2_control_demos cart_example_velocity.launch.py
-ros2 launch ignition_ros2_control_demos cart_example_effort.launch.py
+ros2 launch ign_ros2_control_demos cart_example_position.launch.py
+ros2 launch ign_ros2_control_demos cart_example_velocity.launch.py
+ros2 launch ign_ros2_control_demos cart_example_effort.launch.py
 ```
 
 Send example commands:
@@ -199,7 +199,7 @@ Send example commands:
 When the Gazebo world is launched, you can run some of the following commands to move the cart.
 
 ```bash
-ros2 run ignition_ros2_control_demos example_position
-ros2 run ignition_ros2_control_demos example_velocity
-ros2 run ignition_ros2_control_demos example_effort
+ros2 run ign_ros2_control_demos example_position
+ros2 run ign_ros2_control_demos example_velocity
+ros2 run ign_ros2_control_demos example_effort
 ```

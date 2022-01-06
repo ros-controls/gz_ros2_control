@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(ignition_ros2_control)
+project(ign_ros2_control)
 
 # Default to C11
 if(NOT CMAKE_C_STANDARD)
@@ -52,7 +52,7 @@ set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
 include_directories(include)
 
 add_library(${PROJECT_NAME}-system SHARED
-  src/ignition_ros2_control_plugin.cpp
+  src/ign_ros2_control_plugin.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}-system
@@ -72,21 +72,21 @@ ament_target_dependencies(${PROJECT_NAME}-system
 
 #########
 
-add_library(ignition_hardware_plugins SHARED
-  src/ignition_system.cpp
+add_library(ign_hardware_plugins SHARED
+  src/ign_system.cpp
 )
-ament_target_dependencies(ignition_hardware_plugins
+ament_target_dependencies(ign_hardware_plugins
   rclcpp_lifecycle
   hardware_interface
   rclcpp
 )
-target_link_libraries(ignition_hardware_plugins
+target_link_libraries(ign_hardware_plugins
   ignition-gazebo${IGN_GAZEBO_VER}::core
 )
 
 ## Install
 install(TARGETS
-  ignition_hardware_plugins
+  ign_hardware_plugins
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -99,14 +99,14 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME} ignition_hardware_plugins)
+ament_export_libraries(${PROJECT_NAME} ign_hardware_plugins)
 
 # Install directories
 install(TARGETS ${PROJECT_NAME}-system
   DESTINATION lib
 )
 
-pluginlib_export_plugin_description_file(ignition_ros2_control ignition_hardware_plugins.xml)
+pluginlib_export_plugin_description_file(ign_ros2_control ign_hardware_plugins.xml)
 
 # Setup the project
 ament_package()

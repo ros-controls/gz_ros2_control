@@ -34,11 +34,11 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
 
     ignition_ros2_control_demos_path = os.path.join(
-        get_package_share_directory('ignition_ros2_control_demos'))
+        get_package_share_directory('ign_ros2_control_demos'))
 
     xacro_file = os.path.join(ignition_ros2_control_demos_path,
                               'urdf',
-                              'test_cart_velocity.xacro.urdf')
+                              'test_cart_effort.xacro.urdf')
 
     doc = xacro.parse(open(xacro_file))
     xacro.process_doc(doc)
@@ -67,13 +67,7 @@ def generate_launch_description():
     )
 
     load_joint_trajectory_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'start', 'velocity_controller'],
-        output='screen'
-    )
-
-    load_imu_sensor_broadcaster = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'start',
-             'imu_sensor_broadcaster'],
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'start', 'effort_controllers'],
         output='screen'
     )
 
@@ -83,7 +77,7 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(
                 [os.path.join(get_package_share_directory('ros_ign_gazebo'),
                               'launch', 'ign_gazebo.launch.py')]),
-            launch_arguments=[('ign_args', [' -r -v 4 empty.sdf'])]),
+            launch_arguments=[('ign_args', [' -r -v 3 empty.sdf'])]),
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=ignition_spawn_entity,
@@ -94,12 +88,6 @@ def generate_launch_description():
             event_handler=OnProcessExit(
                 target_action=load_joint_state_broadcaster,
                 on_exit=[load_joint_trajectory_controller],
-            )
-        ),
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=load_joint_trajectory_controller,
-                on_exit=[load_imu_sensor_broadcaster],
             )
         ),
         node_robot_state_publisher,
