@@ -45,10 +45,10 @@
 
   <ros2_control name="IgnitionSystem" type="system">
     <hardware>
-      <plugin>ignition_ros2_control/IgnitionSystem</plugin>
+      <plugin>ign_ros2_control/IgnitionSystem</plugin>
     </hardware>
     <joint name="slider_to_cart">
-      <command_interface name="effort">
+      <command_interface name="position">
         <param name="min">-15</param>
         <param name="max">15</param>
       </command_interface>
@@ -80,8 +80,8 @@
 
   <gazebo>
     <!-- Joint state publisher -->
-    <plugin filename="ignition_ros2_control-system" name="ignition_ros2_control::IgnitionROS2ControlPlugin">
-      <parameters>$(find ignition_ros2_control_demos)/config/cartpole_controller_effort.yaml</parameters>
+    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+      <parameters>$(find ign_ros2_control_demos)/config/cartpole_controller_position.yaml</parameters>
     </plugin>
   </gazebo>
 </robot>
