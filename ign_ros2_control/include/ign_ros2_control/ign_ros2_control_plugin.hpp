@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef IGNITION_ROS2_CONTROL__IGNITION_ROS2_CONTROL_PLUGIN_HPP_
-#define IGNITION_ROS2_CONTROL__IGNITION_ROS2_CONTROL_PLUGIN_HPP_
+#ifndef IGN_ROS2_CONTROL__IGN_ROS2_CONTROL_PLUGIN_HPP_
+#define IGN_ROS2_CONTROL__IGN_ROS2_CONTROL_PLUGIN_HPP_
 
 #include <ignition/gazebo/System.hh>
 
@@ -59,4 +59,4 @@ private:
 };
 }  // namespace ign_ros2_control
 
-#endif  // IGNITION_ROS2_CONTROL__IGNITION_ROS2_CONTROL_PLUGIN_HPP_
+#endif  // IGN_ROS2_CONTROL__IGN_ROS2_CONTROL_PLUGIN_HPP_

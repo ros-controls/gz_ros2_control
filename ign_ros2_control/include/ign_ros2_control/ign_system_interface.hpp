@@ -13,8 +13,8 @@
 // limitations under the License.
 
 
-#ifndef IGNITION_ROS2_CONTROL__IGNITION_SYSTEM_INTERFACE_HPP_
-#define IGNITION_ROS2_CONTROL__IGNITION_SYSTEM_INTERFACE_HPP_
+#ifndef IGN_ROS2_CONTROL__IGN_SYSTEM_INTERFACE_HPP_
+#define IGN_ROS2_CONTROL__IGN_SYSTEM_INTERFACE_HPP_
 
 #include <ignition/gazebo/System.hh>
 
@@ -105,4 +105,4 @@ protected:
 
 }  // namespace ign_ros2_control
 
-#endif  // IGNITION_ROS2_CONTROL__IGNITION_SYSTEM_INTERFACE_HPP_
+#endif  // IGN_ROS2_CONTROL__IGN_SYSTEM_INTERFACE_HPP_

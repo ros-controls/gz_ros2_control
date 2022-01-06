@@ -13,8 +13,8 @@
 // limitations under the License.
 
 
-#ifndef IGNITION_ROS2_CONTROL__IGNITION_SYSTEM_HPP_
-#define IGNITION_ROS2_CONTROL__IGNITION_SYSTEM_HPP_
+#ifndef IGN_ROS2_CONTROL__IGN_SYSTEM_HPP_
+#define IGN_ROS2_CONTROL__IGN_SYSTEM_HPP_
 
 #include <map>
 #include <memory>
@@ -76,4 +76,4 @@ private:
 
 }  // namespace ign_ros2_control
 
-#endif  // IGNITION_ROS2_CONTROL__IGNITION_SYSTEM_HPP_
+#endif  // IGN_ROS2_CONTROL__IGN_SYSTEM_HPP_
