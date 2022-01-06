@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>ignition_ros2_control</name>
+  <name>ign_ros2_control</name>
   <version>0.1.0</version>
   <description>Ignition ros2_control package allows to control simulated robots using ros2_control framework.</description>
   <maintainer email="alejandro@openrobotics.com">Alejandro Hernández</maintainer>
@@ -27,6 +27,6 @@
 
   <export>
       <build_type>ament_cmake</build_type>
-      <ignition_ros2_control plugin="${prefix}/ignition_hardware_plugins.xml"/>
+      <ign_ros2_control plugin="${prefix}/ign_hardware_plugins.xml"/>
   </export>
 </package>

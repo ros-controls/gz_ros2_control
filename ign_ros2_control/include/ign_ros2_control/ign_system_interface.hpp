@@ -13,8 +13,8 @@
 // limitations under the License.
 
 
-#ifndef IGNITION_ROS2_CONTROL__IGNITION_SYSTEM_INTERFACE_HPP_
-#define IGNITION_ROS2_CONTROL__IGNITION_SYSTEM_INTERFACE_HPP_
+#ifndef IGN_ROS2_CONTROL__IGN_SYSTEM_INTERFACE_HPP_
+#define IGN_ROS2_CONTROL__IGN_SYSTEM_INTERFACE_HPP_
 
 #include <ignition/gazebo/System.hh>
 
@@ -29,7 +29,7 @@
 #include <string>
 #include <vector>
 
-namespace ignition_ros2_control
+namespace ign_ros2_control
 {
 
 /// \brief This class allows us to handle flags easily, instead of using strings
@@ -103,6 +103,6 @@ protected:
   rclcpp::Node::SharedPtr nh_;
 };
 
-}  // namespace ignition_ros2_control
+}  // namespace ign_ros2_control
 
-#endif  // IGNITION_ROS2_CONTROL__IGNITION_SYSTEM_INTERFACE_HPP_
+#endif  // IGN_ROS2_CONTROL__IGN_SYSTEM_INTERFACE_HPP_

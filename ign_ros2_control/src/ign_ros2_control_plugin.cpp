@@ -37,10 +37,10 @@
 #include <utility>
 #include <vector>
 
-#include "ignition_ros2_control/ignition_ros2_control_plugin.hpp"
-#include "ignition_ros2_control/ignition_system.hpp"
+#include "ign_ros2_control/ign_ros2_control_plugin.hpp"
+#include "ign_ros2_control/ign_system.hpp"
 
-namespace ignition_ros2_control
+namespace ign_ros2_control
 {
 //////////////////////////////////////////////////
 class IgnitionROS2ControlPluginPrivate
@@ -80,7 +80,7 @@ public:
 
   /// \brief Interface loader
   std::shared_ptr<pluginlib::ClassLoader<
-      ignition_ros2_control::IgnitionSystemInterface>>
+      ign_ros2_control::IgnitionSystemInterface>>
   robot_hw_sim_loader_{nullptr};
 
   /// \brief Controller manager
@@ -137,7 +137,7 @@ IgnitionROS2ControlPluginPrivate::GetEnabledJoints(
         {
           RCLCPP_INFO(
             node_->get_logger(),
-            "[ignition_ros2_control] Fixed joint [%s] (Entity=%d)] is skipped",
+            "[ign_ros2_control] Fixed joint [%s] (Entity=%d)] is skipped",
             jointName.c_str(), jointEntity);
           continue;
         }
@@ -148,7 +148,7 @@ IgnitionROS2ControlPluginPrivate::GetEnabledJoints(
         {
           RCLCPP_WARN(
             node_->get_logger(),
-            "[ignition_ros2_control] Joint [%s] (Entity=%d)] is of unsupported type."
+            "[ign_ros2_control] Joint [%s] (Entity=%d)] is of unsupported type."
             " Only joints with a single axis are supported.",
             jointName.c_str(), jointEntity);
           continue;
@@ -157,7 +157,7 @@ IgnitionROS2ControlPluginPrivate::GetEnabledJoints(
         {
           RCLCPP_WARN(
             node_->get_logger(),
-            "[ignition_ros2_control] Joint [%s] (Entity=%d)] is of unknown type",
+            "[ign_ros2_control] Joint [%s] (Entity=%d)] is of unknown type",
             jointName.c_str(), jointEntity);
           continue;
         }
@@ -212,7 +212,7 @@ std::string IgnitionROS2ControlPluginPrivate::getURDF() const
       break;
     } else {
       RCLCPP_ERROR(
-        node_->get_logger(), "ignition_ros2_control plugin is waiting for model"
+        node_->get_logger(), "ign_ros2_control plugin is waiting for model"
         " URDF in parameter [%s] on the ROS param server.",
         this->robot_description_.c_str());
     }
@@ -359,7 +359,7 @@ void IgnitionROS2ControlPlugin::Configure(
   } catch (const std::runtime_error & ex) {
     RCLCPP_ERROR_STREAM(
       this->dataPtr->node_->get_logger(),
-      "Error parsing URDF in ignition_ros2_control plugin, plugin not active : " << ex.what());
+      "Error parsing URDF in ign_ros2_control plugin, plugin not active : " << ex.what());
     return;
   }
 
@@ -368,9 +368,9 @@ void IgnitionROS2ControlPlugin::Configure(
 
   try {
     this->dataPtr->robot_hw_sim_loader_.reset(
-      new pluginlib::ClassLoader<ignition_ros2_control::IgnitionSystemInterface>(
-        "ignition_ros2_control",
-        "ignition_ros2_control::IgnitionSystemInterface"));
+      new pluginlib::ClassLoader<ign_ros2_control::IgnitionSystemInterface>(
+        "ign_ros2_control",
+        "ign_ros2_control::IgnitionSystemInterface"));
   } catch (pluginlib::LibraryLoadException & ex) {
     RCLCPP_ERROR(
       this->dataPtr->node_->get_logger(), "Failed to create robot simulation interface loader: %s ",
@@ -380,7 +380,7 @@ void IgnitionROS2ControlPlugin::Configure(
 
   for (unsigned int i = 0; i < control_hardware.size(); ++i) {
     std::string robot_hw_sim_type_str_ = control_hardware[i].hardware_class_type;
-    auto ignitionSystem = std::unique_ptr<ignition_ros2_control::IgnitionSystemInterface>(
+    auto ignitionSystem = std::unique_ptr<ign_ros2_control::IgnitionSystemInterface>(
       this->dataPtr->robot_hw_sim_loader_->createUnmanagedInstance(robot_hw_sim_type_str_));
 
     if (!ignitionSystem->initSim(
@@ -464,17 +464,17 @@ void IgnitionROS2ControlPlugin::PostUpdate(
   if (sim_period >= this->dataPtr->control_period_) {
     this->dataPtr->last_update_sim_time_ros_ = sim_time_ros;
     auto ign_controller_manager =
-      std::dynamic_pointer_cast<ignition_ros2_control::IgnitionSystemInterface>(
+      std::dynamic_pointer_cast<ign_ros2_control::IgnitionSystemInterface>(
       this->dataPtr->controller_manager_);
     this->dataPtr->controller_manager_->read();
     this->dataPtr->controller_manager_->update();
   }
 }
-}  // namespace ignition_ros2_control
+}  // namespace ign_ros2_control
 
 IGNITION_ADD_PLUGIN(
-  ignition_ros2_control::IgnitionROS2ControlPlugin,
+  ign_ros2_control::IgnitionROS2ControlPlugin,
   ignition::gazebo::System,
-  ignition_ros2_control::IgnitionROS2ControlPlugin::ISystemConfigure,
-  ignition_ros2_control::IgnitionROS2ControlPlugin::ISystemPreUpdate,
-  ignition_ros2_control::IgnitionROS2ControlPlugin::ISystemPostUpdate)
+  ign_ros2_control::IgnitionROS2ControlPlugin::ISystemConfigure,
+  ign_ros2_control::IgnitionROS2ControlPlugin::ISystemPreUpdate,
+  ign_ros2_control::IgnitionROS2ControlPlugin::ISystemPostUpdate)
