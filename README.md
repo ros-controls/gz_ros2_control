@@ -119,7 +119,7 @@ robot hardware interfaces between `ros2_control` and Gazebo.
 
 ```xml
 <gazebo>
-    <plugin filename="libignition_ros2_control.so" name="ign_ros2_control">
+    <plugin filename="libign_ros2_control-system.so" name="ign_ros2_control">
       <robot_param>robot_description</robot_param>
       <robot_param_node>robot_state_publisher</robot_param_node>
       <parameters>$(find ign_ros2_control_demos)/config/cartpole_controller.yaml</parameters>
@@ -158,7 +158,7 @@ robot model is loaded. For example, the following XML will load the default plug
   ...
 <ros2_control>
 <gazebo>
-  <plugin name="ign_ros2_control" filename="libignition_ros2_control.so">
+  <plugin name="ign_ros2_control" filename="libign_ros2_control-system.so">
     ...
   </plugin>
 </gazebo>
@@ -171,7 +171,7 @@ and use the tag `<controller_manager_prefix_node_name>` to set the controller ma
 
 ```xml
 <gazebo>
-  <plugin name="ign_ros2_control" filename="libignition_ros2_control.so">
+  <plugin name="ign_ros2_control" filename="libign_ros2_control-system.so">
     <parameters>$(find ign_ros2_control_demos)/config/cartpole_controller.yaml</parameters>
     <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
   </plugin>
