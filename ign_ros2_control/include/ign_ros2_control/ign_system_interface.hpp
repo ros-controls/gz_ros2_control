@@ -76,7 +76,7 @@ class IgnitionSystemInterface
   : public hardware_interface::BaseInterface<hardware_interface::SystemInterface>
 {
 public:
-  /// \brief Initilize the system interface
+  /// \brief Initialize the system interface
   /// param[in] model_nh Pointer to the ros2 node
   /// param[in] joints Map with the name of the joint as the key and the value is
   /// related with the entity in Gazebo
