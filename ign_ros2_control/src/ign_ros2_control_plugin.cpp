@@ -55,7 +55,7 @@ public:
   /// \param[in] _entity Entity of the model that the plugin is being
   /// configured for
   /// \param[in] _ecm Ignition Entity Component Manager
-  /// \return List of entities containinig all enabled joints
+  /// \return List of entities containing all enabled joints
   std::map<std::string, ignition::gazebo::Entity> GetEnabledJoints(
     const ignition::gazebo::Entity & _entity,
     ignition::gazebo::EntityComponentManager & _ecm) const;
@@ -66,7 +66,7 @@ public:
   /// \brief Node Handles
   std::shared_ptr<rclcpp::Node> node_{nullptr};
 
-  /// \brief Thread where the executor will sping
+  /// \brief Thread where the executor will spin
   std::thread thread_executor_spin_;
 
   /// \brief Flag to stop the executor thread when this plugin is exiting
