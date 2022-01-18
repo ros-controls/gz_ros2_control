@@ -426,18 +426,29 @@ hardware_interface::return_type IgnitionSystem::write()
     }
 
     if (this->dataPtr->joints_[i].joint_control_method & POSITION) {
-      if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointPositionReset>(
-          this->dataPtr->joints_[i].sim_joint))
+      // Get error in position
+      double error;
+      error = (this->dataPtr->joints_[i].joint_position -
+              this->dataPtr->joints_[i].joint_position_cmd ) * 100;
+
+      // Calculate target velcity
+      double targetVel = 0;
+
+      targetVel = -error;
+
+      auto vel =
+        this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
+          this->dataPtr->joints_[i].sim_joint);
+
+      if (vel == nullptr)
       {
         this->dataPtr->ecm->CreateComponent(
-          this->dataPtr->joints_[i].sim_joint,
-          ignition::gazebo::components::JointPositionReset(
-            {this->dataPtr->joints_[i].joint_position}));
-        const auto jointPosCmd =
-          this->dataPtr->ecm->Component<ignition::gazebo::components::JointPositionReset>(
-          this->dataPtr->joints_[i].sim_joint);
-        *jointPosCmd = ignition::gazebo::components::JointPositionReset(
-          {this->dataPtr->joints_[i].joint_position_cmd});
+            this->dataPtr->joints_[i].sim_joint,
+            ignition::gazebo::components::JointVelocityCmd({targetVel}));
+      }
+      else if (!vel->Data().empty())
+      {
+        vel->Data()[0] = targetVel;
       }
     }
 
