@@ -429,7 +429,7 @@ hardware_interface::return_type IgnitionSystem::write()
       // Get error in position
       double error;
       error = (this->dataPtr->joints_[i].joint_position -
-              this->dataPtr->joints_[i].joint_position_cmd ) * 100;
+        this->dataPtr->joints_[i].joint_position_cmd ) * 100;
 
       // Calculate target velcity
       double targetVel = 0;
@@ -438,16 +438,13 @@ hardware_interface::return_type IgnitionSystem::write()
 
       auto vel =
         this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
-          this->dataPtr->joints_[i].sim_joint);
+        this->dataPtr->joints_[i].sim_joint);
 
-      if (vel == nullptr)
-      {
+      if (vel == nullptr) {
         this->dataPtr->ecm->CreateComponent(
-            this->dataPtr->joints_[i].sim_joint,
-            ignition::gazebo::components::JointVelocityCmd({targetVel}));
-      }
-      else if (!vel->Data().empty())
-      {
+          this->dataPtr->joints_[i].sim_joint,
+          ignition::gazebo::components::JointVelocityCmd({targetVel}));
+      } else if (!vel->Data().empty()) {
         vel->Data()[0] = targetVel;
       }
     }
