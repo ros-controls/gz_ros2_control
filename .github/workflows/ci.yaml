@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: [edifice]
+        version: [fortress]
     env:
       IGNITION_VERSION: ${{ matrix.version }}
     container:
@@ -32,8 +32,6 @@ jobs:
         apt-get update && apt-get upgrade -q -y
         apt-get update && apt-get install -qq -y \
           dirmngr \
-          gnupg2 \
-          lsb-release \
           python3-colcon-ros \
           python3-colcon-common-extensions \
           python3-rosdep \
@@ -41,17 +39,17 @@ jobs:
         cd /home/ros2_ws/src/
         rosdep init
         rosdep update
-        rosdep install --from-paths ./ -i -y --rosdistro galactic
+        rosdep install --from-paths ./ -i -y --rosdistro rolling --ignore-src
     - name: Build project
       id: build
       run: |
         cd /home/ros2_ws/
-        . /opt/ros/galactic/local_setup.sh
+        . /opt/ros/rolling/local_setup.sh
         colcon build --packages-up-to ign_ros2_control_demos
     - name: Run tests
       id: test
       run: |
         cd /home/ros2_ws/
-        . /opt/ros/galactic/local_setup.sh
+        . /opt/ros/rolling/local_setup.sh
         colcon test --event-handlers console_direct+ --packages-select ign_ros2_control ign_ros2_control_demos
         colcon test-result
