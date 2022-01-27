@@ -197,17 +197,14 @@ bool IgnitionSystem::initSim(
     RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\tState:");
 
     auto get_initial_value = [this](const hardware_interface::InterfaceInfo & interface_info) {
-      if (!interface_info.initial_value.empty())
-      {
-        double value = std::stod(interface_info.initial_value);
-        RCLCPP_INFO(this->nh_->get_logger(), "\t\t\t found initial value: %f", value);
-        return value;
-      }
-      else
-      {
-        return 0.0;
-      }
-    };
+        if (!interface_info.initial_value.empty()) {
+          double value = std::stod(interface_info.initial_value);
+          RCLCPP_INFO(this->nh_->get_logger(), "\t\t\t found initial value: %f", value);
+          return value;
+        } else {
+          return 0.0;
+        }
+      };
 
     double initial_position = std::numeric_limits<double>::quiet_NaN();
     double initial_velocity = std::numeric_limits<double>::quiet_NaN();
