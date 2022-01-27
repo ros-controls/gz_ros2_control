@@ -14,7 +14,7 @@ jobs:
     env:
       IGNITION_VERSION: ${{ matrix.version }}
     container:
-      image: ubuntu:20.04
+      image: osrf/ros:rolling-desktop
     steps:
     - uses: actions/checkout@v2
     - name: Setup colcon workspace
@@ -41,17 +41,17 @@ jobs:
         cd /home/ros2_ws/src/
         rosdep init
         rosdep update
-        rosdep install --from-paths ./ -i -y --rosdistro galactic
+        rosdep install --from-paths ./ -i -y --rosdistro rolling
     - name: Build project
       id: build
       run: |
         cd /home/ros2_ws/
-        . /opt/ros/galactic/local_setup.sh
+        . /opt/ros/rolling/local_setup.sh
         colcon build --packages-up-to ign_ros2_control_demos
     - name: Run tests
       id: test
       run: |
         cd /home/ros2_ws/
-        . /opt/ros/galactic/local_setup.sh
+        . /opt/ros/rolling/local_setup.sh
         colcon test --event-handlers console_direct+ --packages-select ign_ros2_control ign_ros2_control_demos
         colcon test-result
