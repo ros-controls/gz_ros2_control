@@ -32,6 +32,9 @@
 
 #include <ignition/transport/Node.hh>
 
+#include <hardware_interface/hardware_info.hpp>
+
+#include <limits>
 #include <map>
 #include <memory>
 #include <string>
@@ -191,6 +194,53 @@ bool IgnitionSystem::initSim(
     // Accept this joint and continue configuration
     RCLCPP_INFO_STREAM(this->nh_->get_logger(), "Loading joint: " << joint_name);
 
+    RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\tState:");
+
+    auto get_initial_value = [this](const hardware_interface::InterfaceInfo & interface_info) {
+        if (!interface_info.initial_value.empty()) {
+          double value = std::stod(interface_info.initial_value);
+          RCLCPP_INFO(this->nh_->get_logger(), "\t\t\t found initial value: %f", value);
+          return value;
+        } else {
+          return 0.0;
+        }
+      };
+
+    double initial_position = std::numeric_limits<double>::quiet_NaN();
+    double initial_velocity = std::numeric_limits<double>::quiet_NaN();
+    double initial_effort = std::numeric_limits<double>::quiet_NaN();
+
+    // register the state handles
+    for (unsigned int i = 0; i < hardware_info.joints[j].state_interfaces.size(); ++i) {
+      if (hardware_info.joints[j].state_interfaces[i].name == "position") {
+        RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t position");
+        this->dataPtr->state_interfaces_.emplace_back(
+          joint_name,
+          hardware_interface::HW_IF_POSITION,
+          &this->dataPtr->joints_[j].joint_position);
+        initial_position = get_initial_value(hardware_info.joints[j].state_interfaces[i]);
+        this->dataPtr->joints_[j].joint_position = initial_position;
+      }
+      if (hardware_info.joints[j].state_interfaces[i].name == "velocity") {
+        RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
+        this->dataPtr->state_interfaces_.emplace_back(
+          joint_name,
+          hardware_interface::HW_IF_VELOCITY,
+          &this->dataPtr->joints_[j].joint_velocity);
+        initial_velocity = get_initial_value(hardware_info.joints[j].state_interfaces[i]);
+        this->dataPtr->joints_[j].joint_velocity = initial_velocity;
+      }
+      if (hardware_info.joints[j].state_interfaces[i].name == "effort") {
+        RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
+        this->dataPtr->state_interfaces_.emplace_back(
+          joint_name,
+          hardware_interface::HW_IF_EFFORT,
+          &this->dataPtr->joints_[j].joint_effort);
+        initial_effort = get_initial_value(hardware_info.joints[j].state_interfaces[i]);
+        this->dataPtr->joints_[j].joint_effort = initial_effort;
+      }
+    }
+
     RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\tCommand:");
 
     // register the command handles
@@ -202,6 +252,9 @@ bool IgnitionSystem::initSim(
           joint_name,
           hardware_interface::HW_IF_POSITION,
           &this->dataPtr->joints_[j].joint_position_cmd);
+        if (!std::isnan(initial_position)) {
+          this->dataPtr->joints_[j].joint_position_cmd = initial_position;
+        }
       } else if (hardware_info.joints[j].command_interfaces[i].name == "velocity") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
         this->dataPtr->joints_[j].joint_control_method |= VELOCITY;
@@ -209,6 +262,9 @@ bool IgnitionSystem::initSim(
           joint_name,
           hardware_interface::HW_IF_VELOCITY,
           &this->dataPtr->joints_[j].joint_velocity_cmd);
+        if (!std::isnan(initial_velocity)) {
+          this->dataPtr->joints_[j].joint_velocity_cmd = initial_velocity;
+        }
       } else if (hardware_info.joints[j].command_interfaces[i].name == "effort") {
         this->dataPtr->joints_[j].joint_control_method |= EFFORT;
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
@@ -216,32 +272,9 @@ bool IgnitionSystem::initSim(
           joint_name,
           hardware_interface::HW_IF_EFFORT,
           &this->dataPtr->joints_[j].joint_effort_cmd);
-      }
-    }
-
-    RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\tState:");
-    // register the state handles
-    for (unsigned int i = 0; i < hardware_info.joints[j].state_interfaces.size(); ++i) {
-      if (hardware_info.joints[j].state_interfaces[i].name == "position") {
-        RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t position");
-        this->dataPtr->state_interfaces_.emplace_back(
-          joint_name,
-          hardware_interface::HW_IF_POSITION,
-          &this->dataPtr->joints_[j].joint_position);
-      }
-      if (hardware_info.joints[j].state_interfaces[i].name == "velocity") {
-        RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
-        this->dataPtr->state_interfaces_.emplace_back(
-          joint_name,
-          hardware_interface::HW_IF_VELOCITY,
-          &this->dataPtr->joints_[j].joint_velocity);
-      }
-      if (hardware_info.joints[j].state_interfaces[i].name == "effort") {
-        RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
-        this->dataPtr->state_interfaces_.emplace_back(
-          joint_name,
-          hardware_interface::HW_IF_EFFORT,
-          &this->dataPtr->joints_[j].joint_effort);
+        if (!std::isnan(initial_effort)) {
+          this->dataPtr->joints_[j].joint_effort_cmd = initial_effort;
+        }
       }
     }
   }

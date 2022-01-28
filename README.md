@@ -106,7 +106,9 @@ include:
       <param name="min">-1000</param>
       <param name="max">1000</param>
     </command_interface>
-    <state_interface name="position"/>
+    <state_interface name="position">
+      <param name="initial_value">1.0</param>
+    </state_interface>
     <state_interface name="velocity"/>
     <state_interface name="effort"/>
   </joint>
