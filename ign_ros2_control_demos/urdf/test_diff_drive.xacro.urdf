@@ -121,7 +121,7 @@
 
     <inertial>
       <origin xyz="-0.957138 -0 0.2" rpy="0 0 0"/>
-      <mass value="1"/>
+      <mass value="0.005"/>
       <inertia
         ixx="0.1"
         ixy="0.0"

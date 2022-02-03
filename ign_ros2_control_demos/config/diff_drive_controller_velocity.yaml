@@ -13,9 +13,9 @@ diff_drive_base_controller:
     left_wheel_names: ["left_wheel_joint"]
     right_wheel_names: ["right_wheel_joint"]
 
-    wheel_separation: 0.10
+    wheel_separation: 1.25
     #wheels_per_side: 1  # actually 2, but both are controlled by 1 signal
-    wheel_radius: 0.015
+    wheel_radius: 0.3
 
     wheel_separation_multiplier: 1.0
     left_wheel_radius_multiplier: 1.0
@@ -24,8 +24,8 @@ diff_drive_base_controller:
     publish_rate: 50.0
     odom_frame_id: odom
     base_frame_id: base_link
-    pose_covariance_diagonal : [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
-    twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
+    pose_covariance_diagonal : [0.001, 0.001, 0.0, 0.0, 0.0, 0.01]
+    twist_covariance_diagonal: [0.001, 0.0, 0.0, 0.0, 0.0, 0.01]
 
     open_loop: true
     enable_odom_tf: true
