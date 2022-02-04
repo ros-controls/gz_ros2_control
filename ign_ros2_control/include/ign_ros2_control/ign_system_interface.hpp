@@ -87,7 +87,7 @@ public:
     std::map<std::string, ignition::gazebo::Entity> & joints,
     const hardware_interface::HardwareInfo & hardware_info,
     ignition::gazebo::EntityComponentManager & _ecm,
-    int &update_rate) = 0;
+    int & update_rate) = 0;
 
   // Methods used to control a joint.
   enum ControlMethod_

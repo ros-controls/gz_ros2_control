@@ -66,7 +66,7 @@ public:
     std::map<std::string, ignition::gazebo::Entity> & joints,
     const hardware_interface::HardwareInfo & hardware_info,
     ignition::gazebo::EntityComponentManager & _ecm,
-    int &update_rate) override;
+    int & update_rate) override;
 
 private:
   // Register a sensor (for now just IMUs)

@@ -144,7 +144,7 @@ bool IgnitionSystem::initSim(
   std::map<std::string, ignition::gazebo::Entity> & enableJoints,
   const hardware_interface::HardwareInfo & hardware_info,
   ignition::gazebo::EntityComponentManager & _ecm,
-  int &update_rate)
+  int & update_rate)
 {
   this->dataPtr = std::make_unique<IgnitionSystemPrivate>();
   this->dataPtr->last_update_sim_time_ros_ = rclcpp::Time();
