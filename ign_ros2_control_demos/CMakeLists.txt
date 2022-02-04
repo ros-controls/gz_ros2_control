@@ -19,6 +19,7 @@ find_package(control_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 install(DIRECTORY
   launch
@@ -46,6 +47,12 @@ ament_target_dependencies(example_effort
   std_msgs
 )
 
+add_executable(example_diff_drive examples/example_diff_drive.cpp)
+ament_target_dependencies(example_diff_drive
+  rclcpp
+  geometry_msgs
+)
+
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
@@ -54,8 +61,14 @@ if(BUILD_TESTING)
 endif()
 
 ## Install
-install(TARGETS example_position example_velocity example_effort
-  DESTINATION lib/${PROJECT_NAME}
+install(
+  TARGETS
+    example_position
+    example_velocity
+    example_effort
+    example_diff_drive
+  DESTINATION
+    lib/${PROJECT_NAME}
 )
 
 ament_package()
