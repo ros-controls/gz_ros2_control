@@ -6,8 +6,9 @@ More information about `ros2_control` can be found here: https://control.ros.org
 This package provides an Ignition Gazebo system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.
 
 Tested on:
-
+ - Debs
   - [Ignition Citadel](https://ignitionrobotics.org/docs/citadel) + [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
+ - From source:
   - [Ignition Edifice](https://ignitionrobotics.org/docs/edifice) + [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
   - [Ignition Fortress](https://ignitionrobotics.org/docs/fortress) + [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
 
@@ -37,6 +38,9 @@ colcon build
 ## Video + Pictures
 
 ![](img/ign_ros2_control.gif)
+
+![](img/diff_drive.gif)
+
 
 ## Running
 
@@ -119,7 +123,7 @@ robot hardware interfaces between `ros2_control` and Gazebo.
 
 ```xml
 <gazebo>
-    <plugin filename="libignition_ros2_control.so" name="ign_ros2_control">
+    <plugin filename="libign_ros2_control-system.so" name="ign_ros2_control">
       <robot_param>robot_description</robot_param>
       <robot_param_node>robot_state_publisher</robot_param_node>
       <parameters>$(find ign_ros2_control_demos)/config/cartpole_controller.yaml</parameters>
@@ -158,7 +162,7 @@ robot model is loaded. For example, the following XML will load the default plug
   ...
 <ros2_control>
 <gazebo>
-  <plugin name="ign_ros2_control" filename="libignition_ros2_control.so">
+  <plugin name="ign_ros2_control" filename="libign_ros2_control-system.so">
     ...
   </plugin>
 </gazebo>
@@ -171,7 +175,7 @@ and use the tag `<controller_manager_prefix_node_name>` to set the controller ma
 
 ```xml
 <gazebo>
-  <plugin name="ign_ros2_control" filename="libignition_ros2_control.so">
+  <plugin name="ign_ros2_control" filename="libign_ros2_control-system.so">
     <parameters>$(find ign_ros2_control_demos)/config/cartpole_controller.yaml</parameters>
     <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
   </plugin>
@@ -209,6 +213,7 @@ You can run some of the example configurations by running the following commands
 ros2 launch ign_ros2_control_demos cart_example_position.launch.py
 ros2 launch ign_ros2_control_demos cart_example_velocity.launch.py
 ros2 launch ign_ros2_control_demos cart_example_effort.launch.py
+ros2 launch ign_ros2_control_demos diff_drive_example.launch.py
 ```
 
 Send example commands:
@@ -219,4 +224,5 @@ When the Gazebo world is launched, you can run some of the following commands to
 ros2 run ign_ros2_control_demos example_position
 ros2 run ign_ros2_control_demos example_velocity
 ros2 run ign_ros2_control_demos example_effort
+ros2 run ign_ros2_control_demos example_diff_drive
 ```
