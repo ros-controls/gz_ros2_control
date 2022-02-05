@@ -118,6 +118,38 @@ include:
 </ros2_control>
 ```
 
+
+### Using mimic joints in simulation
+
+To use `mimic` joints in `ign_ros2_control` you should define its parameters to your URDF.
+We should include:
+
+- `<mimic>` tag to the mimicked joint ([detailed manual(https://wiki.ros.org/urdf/XML/joint))
+- `mimic` and `multiplier` parameters to joint definition in `<ros2_control>` tag
+
+```xml
+<joint name="left_finger_joint" type="prismatic">
+  <mimic joint="right_finger_joint"/>
+  <axis xyz="0 1 0"/>
+  <origin xyz="0.0 0.48 1" rpy="0.0 0.0 3.1415926535"/>
+  <parent link="base"/>
+  <child link="finger_left"/>
+  <limit effort="1000.0" lower="0" upper="0.38" velocity="10"/>
+</joint>
+```
+
+```xml
+<joint name="left_finger_joint">
+  <param name="mimic">right_finger_joint</param>
+  <param name="multiplier">1</param>
+  <command_interface name="position"/>
+  <state_interface name="position"/>
+  <state_interface name="velocity"/>
+  <state_interface name="effort"/>
+</joint>
+```
+
+
 ## Add the ign_ros2_control plugin
 
 In addition to the `ros2_control` tags, a Gazebo plugin needs to be added to your URDF that
@@ -232,4 +264,19 @@ ros2 run ign_ros2_control_demos example_velocity
 ros2 run ign_ros2_control_demos example_effort
 ros2 run ign_ros2_control_demos example_diff_drive
 ros2 run ign_ros2_control_demos example_tricycle_drive
+```
+
+The following example shows parallel gripper with mimic joint:
+
+![](img/gripper.gif)
+
+
+```bash
+ros2 launch ign_ros2_control_demos gripper_mimic_joint_example.launch.py
+```
+
+Send example commands:
+
+```bash
+ros2 run ign_ros2_control_demos example_gripper
 ```

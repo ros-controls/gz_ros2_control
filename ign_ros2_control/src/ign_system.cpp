@@ -72,6 +72,13 @@ struct jointData
   ign_ros2_control::IgnitionSystemInterface::ControlMethod joint_control_method;
 };
 
+struct MimicJoint
+{
+  std::size_t joint_index;
+  std::size_t mimicked_joint_index;
+  double multiplier = 1.0;
+};
+
 class ImuData
 {
 public:
@@ -138,6 +145,9 @@ public:
 
   /// \brief Ignition communication node.
   ignition::transport::Node node;
+
+  /// \brief mapping of mimicked joints to index of joint they mimic
+  std::vector<MimicJoint> mimic_joints_;
 };
 
 namespace ign_ros2_control
@@ -169,7 +179,8 @@ bool IgnitionSystem::initSim(
   }
 
   for (unsigned int j = 0; j < this->dataPtr->n_dof_; j++) {
-    std::string joint_name = this->dataPtr->joints_[j].name = hardware_info.joints[j].name;
+    auto & joint_info = hardware_info.joints[j];
+    std::string joint_name = this->dataPtr->joints_[j].name = joint_info.name;
 
     ignition::gazebo::Entity simjoint = enableJoints[joint_name];
     this->dataPtr->joints_[j].sim_joint = simjoint;
@@ -201,6 +212,38 @@ bool IgnitionSystem::initSim(
     // Accept this joint and continue configuration
     RCLCPP_INFO_STREAM(this->nh_->get_logger(), "Loading joint: " << joint_name);
 
+    std::string suffix = "";
+
+    // check if joint is mimicked
+    if (joint_info.parameters.find("mimic") != joint_info.parameters.end()) {
+      const auto mimicked_joint = joint_info.parameters.at("mimic");
+      const auto mimicked_joint_it = std::find_if(
+        hardware_info.joints.begin(), hardware_info.joints.end(),
+        [&mimicked_joint](const hardware_interface::ComponentInfo & info) {
+          return info.name == mimicked_joint;
+        });
+      if (mimicked_joint_it == hardware_info.joints.end()) {
+        throw std::runtime_error(
+                std::string("Mimicked joint '") + mimicked_joint + "' not found");
+      }
+      MimicJoint mimic_joint;
+      mimic_joint.joint_index = j;
+      mimic_joint.mimicked_joint_index = std::distance(
+        hardware_info.joints.begin(), mimicked_joint_it);
+      auto param_it = joint_info.parameters.find("multiplier");
+      if (param_it != joint_info.parameters.end()) {
+        mimic_joint.multiplier = std::stod(joint_info.parameters.at("multiplier"));
+      } else {
+        mimic_joint.multiplier = 1.0;
+      }
+      RCLCPP_INFO_STREAM(
+        this->nh_->get_logger(),
+        "Joint '" << joint_name << "'is mimicing joint '" << mimicked_joint << "' with mutiplier: "
+                  << mimic_joint.multiplier);
+      this->dataPtr->mimic_joints_.push_back(mimic_joint);
+      suffix = "_mimic";
+    }
+
     RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\tState:");
 
     auto get_initial_value = [this](const hardware_interface::InterfaceInfo & interface_info) {
@@ -218,32 +261,32 @@ bool IgnitionSystem::initSim(
     double initial_effort = std::numeric_limits<double>::quiet_NaN();
 
     // register the state handles
-    for (unsigned int i = 0; i < hardware_info.joints[j].state_interfaces.size(); ++i) {
-      if (hardware_info.joints[j].state_interfaces[i].name == "position") {
+    for (unsigned int i = 0; i < joint_info.state_interfaces.size(); ++i) {
+      if (joint_info.state_interfaces[i].name == "position") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t position");
         this->dataPtr->state_interfaces_.emplace_back(
-          joint_name,
+          joint_name + suffix,
           hardware_interface::HW_IF_POSITION,
           &this->dataPtr->joints_[j].joint_position);
-        initial_position = get_initial_value(hardware_info.joints[j].state_interfaces[i]);
+        initial_position = get_initial_value(joint_info.state_interfaces[i]);
         this->dataPtr->joints_[j].joint_position = initial_position;
       }
-      if (hardware_info.joints[j].state_interfaces[i].name == "velocity") {
+      if (joint_info.state_interfaces[i].name == "velocity") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
         this->dataPtr->state_interfaces_.emplace_back(
-          joint_name,
+          joint_name + suffix,
           hardware_interface::HW_IF_VELOCITY,
           &this->dataPtr->joints_[j].joint_velocity);
-        initial_velocity = get_initial_value(hardware_info.joints[j].state_interfaces[i]);
+        initial_velocity = get_initial_value(joint_info.state_interfaces[i]);
         this->dataPtr->joints_[j].joint_velocity = initial_velocity;
       }
-      if (hardware_info.joints[j].state_interfaces[i].name == "effort") {
+      if (joint_info.state_interfaces[i].name == "effort") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
         this->dataPtr->state_interfaces_.emplace_back(
-          joint_name,
+          joint_name + suffix,
           hardware_interface::HW_IF_EFFORT,
           &this->dataPtr->joints_[j].joint_effort);
-        initial_effort = get_initial_value(hardware_info.joints[j].state_interfaces[i]);
+        initial_effort = get_initial_value(joint_info.state_interfaces[i]);
         this->dataPtr->joints_[j].joint_effort = initial_effort;
       }
     }
@@ -251,29 +294,30 @@ bool IgnitionSystem::initSim(
     RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\tCommand:");
 
     // register the command handles
-    for (unsigned int i = 0; i < hardware_info.joints[j].command_interfaces.size(); ++i) {
-      if (hardware_info.joints[j].command_interfaces[i].name == "position") {
+    for (unsigned int i = 0; i < joint_info.command_interfaces.size(); ++i) {
+      if (joint_info.command_interfaces[i].name == "position") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t position");
         this->dataPtr->command_interfaces_.emplace_back(
-          joint_name,
+          joint_name + suffix,
           hardware_interface::HW_IF_POSITION,
           &this->dataPtr->joints_[j].joint_position_cmd);
         if (!std::isnan(initial_position)) {
           this->dataPtr->joints_[j].joint_position_cmd = initial_position;
         }
-      } else if (hardware_info.joints[j].command_interfaces[i].name == "velocity") {
+      } else if (joint_info.command_interfaces[i].name == "velocity") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
         this->dataPtr->command_interfaces_.emplace_back(
-          joint_name,
+          joint_name + suffix,
           hardware_interface::HW_IF_VELOCITY,
           &this->dataPtr->joints_[j].joint_velocity_cmd);
         if (!std::isnan(initial_velocity)) {
           this->dataPtr->joints_[j].joint_velocity_cmd = initial_velocity;
         }
-      } else if (hardware_info.joints[j].command_interfaces[i].name == "effort") {
+      } else if (joint_info.command_interfaces[i].name == "effort") {
+        this->dataPtr->joints_[j].joint_control_method |= EFFORT;
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
         this->dataPtr->command_interfaces_.emplace_back(
-          joint_name,
+          joint_name + suffix,
           hardware_interface::HW_IF_EFFORT,
           &this->dataPtr->joints_[j].joint_effort_cmd);
         if (!std::isnan(initial_effort)) {
@@ -365,10 +409,10 @@ void IgnitionSystem::registerSensors(
 }
 
 CallbackReturn
-IgnitionSystem::on_init(const hardware_interface::HardwareInfo & actuator_info)
+IgnitionSystem::on_init(const hardware_interface::HardwareInfo & system_info)
 {
   RCLCPP_WARN(this->nh_->get_logger(), "On init...");
-  if (hardware_interface::SystemInterface::on_init(actuator_info) != CallbackReturn::SUCCESS) {
+  if (hardware_interface::SystemInterface::on_init(system_info) != CallbackReturn::SUCCESS) {
     return CallbackReturn::ERROR;
   }
   return CallbackReturn::SUCCESS;
@@ -558,7 +602,62 @@ hardware_interface::return_type IgnitionSystem::write(
           this->dataPtr->ecm->Component<ignition::gazebo::components::JointForceCmd>(
           this->dataPtr->joints_[i].sim_joint);
         *jointEffortCmd = ignition::gazebo::components::JointForceCmd(
-          {this->dataPtr->joints_[i].joint_effort_cmd});
+          {this->dataPtr->joints_[i].joint_effort_cmd});Ž
+      }
+    }
+  }
+
+  // set values of all mimic joints with respect to mimicked joint
+  for (const auto & mimic_joint : this->dataPtr->mimic_joints_) {
+    if (this->dataPtr->joints_[mimic_joint.joint_index].joint_control_method & POSITION &&
+      this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_control_method & POSITION)
+    {
+      if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointPositionReset>(
+          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint))
+      {
+        this->dataPtr->ecm->CreateComponent(
+          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
+          ignition::gazebo::components::JointPositionReset(
+            {mimic_joint.multiplier * this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_position}));
+        const auto jointPosCmd =
+          this->dataPtr->ecm->Component<ignition::gazebo::components::JointPositionReset>(
+          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
+        *jointPosCmd = ignition::gazebo::components::JointPositionReset(
+          {mimic_joint.multiplier * this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_position_cmd});
+      }
+    }
+    if (this->dataPtr->joints_[mimic_joint.joint_index].joint_control_method & VELOCITY &&
+      this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_control_method & VELOCITY)
+    {
+      if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
+          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint))
+      {
+        this->dataPtr->ecm->CreateComponent(
+          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
+          ignition::gazebo::components::JointVelocityCmd({0}));
+      } else {
+        const auto jointVelCmd =
+          this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
+          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
+        *jointVelCmd = ignition::gazebo::components::JointVelocityCmd(
+          {mimic_joint.multiplier * this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_velocity_cmd});
+      }
+    }
+    if (this->dataPtr->joints_[mimic_joint.joint_index].joint_control_method & EFFORT &&
+      this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_control_method & VELOCITY)
+    {
+      if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointForceCmd>(
+          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint))
+      {
+        this->dataPtr->ecm->CreateComponent(
+          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
+          ignition::gazebo::components::JointForceCmd({0}));
+      } else {
+        const auto jointEffortCmd =
+          this->dataPtr->ecm->Component<ignition::gazebo::components::JointForceCmd>(
+          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
+        *jointEffortCmd = ignition::gazebo::components::JointForceCmd(
+          {mimic_joint.multiplier * this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_effort_cmd});
       }
     }
   }
