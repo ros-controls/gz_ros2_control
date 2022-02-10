@@ -126,6 +126,9 @@ public:
   /// methods, otherwise the app will crash
   ignition::gazebo::EntityComponentManager * ecm;
 
+  /// \brief controller update rate
+  int * update_rate;
+
   /// \brief Ignition communication node.
   ignition::transport::Node node;
 };
@@ -137,7 +140,8 @@ bool IgnitionSystem::initSim(
   rclcpp::Node::SharedPtr & model_nh,
   std::map<std::string, ignition::gazebo::Entity> & enableJoints,
   const hardware_interface::HardwareInfo & hardware_info,
-  ignition::gazebo::EntityComponentManager & _ecm)
+  ignition::gazebo::EntityComponentManager & _ecm,
+  int & update_rate)
 {
   this->dataPtr = std::make_unique<IgnitionSystemPrivate>();
 
@@ -145,7 +149,9 @@ bool IgnitionSystem::initSim(
   this->dataPtr->ecm = &_ecm;
   this->dataPtr->n_dof_ = hardware_info.joints.size();
 
-  RCLCPP_DEBUG(this->nh_->get_logger(), "n_dof_ %d", this->dataPtr->n_dof_);
+  this->dataPtr->update_rate = &update_rate;
+
+  RCLCPP_DEBUG(this->nh_->get_logger(), "n_dof_ %lu", this->dataPtr->n_dof_);
 
   this->dataPtr->joints_.resize(this->dataPtr->n_dof_);
 
@@ -412,18 +418,24 @@ hardware_interface::return_type IgnitionSystem::write()
     }
 
     if (this->dataPtr->joints_[i].joint_control_method & POSITION) {
-      if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointPositionReset>(
-          this->dataPtr->joints_[i].sim_joint))
-      {
+      // Get error in position
+      double error;
+      error = (this->dataPtr->joints_[i].joint_position -
+        this->dataPtr->joints_[i].joint_position_cmd) * *this->dataPtr->update_rate;
+
+      // Calculate target velcity
+      double targetVel = -error;
+
+      auto vel =
+        this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
+        this->dataPtr->joints_[i].sim_joint);
+
+      if (vel == nullptr) {
         this->dataPtr->ecm->CreateComponent(
           this->dataPtr->joints_[i].sim_joint,
-          ignition::gazebo::components::JointPositionReset(
-            {this->dataPtr->joints_[i].joint_position}));
-        const auto jointPosCmd =
-          this->dataPtr->ecm->Component<ignition::gazebo::components::JointPositionReset>(
-          this->dataPtr->joints_[i].sim_joint);
-        *jointPosCmd = ignition::gazebo::components::JointPositionReset(
-          {this->dataPtr->joints_[i].joint_position_cmd});
+          ignition::gazebo::components::JointVelocityCmd({targetVel}));
+      } else if (!vel->Data().empty()) {
+        vel->Data()[0] = targetVel;
       }
     }
 

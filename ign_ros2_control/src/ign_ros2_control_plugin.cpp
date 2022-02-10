@@ -101,6 +101,9 @@ public:
 
   /// \brief ECM pointer
   ignition::gazebo::EntityComponentManager * ecm{nullptr};
+
+  /// \brief controller update rate
+  int update_rate;
 };
 
 //////////////////////////////////////////////////
@@ -387,7 +390,8 @@ void IgnitionROS2ControlPlugin::Configure(
         this->dataPtr->node_,
         enabledJoints,
         control_hardware[i],
-        _ecm))
+        _ecm,
+        this->dataPtr->update_rate))
     {
       RCLCPP_FATAL(
         this->dataPtr->node_->get_logger(), "Could not initialize robot simulation interface");
@@ -412,10 +416,11 @@ void IgnitionROS2ControlPlugin::Configure(
     return;
   }
 
-  auto cm_update_rate = this->dataPtr->controller_manager_->get_parameter("update_rate").as_int();
+  this->dataPtr->update_rate =
+    this->dataPtr->controller_manager_->get_parameter("update_rate").as_int();
   this->dataPtr->control_period_ = rclcpp::Duration(
     std::chrono::duration_cast<std::chrono::nanoseconds>(
-      std::chrono::duration<double>(1.0 / static_cast<double>(cm_update_rate))));
+      std::chrono::duration<double>(1.0 / static_cast<double>(this->dataPtr->update_rate))));
 
   this->dataPtr->entity_ = _entity;
 }

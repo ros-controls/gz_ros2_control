@@ -61,7 +61,8 @@ public:
     rclcpp::Node::SharedPtr & model_nh,
     std::map<std::string, ignition::gazebo::Entity> & joints,
     const hardware_interface::HardwareInfo & hardware_info,
-    ignition::gazebo::EntityComponentManager & _ecm) override;
+    ignition::gazebo::EntityComponentManager & _ecm,
+    int & update_rate) override;
 
 private:
   // Register a sensor (for now just IMUs)
