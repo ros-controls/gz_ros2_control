@@ -112,7 +112,7 @@ int main(int argc, char * argv[])
   point.time_from_start = rclcpp::Duration::from_seconds(0.0);  // start asap
   point.positions.resize(joint_names.size());
 
-  point.positions[0] = 0.0;
+  point.positions[0] = 5.0;
 
   trajectory_msgs::msg::JointTrajectoryPoint point2;
   point2.time_from_start = rclcpp::Duration::from_seconds(1.0);
