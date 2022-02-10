@@ -438,9 +438,7 @@ hardware_interface::return_type IgnitionSystem::write()
         this->dataPtr->joints_[i].joint_position_cmd) * *this->dataPtr->update_rate;
 
       // Calculate target velcity
-      double targetVel = 0;
-
-      targetVel = -error;
+      double targetVel = -error;
 
       auto vel =
         this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
