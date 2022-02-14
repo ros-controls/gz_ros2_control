@@ -14,8 +14,6 @@
 
 #include "ign_ros2_control/ign_system.hpp"
 
-#include <ignition/msgs/imu.pb.h>
-
 #include <ignition/gazebo/components/AngularVelocity.hh>
 #include <ignition/gazebo/components/Imu.hh>
 #include <ignition/gazebo/components/JointForce.hh>
@@ -30,9 +28,9 @@
 #include <ignition/gazebo/components/Pose.hh>
 #include <ignition/gazebo/components/Sensor.hh>
 
-#include <ignition/transport/Node.hh>
+#include <ignition/msgs/imu.pb.h>
 
-#include <hardware_interface/hardware_info.hpp>
+#include <ignition/transport/Node.hh>
 
 #include <limits>
 #include <map>
@@ -40,6 +38,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#include <hardware_interface/hardware_info.hpp>
 
 struct jointData
 {

@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_action/rclcpp_action.hpp>
 
 #include <control_msgs/action/follow_joint_trajectory.hpp>
-
-#include <memory>
-#include <string>
-#include <vector>
 
 std::shared_ptr<rclcpp::Node> node;
 bool common_goal_accepted = false;

@@ -12,12 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <controller_manager/controller_manager.hpp>
-
-#include <hardware_interface/resource_manager.hpp>
-#include <hardware_interface/component_parser.hpp>
-#include <hardware_interface/types/hardware_interface_type_values.hpp>
-
 #include <ignition/gazebo/components/Joint.hh>
 #include <ignition/gazebo/components/JointType.hh>
 #include <ignition/gazebo/components/Name.hh>
@@ -27,15 +21,21 @@
 
 #include <ignition/plugin/Register.hh>
 
-#include <pluginlib/class_loader.hpp>
-
-#include <rclcpp/rclcpp.hpp>
-
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
+
+#include <controller_manager/controller_manager.hpp>
+
+#include <hardware_interface/resource_manager.hpp>
+#include <hardware_interface/component_parser.hpp>
+#include <hardware_interface/types/hardware_interface_type_values.hpp>
+
+#include <pluginlib/class_loader.hpp>
+
+#include <rclcpp/rclcpp.hpp>
 
 #include "ign_ros2_control/ign_ros2_control_plugin.hpp"
 #include "ign_ros2_control/ign_system.hpp"
