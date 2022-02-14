@@ -29,7 +29,7 @@
   <exec_depend>hardware_interface</exec_depend>
   <exec_depend>ign_ros2_control</exec_depend>
   <exec_depend>imu_sensor_broadcaster</exec_depend>
-  <exec_depend>joint_state_controller</exec_depend>
+  <exec_depend>joint_state_broadcaster</exec_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
