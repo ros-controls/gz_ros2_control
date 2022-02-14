@@ -39,7 +39,34 @@ jobs:
         cd /home/ros2_ws/src/
         rosdep init
         rosdep update
-        rosdep install --from-paths ./ -i -y --rosdistro rolling --ignore-src
+        rosdep install --from-paths ./ -i -r -y --rosdistro rolling --ignore-src
+        # rosdep is broken in rolling due the transition to Ubuntu Jammy. Installing dependencies manually
+        apt-get install -qq -y \
+                        ros-rolling-pluginlib \
+                        ros-rolling-rclcpp \
+                        ros-rolling-rclcpp-action \
+                        ros-rolling-ament-lint-common \
+                        ros-rolling-ament-lint-auto \
+                        ros-rolling-std-msgs \
+                        ros-rolling-ament-index-python \
+                        ros-rolling-effort-controllers \
+                        ros-rolling-hardware-interface \
+                        ros-rolling-imu-sensor-broadcaster \
+                        ros-rolling-joint-state-broadcaster \
+                        ros-rolling-joint-trajectory-controller \
+                        ros-rolling-launch \
+                        ros-rolling-launch-ros \
+                        ros-rolling-robot-state-publisher \
+                        ros-rolling-ros-ign-gazebo \
+                        ros-rolling-control-msgs. \
+                        ros-rolling-ros2controlcli \
+                        ros-rolling-velocity-controllers \
+                        ros-rolling-xacro \
+                        ros-rolling-yaml-cpp-vendor \
+                        ros-rolling-rclcpp-lifecycle \
+                        ros-rolling-urdf \
+                        ros-rolling-controller-manager \
+                        ros-rolling-ament-cmake-gtest
     - name: Build project
       id: build
       run: |
