@@ -18,15 +18,15 @@
 
 #include <ignition/gazebo/System.hh>
 
-#include <hardware_interface/system_interface.hpp>
-#include <hardware_interface/types/hardware_interface_type_values.hpp>
-
-#include <rclcpp/rclcpp.hpp>
-
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
+
+#include <hardware_interface/system_interface.hpp>
+#include <hardware_interface/types/hardware_interface_type_values.hpp>
+
+#include <rclcpp/rclcpp.hpp>
 
 namespace ign_ros2_control
 {
