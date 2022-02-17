@@ -2,6 +2,15 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.0 (2022-02-17)
+------------------
+* Merge pull request `#36 <https://github.com/ignitionrobotics/ign_ros2_control/issues/36>`_ from ignitionrobotics/ahcorde/foxy_to_galactic
+  Foxy -> Galactic
+* Merge remote-tracking branch 'origin/foxy' into ahcorde/foxy_to_galactic
+* Fixed position control (`#29 <https://github.com/ignitionrobotics/ign_ros2_control/issues/29>`_)
+* typo fix. (`#25 <https://github.com/ignitionrobotics/ign_ros2_control/issues/25>`_)
+* Contributors: Alejandro Hernández Cordero, Tomoya Fujita
+
 0.1.2 (2022-02-14)
 ------------------
 * Fixed position control (`#29 <https://github.com/ignitionrobotics/ign_ros2_control/issues/29>`_) (`#34 <https://github.com/ignitionrobotics/ign_ros2_control/issues/34>`_)
