@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>ign_ros2_control_demos</name>
-  <version>0.0.0</version>
+  <version>0.1.2</version>
   <description>ign_ros2_control_demos</description>
 
   <maintainer email="ahcorde@osrfoundation.org">Alejandro Hernandez</maintainer>
@@ -17,6 +17,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <build_depend>control_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
   <build_depend>rclcpp</build_depend>
   <build_depend>rclcpp_action</build_depend>
   <build_depend>std_msgs</build_depend>
@@ -24,6 +25,7 @@
   <exec_depend>ament_index_python</exec_depend>
   <exec_depend>control_msgs</exec_depend>
   <exec_depend>effort_controllers</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>hardware_interface</exec_depend>
   <exec_depend>ign_ros2_control</exec_depend>
   <exec_depend>imu_sensor_broadcaster</exec_depend>
@@ -37,6 +39,7 @@
   <exec_depend>ros2controlcli</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>velocity_controllers</exec_depend>
+  <exec_depend>diff_drive_controller</exec_depend>
   <exec_depend>xacro</exec_depend>
 
   <test_depend>ament_cmake_gtest</test_depend>
