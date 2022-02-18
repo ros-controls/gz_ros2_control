@@ -22,7 +22,7 @@ RUN wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add - && \
 
 RUN mkdir -p /home/ros2_ws/src \
     && cd /home/ros2_ws/src \
-    && git clone https://github.com/ignitionrobotics/ign_ros2_control/ -b ahcorde/galactic/ign_ros2_control \
+    && git clone https://github.com/ignitionrobotics/ign_ros2_control/ -b galactic \
     && rosdep update \
     && rosdep install --from-paths ./ -i -y --rosdistro galactic
 
