@@ -10,6 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>ament_index_cpp</depend>
+  <!-- default version to use in official ROS2 packages is Ignition Edifice for ROS2 Galactic -->
   <depend condition="$IGNITION_VERSION == ''">ignition-gazebo5</depend>
   <depend condition="$IGNITION_VERSION == cidadel">ignition-gazebo3</depend>
   <depend condition="$IGNITION_VERSION == edifice">ignition-gazebo5</depend>
