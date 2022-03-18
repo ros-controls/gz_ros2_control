@@ -2,8 +2,13 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.0 (2022-03-18)
+------------------
+* Fix default ign gazebo version Galactic (`#44 <https://github.com/ignitionrobotics/ign_ros2_control/issues/44>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.3.0 (2022-03-16)
------------
+------------------
 * Fix ignition version in package.xml (`#40 <https://github.com/ignitionrobotics/ign_ros2_control/issues/40>`_)
 * Contributors: Alejandro Hernández Cordero
 
