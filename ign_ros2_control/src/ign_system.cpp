@@ -239,7 +239,7 @@ bool IgnitionSystem::initSim(
         "Joint '" << joint_name << "'is mimicing joint '" << mimicked_joint << "' with mutiplier: "
                   << mimic_joint.multiplier);
       this->dataPtr->mimic_joints_.push_back(mimic_joint);
-        suffix = "";
+        suffix = "_mimic";
 
     }
 
