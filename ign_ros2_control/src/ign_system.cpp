@@ -552,7 +552,7 @@ hardware_interface::return_type IgnitionSystem::write()
       this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_control_method & POSITION)
     {
         double position_error = this->dataPtr->joints_[mimic_joint.joint_index].joint_position -
-                this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_position_cmd;
+                this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_position_cmd * mimic_joint.multiplier;
 
         double velocity_sp = (-1.0) * position_error * (*this->dataPtr->update_rate);
 
