@@ -75,6 +75,7 @@ struct MimicJoint
   std::size_t joint_index;
   std::size_t mimicked_joint_index;
   double multiplier = 1.0;
+  std::vector<std::string> interfaces_to_mimic;
 };
 
 class ImuData
@@ -221,10 +222,11 @@ bool IgnitionSystem::initSim(
           return info.name == mimicked_joint;
         });
       if (mimicked_joint_it == hardware_info.joints.end()) {
-        throw std::runtime_error(
-                std::string("Mimicked joint '") + mimicked_joint + "' not found");
+          throw std::runtime_error(
+                  std::string("Mimicked joint '") + mimicked_joint + "' not found");
       }
-      MimicJoint mimic_joint;
+
+        MimicJoint mimic_joint;
       mimic_joint.joint_index = j;
       mimic_joint.mimicked_joint_index = std::distance(
         hardware_info.joints.begin(), mimicked_joint_it);
@@ -234,7 +236,26 @@ bool IgnitionSystem::initSim(
       } else {
         mimic_joint.multiplier = 1.0;
       }
-      RCLCPP_INFO_STREAM(
+
+      // check joint info of mimicked joint
+      auto & joint_info_mimicked = hardware_info.joints[mimic_joint.mimicked_joint_index];
+      const auto state_mimicked_interface = std::find_if(joint_info_mimicked.state_interfaces.begin(), joint_info_mimicked.state_interfaces.end(),
+                   [&mimic_joint](const hardware_interface::InterfaceInfo & interface_info) {
+                        bool pos = interface_info.name == "position";
+                        if (pos) mimic_joint.interfaces_to_mimic.push_back(hardware_interface::HW_IF_POSITION);
+                        bool vel =  interface_info.name == "velocity";
+                       if (vel) mimic_joint.interfaces_to_mimic.push_back(hardware_interface::HW_IF_VELOCITY);
+                       bool eff =  interface_info.name == "effort";
+                       if (vel) mimic_joint.interfaces_to_mimic.push_back(hardware_interface::HW_IF_EFFORT);
+                       return pos || vel || eff;
+                   });
+      if (state_mimicked_interface == joint_info_mimicked.state_interfaces.end())
+      {
+          throw std::runtime_error(
+                  std::string("For mimic joint '") + joint_info.name +
+                  "' no state interface was found in mimicked joint '" + mimicked_joint + " ' to mimic");
+      }
+        RCLCPP_INFO_STREAM(
         this->nh_->get_logger(),
         "Joint '" << joint_name << "'is mimicing joint '" << mimicked_joint << "' with mutiplier: "
                   << mimic_joint.multiplier);
@@ -548,60 +569,81 @@ hardware_interface::return_type IgnitionSystem::write()
 
   // set values of all mimic joints with respect to mimicked joint
   for (const auto & mimic_joint : this->dataPtr->mimic_joints_) {
-    if (this->dataPtr->joints_[mimic_joint.joint_index].joint_control_method & POSITION &&
-      this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_control_method & POSITION)
-    {
-        double position_error = this->dataPtr->joints_[mimic_joint.joint_index].joint_position -
-                this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_position_cmd * mimic_joint.multiplier;
 
-        double velocity_sp = (-1.0) * position_error * (*this->dataPtr->update_rate);
+        for (const auto & mimic_interface: mimic_joint.interfaces_to_mimic){
 
-        auto vel =
-                this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
-                        this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
+            if (mimic_interface == "position"){
 
-        if (vel == nullptr) {
-            this->dataPtr->ecm->CreateComponent(
-                    this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
-                    ignition::gazebo::components::JointVelocityCmd({velocity_sp}));
-        } else if (!vel->Data().empty()) {
-            vel->Data()[0] = velocity_sp;
+                // Get the joint position
+                double position_mimicked_joint =
+                        this->dataPtr->ecm->Component<ignition::gazebo::components::JointPosition>(
+                                this->dataPtr->joints_[mimic_joint.mimicked_joint_index].sim_joint)->Data()[0];
+
+                double position_mimic_joint =
+                        this->dataPtr->ecm->Component<ignition::gazebo::components::JointPosition>(
+                                this->dataPtr->joints_[mimic_joint.joint_index].sim_joint)->Data()[0];
+
+                double position_error = position_mimic_joint - position_mimicked_joint * mimic_joint.multiplier;
+
+                double velocity_sp = (-1.0) * position_error * (*this->dataPtr->update_rate);
+
+                auto vel =
+                        this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
+                                this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
+
+                if (vel == nullptr) {
+                    this->dataPtr->ecm->CreateComponent(
+                            this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
+                            ignition::gazebo::components::JointVelocityCmd({velocity_sp}));
+                } else if (!vel->Data().empty()) {
+                    vel->Data()[0] = velocity_sp;
+                }
+            }
+            if (mimic_interface == "velocity"){
+
+                // get the velocity of mimicked joint
+                double velocity_mimicked_joint =
+                        this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocity>(
+                                this->dataPtr->joints_[mimic_joint.mimicked_joint_index].sim_joint)->Data()[0];
+
+                if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
+                        this->dataPtr->joints_[mimic_joint.joint_index].sim_joint))
+                {
+                    this->dataPtr->ecm->CreateComponent(
+                            this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
+                            ignition::gazebo::components::JointVelocityCmd({0}));
+                } else {
+                    const auto jointVelCmd =
+                            this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
+                                    this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
+                    *jointVelCmd = ignition::gazebo::components::JointVelocityCmd(
+                            {mimic_joint.multiplier * velocity_mimicked_joint});
+                }
+
+            }
+            if (mimic_interface == "effort"){
+
+                // TODO(ahcorde): Revisit this part ignitionrobotics/ign-physics#124
+                // Get the joint force
+                // const auto * jointForce =
+                //   _ecm.Component<ignition::gazebo::components::JointForce>(
+                //   this->dataPtr->sim_joints_[j]);
+
+                if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointForceCmd>(
+                        this->dataPtr->joints_[mimic_joint.joint_index].sim_joint))
+                {
+                    this->dataPtr->ecm->CreateComponent(
+                            this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
+                            ignition::gazebo::components::JointForceCmd({0}));
+                } else {
+                    const auto jointEffortCmd =
+                            this->dataPtr->ecm->Component<ignition::gazebo::components::JointForceCmd>(
+                                    this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
+                    *jointEffortCmd = ignition::gazebo::components::JointForceCmd(
+                            {mimic_joint.multiplier * this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_effort});
+                }
+            }
         }
-    }
-    if (this->dataPtr->joints_[mimic_joint.joint_index].joint_control_method & VELOCITY &&
-      this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_control_method & VELOCITY)
-    {
-      if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
-          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint))
-      {
-        this->dataPtr->ecm->CreateComponent(
-          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
-          ignition::gazebo::components::JointVelocityCmd({0}));
-      } else {
-        const auto jointVelCmd =
-          this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
-          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
-        *jointVelCmd = ignition::gazebo::components::JointVelocityCmd(
-          {mimic_joint.multiplier * this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_velocity_cmd});
-      }
-    }
-    if (this->dataPtr->joints_[mimic_joint.joint_index].joint_control_method & EFFORT &&
-      this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_control_method & VELOCITY)
-    {
-      if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointForceCmd>(
-          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint))
-      {
-        this->dataPtr->ecm->CreateComponent(
-          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
-          ignition::gazebo::components::JointForceCmd({0}));
-      } else {
-        const auto jointEffortCmd =
-          this->dataPtr->ecm->Component<ignition::gazebo::components::JointForceCmd>(
-          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
-        *jointEffortCmd = ignition::gazebo::components::JointForceCmd(
-          {mimic_joint.multiplier * this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_effort_cmd});
-      }
-    }
   }
 
   return hardware_interface::return_type::OK;
