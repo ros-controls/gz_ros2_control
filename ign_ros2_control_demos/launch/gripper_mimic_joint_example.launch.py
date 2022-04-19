@@ -51,7 +51,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             [FindPackageShare("ros_ign_gazebo"), "/launch", "/ign_gazebo.launch.py"]
         ),
-        launch_arguments=[('ign_args', [' -r -v 4 empty.sdf'])],
+        launch_arguments=[('ign_args', [' -r -v 3 empty.sdf'])],
     )
 
     spawn_entity = Node(
@@ -59,13 +59,26 @@ def generate_launch_description():
         executable="create",
         output="screen",
         arguments=[
-            "-string",
-            robot_description_content,
+            "-param",
+            "robot_description",
             "-name",
             "gripper",
             "-allow_renaming",
             "true",
+            "-x",
+            "0.0",
+            "-y",
+            "0.0",
+            "-z",
+            "0.0",
+            "-R",
+            "0.0",
+            "-P",
+            "0.0",
+            "-Y",
+            "0.0",
         ],
+        parameters=[robot_description]
     )
 
     load_joint_state_controller = ExecuteProcess(
