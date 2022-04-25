@@ -27,7 +27,7 @@ jobs:
         mkdir -p /home/ros2_ws/src
         cp -r ign_ros2_control /home/ros2_ws/src/
         wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
-        sh -c 'echo "deb http://packages.ros.org/ros2/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list'
+        sh -c 'echo "deb http://packages.ros.org/ros2-testing/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-testing.list'
         curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
         apt-get update && apt-get upgrade -q -y
         apt-get update && apt-get install -qq -y \
@@ -39,7 +39,7 @@ jobs:
         cd /home/ros2_ws/src/
         rosdep init
         rosdep update
-        rosdep install --from-paths ./ -i -r -y --rosdistro rolling --ignore-src
+        rosdep install --from-paths ./ -i -y --rosdistro rolling --ignore-src
         # rosdep is broken in rolling due the transition to Ubuntu Jammy. Installing dependencies manually
         apt-get install -qq -y \
                         ros-rolling-pluginlib \
