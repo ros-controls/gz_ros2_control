@@ -46,6 +46,12 @@ ament_target_dependencies(example_effort
   std_msgs
 )
 
+add_executable(example_gripper examples/example_gripper.cpp)
+ament_target_dependencies(example_gripper
+  rclcpp
+  std_msgs
+)
+
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
@@ -54,7 +60,7 @@ if(BUILD_TESTING)
 endif()
 
 ## Install
-install(TARGETS example_position example_velocity example_effort
+install(TARGETS example_position example_velocity example_effort example_gripper
   DESTINATION lib/${PROJECT_NAME}
 )
 
