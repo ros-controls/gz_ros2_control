@@ -15,9 +15,9 @@
 #ifndef IGN_ROS2_CONTROL__IGN_ROS2_CONTROL_PLUGIN_HPP_
 #define IGN_ROS2_CONTROL__IGN_ROS2_CONTROL_PLUGIN_HPP_
 
-#include <ignition/gazebo/System.hh>
-
 #include <memory>
+
+#include <ignition/gazebo/System.hh>
 
 namespace ign_ros2_control
 {

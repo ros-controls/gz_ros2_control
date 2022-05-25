@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <map>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <ignition/gazebo/components/Joint.hh>
 #include <ignition/gazebo/components/JointType.hh>
 #include <ignition/gazebo/components/Name.hh>
@@ -20,12 +26,6 @@
 #include <ignition/gazebo/Model.hh>
 
 #include <ignition/plugin/Register.hh>
-
-#include <map>
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
 
 #include <controller_manager/controller_manager.hpp>
 
@@ -451,9 +451,12 @@ void IgnitionROS2ControlPlugin::PreUpdate(
     warned = true;
   }
 
+  rclcpp::Time sim_time_ros(std::chrono::duration_cast<std::chrono::nanoseconds>(
+      _info.simTime).count(), RCL_ROS_TIME);
+  rclcpp::Duration sim_period = sim_time_ros - this->dataPtr->last_update_sim_time_ros_;
   // Always set commands on joints, otherwise at low control frequencies the joints tremble
   // as they are updated at a fraction of gazebo sim time
-  this->dataPtr->controller_manager_->write();
+  this->dataPtr->controller_manager_->write(sim_time_ros, sim_period);
 }
 
 //////////////////////////////////////////////////
@@ -471,7 +474,7 @@ void IgnitionROS2ControlPlugin::PostUpdate(
     auto ign_controller_manager =
       std::dynamic_pointer_cast<ign_ros2_control::IgnitionSystemInterface>(
       this->dataPtr->controller_manager_);
-    this->dataPtr->controller_manager_->read();
+    this->dataPtr->controller_manager_->read(sim_time_ros, sim_period);
     this->dataPtr->controller_manager_->update(sim_time_ros, sim_period);
   }
 }
