@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>ign_ros2_control</name>
-  <version>0.0.0</version>
+  <version>0.4.0</version>
   <description>Ignition ros2_control package allows to control simulated robots using ros2_control framework.</description>
   <maintainer email="alejandro@openrobotics.com">Alejandro Hernández</maintainer>
   <author>Alejandro Hernández</author>
@@ -20,7 +20,6 @@
   <depend>rclcpp</depend>
   <depend>yaml_cpp_vendor</depend>
   <depend>rclcpp_lifecycle</depend>
-  <depend>urdf</depend>
   <depend>hardware_interface</depend>
   <depend>controller_manager</depend>
 
