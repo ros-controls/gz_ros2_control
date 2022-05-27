@@ -2,8 +2,8 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.3 (2022-05-27)
+------------------
 * Remove URDF dependency (`#56 <https://github.com/ignitionrobotics/ign_ros2_control/issues/56>`_)
 * typo in citadel name (`#54 <https://github.com/ignitionrobotics/ign_ros2_control/issues/54>`_)
 * Contributors: Alejandro Hernández Cordero, Guillaume Beuzeboc
