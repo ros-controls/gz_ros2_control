@@ -28,7 +28,7 @@ RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o 
 
 RUN mkdir -p /home/ros2_ws/src \
     && cd /home/ros2_ws/src \
-    && git clone https://github.com/ignitionrobotics/ign_ros2_control/ \
+    && git clone https://github.com/ros-controls/gz_ros2_control/ \
     && rosdep init && rosdep update \
     && rosdep install --from-paths ./ -i -y --rosdistro rolling
 
