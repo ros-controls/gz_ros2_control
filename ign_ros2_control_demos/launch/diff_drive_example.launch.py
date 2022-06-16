@@ -33,7 +33,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
 
     ignition_ros2_control_demos_path = os.path.join(
-        get_package_share_directory('ign_ros2_control_demos'))
+        get_package_share_directory('gz_ros2_control_demos'))
 
     xacro_file = os.path.join(ignition_ros2_control_demos_path,
                               'urdf',

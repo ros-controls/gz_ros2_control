@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(ign_ros2_control_demos)
+project(gz_ros2_control_demos)
 
 # Default to C11
 if(NOT CMAKE_C_STANDARD)
