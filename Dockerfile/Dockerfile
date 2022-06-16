@@ -39,4 +39,4 @@ RUN cd /home/ros2_ws/ \
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ros2 launch ign_ros2_control_demos cart_example_position.launch.py
+CMD ros2 launch gz_ros2_control_demos cart_example_position.launch.py

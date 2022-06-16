@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(ign_ros2_control)
+project(gz_ros2_control)
 
 # Default to C11
 if(NOT CMAKE_C_STANDARD)
@@ -26,7 +26,7 @@ find_package(yaml_cpp_vendor REQUIRED)
 
 if("$ENV{IGNITION_VERSION}" STREQUAL "citadel")
   find_package(ignition-gazebo3 REQUIRED)
-  set(IGN_GAZEBO_VER ${ignition-gazebo3_VERSION_MAJOR})
+  set(gz_GAZEBO_VER ${ignition-gazebo3_VERSION_MAJOR})
   message(STATUS "Compiling against Ignition Citadel")
 
 elseif("$ENV{IGNITION_VERSION}" STREQUAL "edifice")
@@ -39,19 +39,30 @@ elseif("$ENV{IGNITION_VERSION}" STREQUAL "fortress")
   set(IGN_GAZEBO_VER ${ignition-gazebo6_VERSION_MAJOR})
   message(STATUS "Compiling against Ignition Fortress")
 
+elseif("$ENV{IGNITION_VERSION}" STREQUAL "garden")
+  find_package(ignition-gazebo7 REQUIRED)
+  set(IGN_GAZEBO_VER ${ignition-gazebo7_VERSION_MAJOR})
+  message(STATUS "Compiling against Ignition Garden")
+
 else()
   find_package(ignition-gazebo6 REQUIRED)
   set(IGN_GAZEBO_VER ${ignition-gazebo6_VERSION_MAJOR})
   message(STATUS "Compiling against Ignition Fortress")
 endif()
 
-find_package(ignition-plugin1 REQUIRED)
-set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
+if("$ENV{IGNITION_VERSION}" STREQUAL "garden")
+  find_package(ignition-plugin2 REQUIRED)
+  set(IGN_PLUGIN_VER ${ignition-plugin2_VERSION_MAJOR})
+
+else()
+  find_package(ignition-plugin1 REQUIRED)
+  set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
+endif()
 
 include_directories(include)
 
 add_library(${PROJECT_NAME}-system SHARED
-  src/ign_ros2_control_plugin.cpp
+  src/gz_ros2_control_plugin.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}-system
@@ -70,21 +81,21 @@ ament_target_dependencies(${PROJECT_NAME}-system
 
 #########
 
-add_library(ign_hardware_plugins SHARED
-  src/ign_system.cpp
+add_library(gz_hardware_plugins SHARED
+  src/gz_system.cpp
 )
-ament_target_dependencies(ign_hardware_plugins
+ament_target_dependencies(gz_hardware_plugins
   rclcpp_lifecycle
   hardware_interface
   rclcpp
 )
-target_link_libraries(ign_hardware_plugins
+target_link_libraries(gz_hardware_plugins
   ignition-gazebo${IGN_GAZEBO_VER}::core
 )
 
 ## Install
 install(TARGETS
-  ign_hardware_plugins
+  gz_hardware_plugins
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -97,14 +108,14 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME} ign_hardware_plugins)
+ament_export_libraries(${PROJECT_NAME} gz_hardware_plugins)
 
 # Install directories
 install(TARGETS ${PROJECT_NAME}-system
   DESTINATION lib
 )
 
-pluginlib_export_plugin_description_file(ign_ros2_control ign_hardware_plugins.xml)
+pluginlib_export_plugin_description_file(gz_ros2_control gz_hardware_plugins.xml)
 
 # Setup the project
 ament_package()
