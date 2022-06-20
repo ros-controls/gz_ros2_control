@@ -400,6 +400,12 @@ void IgnitionROS2ControlPlugin::Configure(
 
     resource_manager_->import_component(std::move(ignitionSystem), control_hardware[i]);
   }
+
+  rclcpp_lifecycle::State state(
+    lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE,
+    hardware_interface::lifecycle_state_names::ACTIVE);
+  resource_manager_->set_component_state("GazeboSimSystem", state);
+
   // Create the controller manager
   RCLCPP_INFO(this->dataPtr->node_->get_logger(), "Loading controller_manager");
   this->dataPtr->controller_manager_.reset(
