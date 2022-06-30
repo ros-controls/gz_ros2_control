@@ -404,8 +404,8 @@ CallbackReturn IgnitionSystem::on_deactivate(const rclcpp_lifecycle::State & pre
 }
 
 hardware_interface::return_type IgnitionSystem::read(
-  const rclcpp::Time & time,
-  const rclcpp::Duration & period)
+  const rclcpp::Time & /*time*/,
+  const rclcpp::Duration & /*period*/)
 {
   for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
     // Get the joint velocity
@@ -449,8 +449,8 @@ hardware_interface::return_type IgnitionSystem::read(
 }
 
 hardware_interface::return_type IgnitionSystem::write(
-  const rclcpp::Time & time,
-  const rclcpp::Duration & period)
+  const rclcpp::Time & /*time*/,
+  const rclcpp::Duration & /*period*/)
 {
   for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
     if (this->dataPtr->joints_[i].joint_control_method & VELOCITY) {
