@@ -458,12 +458,14 @@ IgnitionSystem::perform_command_mode_switch(
       if (interface_name == (this->dataPtr->joints_[j].name + "/" +
         hardware_interface::HW_IF_POSITION))
       {
-        this->dataPtr->joints_[j].joint_control_method &= static_cast<ControlMethod_>(VELOCITY & EFFORT);
+        this->dataPtr->joints_[j].joint_control_method &=
+          static_cast<ControlMethod_>(VELOCITY & EFFORT);
       }
       if (interface_name == (this->dataPtr->joints_[j].name + "/" +
         hardware_interface::HW_IF_VELOCITY))
       {
-        this->dataPtr->joints_[j].joint_control_method &= static_cast<ControlMethod_>(POSITION & EFFORT);
+        this->dataPtr->joints_[j].joint_control_method &=
+          static_cast<ControlMethod_>(POSITION & EFFORT);
       }
       if (interface_name == (this->dataPtr->joints_[j].name + "/" +
         hardware_interface::HW_IF_EFFORT))
