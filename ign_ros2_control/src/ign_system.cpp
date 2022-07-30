@@ -254,7 +254,6 @@ bool IgnitionSystem::initSim(
     for (unsigned int i = 0; i < hardware_info.joints[j].command_interfaces.size(); ++i) {
       if (hardware_info.joints[j].command_interfaces[i].name == "position") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t position");
-        this->dataPtr->joints_[j].joint_control_method |= POSITION;
         this->dataPtr->command_interfaces_.emplace_back(
           joint_name,
           hardware_interface::HW_IF_POSITION,
@@ -264,7 +263,6 @@ bool IgnitionSystem::initSim(
         }
       } else if (hardware_info.joints[j].command_interfaces[i].name == "velocity") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
-        this->dataPtr->joints_[j].joint_control_method |= VELOCITY;
         this->dataPtr->command_interfaces_.emplace_back(
           joint_name,
           hardware_interface::HW_IF_VELOCITY,
@@ -273,7 +271,6 @@ bool IgnitionSystem::initSim(
           this->dataPtr->joints_[j].joint_velocity_cmd = initial_velocity;
         }
       } else if (hardware_info.joints[j].command_interfaces[i].name == "effort") {
-        this->dataPtr->joints_[j].joint_control_method |= EFFORT;
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
         this->dataPtr->command_interfaces_.emplace_back(
           joint_name,
@@ -445,6 +442,57 @@ hardware_interface::return_type IgnitionSystem::read(
       }
     }
   }
+  return hardware_interface::return_type::OK;
+}
+
+hardware_interface::return_type
+IgnitionSystem::perform_command_mode_switch(
+  const std::vector<std::string> & start_interfaces,
+  const std::vector<std::string> & stop_interfaces)
+{
+  for (unsigned int j = 0; j < this->dataPtr->joints_.size(); j++) {
+    for (const std::string & interface_name : stop_interfaces) {
+      // Clear joint control method bits corresponding to stop interfaces
+      if (interface_name == (this->dataPtr->joints_[j].name + "/" +
+        hardware_interface::HW_IF_POSITION))
+      {
+        this->dataPtr->joints_[j].joint_control_method &=
+          static_cast<ControlMethod_>(VELOCITY & EFFORT);
+      }
+      if (interface_name == (this->dataPtr->joints_[j].name + "/" +
+        hardware_interface::HW_IF_VELOCITY))
+      {
+        this->dataPtr->joints_[j].joint_control_method &=
+          static_cast<ControlMethod_>(POSITION & EFFORT);
+      }
+      if (interface_name == (this->dataPtr->joints_[j].name + "/" +
+        hardware_interface::HW_IF_EFFORT))
+      {
+        this->dataPtr->joints_[j].joint_control_method &=
+          static_cast<ControlMethod_>(POSITION & VELOCITY);
+      }
+    }
+
+    // Set joint control method bits corresponding to start interfaces
+    for (const std::string & interface_name : start_interfaces) {
+      if (interface_name == (this->dataPtr->joints_[j].name + "/" +
+        hardware_interface::HW_IF_POSITION))
+      {
+        this->dataPtr->joints_[j].joint_control_method |= POSITION;
+      }
+      if (interface_name == (this->dataPtr->joints_[j].name + "/" +
+        hardware_interface::HW_IF_VELOCITY))
+      {
+        this->dataPtr->joints_[j].joint_control_method |= VELOCITY;
+      }
+      if (interface_name == (this->dataPtr->joints_[j].name + "/" +
+        hardware_interface::HW_IF_EFFORT))
+      {
+        this->dataPtr->joints_[j].joint_control_method |= EFFORT;
+      }
+    }
+  }
+
   return hardware_interface::return_type::OK;
 }
 
