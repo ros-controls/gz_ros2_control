@@ -5,12 +5,19 @@ More information about `ros2_control` can be found here: https://control.ros.org
 
 This package provides an Ignition Gazebo system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.
 
-Tested on:
- - Debs
-  - [Ignition Citadel](https://ignitionrobotics.org/docs/citadel) + [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
- - From source:
-  - [Ignition Edifice](https://ignitionrobotics.org/docs/edifice) + [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
-  - [Ignition Fortress](https://ignitionrobotics.org/docs/fortress) + [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
+[![Build Status](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci.yaml/badge.svg?branch=foxy)](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci.yaml)
+
+ROS version | Ignition version | Branch | Binaries hosted at
+-- | -- | -- | --
+Foxy | Citadel | [foxy](https://github.com/ros-controls/gz_ros2_control/tree/foxy) | https://packages.ros.org
+Foxy | Edifice | [foxy](https://github.com/ros-controls/gz_ros2_control/tree/foxy) | only from source
+Galactic | Edifice | [galactic](https://github.com/ros-controls/gz_ros2_control/tree/galactic) | https://packages.ros.org
+Galactic | Fortress | [galactic](https://github.com/ros-controls/gz_ros2_control/tree/galactic) | only from source
+Humble | Fortress | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org
+Rolling | Edifice | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
+Rolling | Fortress | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org
+Rolling | Garden (not released) | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
+
 
 # Compile from source
 
