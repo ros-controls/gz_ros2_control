@@ -1,0 +1,175 @@
+<?xml version="1.0"?>
+<robot name="tricycle_drive" xmlns:xacro="http://ros.org/wiki/xacro">
+  <material name="Black">
+    <color rgba="0 0 0 1" />
+  </material>
+  <material name="Grey">
+    <color rgba="0.8 0.8 0.8 1" />
+  </material>
+  <material name="Orange">
+    <color rgba="1 0.6 0 1" />
+  </material>
+  <material name="White">
+    <color rgba="1 1 1 1" />
+  </material>
+
+  <link name="base_link" />
+
+  <!-- Chassis -->
+  <link name="chassis">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="2 1 0.5" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="2 1 0.5" />
+      </geometry>
+      <material name="Orange" />
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="1" />
+      <inertia ixx="0.126164" ixy="0.0" ixz="0.0" iyy="0.416519" iyz="0.0" izz="0.481014" />
+    </inertial>
+  </link>
+
+  <joint name="chassis_joint" type="fixed">
+    <origin xyz="0.8 0 0.5" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="chassis" />
+  </joint>
+
+  <!-- left wheel Link -->
+  <link name="left_wheel">
+    <collision>
+      <geometry>
+        <cylinder length="0.08" radius="0.3" />
+      </geometry>
+    </collision>
+    <visual>
+      <geometry>
+        <cylinder length="0.08" radius="0.3" />
+      </geometry>
+      <material name="Black" />
+    </visual>
+
+    <inertial>
+      <mass value="2" />
+      <inertia ixx="0.145833" ixy="0.0" ixz="0.0" iyy="0.145833" iyz="0.0" izz="0.125" />
+    </inertial>
+  </link>
+
+  <joint name="left_wheel_joint" type="continuous">
+    <origin xyz="-0.8 0.5 -0.2" rpy="-1.57 0 0" />
+    <parent link="chassis" />
+    <child link="left_wheel" />
+    <axis xyz="0 0 1" />
+    <dynamics damping="0.2" />
+  </joint>
+
+  <!-- right wheel Link -->
+  <link name="right_wheel">
+    <collision>
+      <geometry>
+        <cylinder length="0.08" radius="0.3" />
+      </geometry>
+    </collision>
+    <visual>
+      <geometry>
+        <cylinder length="0.08" radius="0.3" />
+      </geometry>
+      <material name="Black" />
+    </visual>
+
+    <inertial>
+      <mass value="2" />
+      <inertia ixx="0.145833" ixy="0.0" ixz="0.0" iyy="0.145833" iyz="0.0" izz="0.125" />
+    </inertial>
+  </link>
+
+  <joint name="right_wheel_joint" type="continuous">
+    <origin xyz="-0.8 -0.5 -0.2" rpy="-1.57 0 0" />
+    <parent link="chassis" />
+    <child link="right_wheel" />
+    <axis xyz="0 0 1" />
+    <dynamics damping="0.2" />
+  </joint>
+
+  <!-- Steering Link -->
+  <link name="steering_link">
+    <visual>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+      <material name="Black" />
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.005" />
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1" />
+    </inertial>
+  </link>
+
+  <joint name="steering_joint" type="continuous">
+    <origin xyz="0.9 0 -0.2" rpy="0 0 0" />
+    <parent link="chassis" />
+    <child link="steering_link" />
+    <axis xyz="0 0 1" />
+  </joint>
+
+  <!-- traction wheel link -->
+  <link name="wheel_front_link">
+    <visual>
+      <geometry>
+        <cylinder length="0.08" radius="0.3" />
+      </geometry>
+      <material name="Black" />
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="15" />
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+    </inertial>
+    <collision>
+      <geometry>
+        <cylinder length="0.08" radius="0.3" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="traction_joint" type="continuous">
+    <parent link="steering_link" />
+    <child link="wheel_front_link" />
+    <origin xyz="0 0 0" rpy="-1.57 1.57 0" />
+    <axis xyz="0 0 1" />
+  </joint>
+
+  <ros2_control name="IgnitionSystem" type="system">
+    <hardware>
+      <plugin>ign_ros2_control/IgnitionSystem</plugin>
+    </hardware>
+    <joint name="steering_joint">
+      <command_interface name="position" />
+      <state_interface name="position" />
+    </joint>
+    <joint name="traction_joint">
+      <command_interface name="velocity" />
+      <state_interface name="velocity" />
+      <state_interface name="position" />
+    </joint>
+  </ros2_control>
+
+
+  <gazebo>
+    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+      <parameters>$(find ign_ros2_control_demos)/config/tricycle_drive_controller.yaml</parameters>
+    </plugin>
+  </gazebo>
+
+</robot>
