@@ -222,6 +222,7 @@ ros2 launch ign_ros2_control_demos cart_example_position.launch.py
 ros2 launch ign_ros2_control_demos cart_example_velocity.launch.py
 ros2 launch ign_ros2_control_demos cart_example_effort.launch.py
 ros2 launch ign_ros2_control_demos diff_drive_example.launch.py
+ros2 launch ign_ros2_control_demos tricycle_drive_example.launch.py
 ```
 
 Send example commands:
@@ -233,4 +234,5 @@ ros2 run ign_ros2_control_demos example_position
 ros2 run ign_ros2_control_demos example_velocity
 ros2 run ign_ros2_control_demos example_effort
 ros2 run ign_ros2_control_demos example_diff_drive
+ros2 run ign_ros2_control_demos example_tricycle_drive
 ```
