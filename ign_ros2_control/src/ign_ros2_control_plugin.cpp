@@ -95,6 +95,9 @@ public:
   // TODO(ahcorde): Add param in plugin tag
   std::string robot_description_node_ = "robot_state_publisher";
 
+  /// \brief String with the namesapce of the robot to cascade to all sub-nodes
+  std::string robot_namespace_ = ""
+
   /// \brief Last time the update method was called
   rclcpp::Time last_update_sim_time_ros_ =
     rclcpp::Time((int64_t)0, RCL_ROS_TIME);
@@ -291,30 +294,42 @@ void IgnitionROS2ControlPlugin::Configure(
     controllerManagerNodeName = controllerManagerPrefixNodeName + "_" + controllerManagerNodeName;
   }
 
+  // TODO Figure out if this is used, if yes it means we will require the use of the context, otherwise remove altogether
+  std::vector<std::string> arguments = {"--ros-args", "--params-file", paramFileName};
+  auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
+
   if (sdfPtr->HasElement("ros")) {
     sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
 
-    // Set namespace if tag is present
+    // Set namespace if tag is present 
     if (sdfRos->HasElement("namespace")) {
       std::string ns = sdfRos->GetElement("namespace")->Get<std::string>();
+      std::cout << "#################### DEBUG namespace:" << ns << std::endl;
       // prevent exception: namespace must be absolute, it must lead with a '/'
       if (ns.empty() || ns[0] != '/') {
         ns = '/' + ns;
       }
-      std::string ns_arg = std::string("__ns:=") + ns;
-      arguments.push_back(RCL_REMAP_FLAG);
-      arguments.push_back(ns_arg);
+      if(ns.length()>1) {
+        this->dataPtr->namespace_ = ns;
+        this->dataPtr->robot_description_node_ = ns + "/robot_state_publisher";
+      }
+
+      // TODO Figure out if this is used, if yes it means we will require the use of the context, otherwise remove altogether
+      //std::string ns_arg = std::string("__ns:=") + ns;
+      //arguments.push_back(RCL_REMAP_FLAG);
+      //arguments.push_back(ns_arg);
     }
 
     // Get list of remapping rules from SDF
     if (sdfRos->HasElement("remapping")) {
       sdf::ElementPtr argument_sdf = sdfRos->GetElement("remapping");
 
-      arguments.push_back(RCL_ROS_ARGS_FLAG);
+    // TODO Figure out if this is used, if yes it means we will require the use of the context, otherwise remove altogether
+    //  arguments.push_back(RCL_ROS_ARGS_FLAG);
       while (argument_sdf) {
         std::string argument = argument_sdf->Get<std::string>();
-        arguments.push_back(RCL_REMAP_FLAG);
-        arguments.push_back(argument);
+    //    arguments.push_back(RCL_REMAP_FLAG);
+    //    arguments.push_back(argument);
         argument_sdf = argument_sdf->GetNextElement("remapping");
       }
     }
