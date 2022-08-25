@@ -87,6 +87,9 @@ public:
   std::shared_ptr<controller_manager::ControllerManager>
   controller_manager_{nullptr};
 
+  /// \brief String with the name of the controller manager node 
+  std::string controller_manager_node_ = "controller_manager";
+
   /// \brief String with the robot description param_name
   // TODO(ahcorde): Add param in plugin tag
   std::string robot_description_ = "robot_description";
@@ -95,7 +98,7 @@ public:
   // TODO(ahcorde): Add param in plugin tag
   std::string robot_description_node_ = "robot_state_publisher";
 
-  /// \brief String with the namesapce of the robot to cascade to all sub-nodes
+  /// \brief String with the namespace of the robot to cascade to all sub-nodes
   std::string robot_namespace_ = ""
 
   /// \brief Last time the update method was called
@@ -252,6 +255,11 @@ void IgnitionROS2ControlPlugin::Configure(
   ignition::gazebo::EntityComponentManager & _ecm,
   ignition::gazebo::EventManager &)
 {
+  // Create a default context, if not already
+  if (!rclcpp::ok()) {
+    rclcpp::init();
+  }
+
   // Make sure the controller is attached to a valid model
   const auto model = ignition::gazebo::Model(_entity);
   if (!model.Valid(_ecm)) {
@@ -264,6 +272,7 @@ void IgnitionROS2ControlPlugin::Configure(
   }
 
   // Get params from SDF
+  // TODO check if this is used. This used to be passed to the default context
   std::string paramFileName = _sdf->Get<std::string>("parameters");
 
   if (paramFileName.empty()) {
@@ -273,10 +282,8 @@ void IgnitionROS2ControlPlugin::Configure(
     return;
   }
 
-  std::vector<std::string> arguments = {"--ros-args"};
-
+  std::vector<std::string> arguments = {"--ros-args", "--params-file", paramFileName};
   auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
-
   sdf::ElementPtr argument_sdf = sdfPtr->GetElement("parameters");
   while (argument_sdf) {
     std::string argument = argument_sdf->Get<std::string>();
@@ -294,60 +301,38 @@ void IgnitionROS2ControlPlugin::Configure(
     controllerManagerNodeName = controllerManagerPrefixNodeName + "_" + controllerManagerNodeName;
   }
 
-  // TODO Figure out if this is used, if yes it means we will require the use of the context, otherwise remove altogether
-  std::vector<std::string> arguments = {"--ros-args", "--params-file", paramFileName};
-  auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
-
   if (sdfPtr->HasElement("ros")) {
     sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
 
     // Set namespace if tag is present 
     if (sdfRos->HasElement("namespace")) {
       std::string ns = sdfRos->GetElement("namespace")->Get<std::string>();
-      std::cout << "#################### DEBUG namespace:" << ns << std::endl;
       // prevent exception: namespace must be absolute, it must lead with a '/'
       if (ns.empty() || ns[0] != '/') {
         ns = '/' + ns;
       }
       if(ns.length()>1) {
-        this->dataPtr->namespace_ = ns;
+        this->dataPtr->robot_namespace_ = ns;
+        this->dataPtr->robot_description_ = ns + "/robot_description";
         this->dataPtr->robot_description_node_ = ns + "/robot_state_publisher";
-      }
-
-      // TODO Figure out if this is used, if yes it means we will require the use of the context, otherwise remove altogether
-      //std::string ns_arg = std::string("__ns:=") + ns;
-      //arguments.push_back(RCL_REMAP_FLAG);
-      //arguments.push_back(ns_arg);
-    }
-
-    // Get list of remapping rules from SDF
-    if (sdfRos->HasElement("remapping")) {
-      sdf::ElementPtr argument_sdf = sdfRos->GetElement("remapping");
-
-    // TODO Figure out if this is used, if yes it means we will require the use of the context, otherwise remove altogether
-    //  arguments.push_back(RCL_ROS_ARGS_FLAG);
-      while (argument_sdf) {
-        std::string argument = argument_sdf->Get<std::string>();
-    //    arguments.push_back(RCL_REMAP_FLAG);
-    //    arguments.push_back(argument);
-        argument_sdf = argument_sdf->GetNextElement("remapping");
+        this->dataPtr->controller_manager_node_ = ns + "/controller_manager";
       }
     }
   }
 
-  std::vector<const char *> argv;
-  for (const auto & arg : arguments) {
-    argv.push_back(reinterpret_cast<const char *>(arg.data()));
+  // Get list of remapping rules from SDF
+  // TODO check if this is used. This used to be passed to the default context
+  if (sdfRos->HasElement("remapping")) {
+    sdf::ElementPtr argument_sdf = sdfRos->GetElement("remapping");
+
+    while (argument_sdf) {
+      std::string argument = argument_sdf->Get<std::string>();
+      argument_sdf = argument_sdf->GetNextElement("remapping");
+    }
   }
 
-  if (!rclcpp::ok()) {
-    rclcpp::init(static_cast<int>(argv.size()), argv.data());
-    std::string node_name = "ignition_ros_control";
-    if (!controllerManagerPrefixNodeName.empty()) {
-      node_name = controllerManagerPrefixNodeName + "_" + node_name;
-    }
-    this->dataPtr->node_ = rclcpp::Node::make_shared(node_name);
-  }
+  // Instanciate and start node with namespace
+  this->dataPtr->node_ = rclcpp::Node::make_shared("ignition_ros_control", this->dataPtr->robot_namespace_);
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   this->dataPtr->executor_->add_node(this->dataPtr->node_);
   this->dataPtr->stop_ = false;
@@ -436,7 +421,8 @@ void IgnitionROS2ControlPlugin::Configure(
     new controller_manager::ControllerManager(
       std::move(resource_manager_),
       this->dataPtr->executor_,
-      controllerManagerNodeName));
+      this->dataPtr->controller_manager_node_,
+      this->dataPtr->robot_namespace_));
   this->dataPtr->executor_->add_node(this->dataPtr->controller_manager_);
 
   if (!this->dataPtr->controller_manager_->has_parameter("update_rate")) {
