@@ -181,7 +181,6 @@ IgnitionROS2ControlPluginPrivate::GetEnabledJoints(
 std::string IgnitionROS2ControlPluginPrivate::getURDF() const
 {
   std::string urdf_string;
-
   using namespace std::chrono_literals;
   auto parameters_client = std::make_shared<rclcpp::AsyncParametersClient>(
     node_, robot_description_node_);
@@ -200,16 +199,16 @@ std::string IgnitionROS2ControlPluginPrivate::getURDF() const
   RCLCPP_INFO(
     node_->get_logger(), "connected to service!! %s asking for %s",
     robot_description_node_.c_str(),
-    this->robot_description_.c_str());
+    robot_description_.c_str());
 
   // search and wait for robot_description on param server
   while (urdf_string.empty()) {
     RCLCPP_DEBUG(
       node_->get_logger(), "param_name %s",
-      this->robot_description_.c_str());
+      robot_description_.c_str());
 
     try {
-      auto f = parameters_client->get_parameters({this->robot_description_});
+      auto f = parameters_client->get_parameters({robot_description_});
       f.wait();
       std::vector<rclcpp::Parameter> values = f.get();
       urdf_string = values[0].as_string();
@@ -223,7 +222,7 @@ std::string IgnitionROS2ControlPluginPrivate::getURDF() const
       RCLCPP_ERROR(
         node_->get_logger(), "ign_ros2_control plugin is waiting for model"
         " URDF in parameter [%s] on the ROS param server.",
-        this->robot_description_.c_str());
+        robot_description_.c_str());
     }
     usleep(100000);
   }
@@ -313,9 +312,12 @@ void IgnitionROS2ControlPlugin::Configure(
       }
       if(ns.length()>1) {
         this->dataPtr->robot_namespace_ = ns;
-        this->dataPtr->robot_description_ = ns + "/robot_description";
         this->dataPtr->robot_description_node_ = ns + "/robot_state_publisher";
-        this->dataPtr->controller_manager_node_ = ns + "/controller_manager";
+        
+        // TODO check if node names need to be prefixed
+        //ns.erase(0, 1); //removing '/' for node names 
+        //this->dataPtr->robot_description_ = ns + "_robot_description";
+        //this->dataPtr->controller_manager_node_ = ns + "_controller_manager";
       }
     }
 
@@ -368,6 +370,7 @@ void IgnitionROS2ControlPlugin::Configure(
       "[Ignition ROS 2 Control] There are no available Joints.");
     return;
   }
+
 
   // Read urdf from ros parameter server then
   // setup actuators and mechanism control node.
