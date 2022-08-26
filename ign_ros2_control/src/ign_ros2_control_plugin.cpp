@@ -99,7 +99,7 @@ public:
   std::string robot_description_node_ = "robot_state_publisher";
 
   /// \brief String with the namespace of the robot to cascade to all sub-nodes
-  std::string robot_namespace_ = ""
+  std::string robot_namespace_ = "";
 
   /// \brief Last time the update method was called
   rclcpp::Time last_update_sim_time_ros_ =
@@ -255,10 +255,6 @@ void IgnitionROS2ControlPlugin::Configure(
   ignition::gazebo::EntityComponentManager & _ecm,
   ignition::gazebo::EventManager &)
 {
-  // Create a default context, if not already
-  if (!rclcpp::ok()) {
-    rclcpp::init();
-  }
 
   // Make sure the controller is attached to a valid model
   const auto model = ignition::gazebo::Model(_entity);
@@ -272,8 +268,8 @@ void IgnitionROS2ControlPlugin::Configure(
   }
 
   // Get params from SDF
-  // TODO check if this is used. This used to be passed to the default context
   std::string paramFileName = _sdf->Get<std::string>("parameters");
+  std::vector<std::string> arguments = {"--ros-args", "--params-file", paramFileName};
 
   if (paramFileName.empty()) {
     RCLCPP_ERROR(
@@ -282,7 +278,6 @@ void IgnitionROS2ControlPlugin::Configure(
     return;
   }
 
-  std::vector<std::string> arguments = {"--ros-args", "--params-file", paramFileName};
   auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
   sdf::ElementPtr argument_sdf = sdfPtr->GetElement("parameters");
   while (argument_sdf) {
@@ -299,8 +294,13 @@ void IgnitionROS2ControlPlugin::Configure(
     _sdf->Get<std::string>("controller_manager_prefix_node_name");
   if (!controllerManagerPrefixNodeName.empty()) {
     controllerManagerNodeName = controllerManagerPrefixNodeName + "_" + controllerManagerNodeName;
+  
+  std::vector<const char *> argv;
+  for (const auto & arg : arguments) {
+    argv.push_back(reinterpret_cast<const char *>(arg.data()));
   }
 
+  auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
   if (sdfPtr->HasElement("ros")) {
     sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
 
@@ -318,17 +318,26 @@ void IgnitionROS2ControlPlugin::Configure(
         this->dataPtr->controller_manager_node_ = ns + "/controller_manager";
       }
     }
+
+    // Get list of remapping rules from SDF
+    if (sdfRos->HasElement("remapping")) {
+      sdf::ElementPtr argument_sdf = sdfRos->GetElement("remapping");
+      arguments.push_back(RCL_ROS_ARGS_FLAG);
+      while (argument_sdf) {
+        std::string argument = argument_sdf->Get<std::string>();
+        arguments.push_back(RCL_REMAP_FLAG);
+        arguments.push_back(argument);
+        argument_sdf = argument_sdf->GetNextElement("remapping");
+      }
+    }
   }
 
-  // Get list of remapping rules from SDF
-  // TODO check if this is used. This used to be passed to the default context
-  if (sdfRos->HasElement("remapping")) {
-    sdf::ElementPtr argument_sdf = sdfRos->GetElement("remapping");
 
-    while (argument_sdf) {
-      std::string argument = argument_sdf->Get<std::string>();
-      argument_sdf = argument_sdf->GetNextElement("remapping");
-    }
+  // Create a default context, if not already
+  // This only triggers for the first robot launch, 
+  // following robots will not see their params passed to the context 
+  if (!rclcpp::ok()) {
+    rclcpp::init(static_cast<int>(argv.size()), argv.data());
   }
 
   // Instanciate and start node with namespace
