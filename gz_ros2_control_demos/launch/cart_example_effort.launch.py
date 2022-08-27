@@ -38,7 +38,7 @@ def generate_launch_description():
 
     xacro_file = os.path.join(ignition_ros2_control_demos_path,
                               'urdf',
-                              'test_cart_position.xacro.urdf')
+                              'test_cart_effort.xacro.urdf')
 
     doc = xacro.parse(open(xacro_file))
     xacro.process_doc(doc)
@@ -52,7 +52,7 @@ def generate_launch_description():
     )
 
     ignition_spawn_entity = Node(
-        package='ros_ign_gazebo',
+        package='ros_gz_sim',
         executable='create',
         output='screen',
         arguments=['-string', doc.toxml(),
@@ -67,8 +67,7 @@ def generate_launch_description():
     )
 
     load_joint_trajectory_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-             'joint_trajectory_controller'],
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'effort_controllers'],
         output='screen'
     )
 
@@ -76,9 +75,9 @@ def generate_launch_description():
         # Launch gazebo environment
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                [os.path.join(get_package_share_directory('ros_ign_gazebo'),
+                [os.path.join(get_package_share_directory('ros_gz_sim'),
                               'launch', 'ign_gazebo.launch.py')]),
-            launch_arguments=[('ign_args', [' -r -v 4 empty.sdf'])]),
+            launch_arguments=[('ign_args', [' -r -v 3 empty.sdf'])]),
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=ignition_spawn_entity,

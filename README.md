@@ -167,7 +167,7 @@ robot model is loaded. For example, the following XML will load the default plug
   ...
 <ros2_control>
 <gazebo>
-  <plugin name="gz_ros2_control" filename="libgz_ros2_control-system.so">
+  <plugin name="gz_ros2_control" filename="libgz_ros2_control-system">
     ...
   </plugin>
 </gazebo>
@@ -180,7 +180,7 @@ and use the tag `<controller_manager_prefix_node_name>` to set the controller ma
 
 ```xml
 <gazebo>
-  <plugin name="gz_ros2_control" filename="libgz_ros2_control-system.so">
+  <plugin name="gz_ros2_control" filename="libgz_ros2_control-system">
     <parameters>$(find gz_ros2_control_demos)/config/cartpole_controller.yaml</parameters>
     <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
   </plugin>

@@ -24,35 +24,35 @@ find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
 
-if("$ENV{IGNITION_VERSION}" STREQUAL "citadel")
+if("$ENV{GZ_VERSION}" STREQUAL "citadel")
   find_package(ignition-gazebo3 REQUIRED)
-  set(gz_GAZEBO_VER ${ignition-gazebo3_VERSION_MAJOR})
-  message(STATUS "Compiling against Ignition Citadel")
+  set(GZ_SIM_VER ${ignition-gazebo3_VERSION_MAJOR})
+  message(STATUS "Compiling against Gazebo Citadel")
 
-elseif("$ENV{IGNITION_VERSION}" STREQUAL "edifice")
+elseif("$ENV{GZ_VERSION}" STREQUAL "edifice")
   find_package(ignition-gazebo5 REQUIRED)
-  set(IGN_GAZEBO_VER ${ignition-gazebo5_VERSION_MAJOR})
-  message(STATUS "Compiling against Ignition Edifice")
+  set(GZ_SIM_VER ${ignition-gazebo5_VERSION_MAJOR})
+  message(STATUS "Compiling against Gazebo Edifice")
 
-elseif("$ENV{IGNITION_VERSION}" STREQUAL "fortress")
+elseif("$ENV{GZ_VERSION}" STREQUAL "fortress")
   find_package(ignition-gazebo6 REQUIRED)
-  set(IGN_GAZEBO_VER ${ignition-gazebo6_VERSION_MAJOR})
-  message(STATUS "Compiling against Ignition Fortress")
+  set(GZ_SIM_VER ${ignition-gazebo6_VERSION_MAJOR})
+  message(STATUS "Compiling against Gazebo Fortress")
 
-elseif("$ENV{IGNITION_VERSION}" STREQUAL "garden")
-  find_package(ignition-gazebo7 REQUIRED)
-  set(IGN_GAZEBO_VER ${ignition-gazebo7_VERSION_MAJOR})
-  message(STATUS "Compiling against Ignition Garden")
+elseif("$ENV{GZ_VERSION}" STREQUAL "garden")
+  find_package(gz-sim7 REQUIRED)
+  set(GZ_SIM_VER ${gz-sim7_VERSION_MAJOR})
+  message(STATUS "Compiling against Gazebo Garden")
 
 else()
   find_package(ignition-gazebo6 REQUIRED)
-  set(IGN_GAZEBO_VER ${ignition-gazebo6_VERSION_MAJOR})
-  message(STATUS "Compiling against Ignition Fortress")
+  set(GZ_SIM_VER ${ignition-gazebo6_VERSION_MAJOR})
+  message(STATUS "Compiling against Gazebo Fortress")
 endif()
 
-if("$ENV{IGNITION_VERSION}" STREQUAL "garden")
-  find_package(ignition-plugin2 REQUIRED)
-  set(IGN_PLUGIN_VER ${ignition-plugin2_VERSION_MAJOR})
+if("$ENV{GZ_VERSION}" STREQUAL "garden")
+  find_package(gz-plugin2 REQUIRED)
+  set(IGN_PLUGIN_VER ${gz-plugin2_VERSION_MAJOR})
 
 else()
   find_package(ignition-plugin1 REQUIRED)
@@ -66,8 +66,8 @@ add_library(${PROJECT_NAME}-system SHARED
 )
 
 target_link_libraries(${PROJECT_NAME}-system
-  ignition-gazebo${IGN_GAZEBO_VER}::core
-  ignition-plugin${IGN_PLUGIN_VER}::register
+  gz-sim${GZ_SIM_VER}::core
+  gz-plugin${IGN_PLUGIN_VER}::register
 )
 ament_target_dependencies(${PROJECT_NAME}-system
   ament_index_cpp
@@ -90,7 +90,7 @@ ament_target_dependencies(gz_hardware_plugins
   rclcpp
 )
 target_link_libraries(gz_hardware_plugins
-  ignition-gazebo${IGN_GAZEBO_VER}::core
+  gz-sim${GZ_SIM_VER}::core
 )
 
 ## Install

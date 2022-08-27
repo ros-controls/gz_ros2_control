@@ -38,7 +38,7 @@ def generate_launch_description():
 
     xacro_file = os.path.join(ignition_ros2_control_demos_path,
                               'urdf',
-                              'test_cart_velocity.xacro.urdf')
+                              'test_cart_position.xacro.urdf')
 
     doc = xacro.parse(open(xacro_file))
     xacro.process_doc(doc)
@@ -52,7 +52,7 @@ def generate_launch_description():
     )
 
     ignition_spawn_entity = Node(
-        package='ros_ign_gazebo',
+        package='ros_gz_sim',
         executable='create',
         output='screen',
         arguments=['-string', doc.toxml(),
@@ -67,13 +67,8 @@ def generate_launch_description():
     )
 
     load_joint_trajectory_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'velocity_controller'],
-        output='screen'
-    )
-
-    load_imu_sensor_broadcaster = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-             'imu_sensor_broadcaster'],
+             'joint_trajectory_controller'],
         output='screen'
     )
 
@@ -81,7 +76,7 @@ def generate_launch_description():
         # Launch gazebo environment
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                [os.path.join(get_package_share_directory('ros_ign_gazebo'),
+                [os.path.join(get_package_share_directory('ros_gz_sim'),
                               'launch', 'ign_gazebo.launch.py')]),
             launch_arguments=[('ign_args', [' -r -v 4 empty.sdf'])]),
         RegisterEventHandler(
@@ -94,12 +89,6 @@ def generate_launch_description():
             event_handler=OnProcessExit(
                 target_action=load_joint_state_broadcaster,
                 on_exit=[load_joint_trajectory_controller],
-            )
-        ),
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=load_joint_trajectory_controller,
-                on_exit=[load_imu_sensor_broadcaster],
             )
         ),
         node_robot_state_publisher,

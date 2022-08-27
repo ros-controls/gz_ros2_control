@@ -282,13 +282,13 @@ bool GazeboSimSystem::initSim(
       // independently of existence of command interface set initial value if defined
       if (!std::isnan(initial_position)) {
         const auto * jointPositions =
-          this->dataPtr->ecm->Component<ignition::gazebo::components::JointPosition>(
+          this->dataPtr->ecm->Component<gz::sim::components::JointPosition>(
           this->dataPtr->joints_[j].sim_joint);
         this->dataPtr->joints_[j].joint_position = initial_position;
       }
       if (!std::isnan(initial_velocity)) {
         const auto * jointVelocity =
-          this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocity>(
+          this->dataPtr->ecm->Component<gz::sim::components::JointVelocity>(
           this->dataPtr->joints_[j].sim_joint);
         this->dataPtr->joints_[j].joint_velocity = jointVelocity->Data()[0];
       }

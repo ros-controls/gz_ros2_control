@@ -385,7 +385,7 @@ void GazeboSimROS2ControlPlugin::Configure(
 
   for (unsigned int i = 0; i < control_hardware_info.size(); ++i) {
     std::string robot_hw_sim_type_str_ = control_hardware_info[i].hardware_class_type;
-    auto gzSimSystem = std::unique_ptr<ign_ros2_control::GazeboSimSystemInterface>(
+    auto gzSimSystem = std::unique_ptr<gz_ros2_control::GazeboSimSystemInterface>(
       this->dataPtr->robot_hw_sim_loader_->createUnmanagedInstance(robot_hw_sim_type_str_));
 
     if (!gzSimSystem->initSim(
@@ -488,7 +488,7 @@ void GazeboSimROS2ControlPlugin::PostUpdate(
 }
 }  // namespace gz_ros2_control
 
-IGNITION_ADD_PLUGIN(
+GZ_ADD_PLUGIN(
   gz_ros2_control::GazeboSimROS2ControlPlugin,
   gz::sim::System,
   gz_ros2_control::GazeboSimROS2ControlPlugin::ISystemConfigure,
