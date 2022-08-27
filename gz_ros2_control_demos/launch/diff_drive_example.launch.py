@@ -78,8 +78,8 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 [os.path.join(get_package_share_directory('ros_gz_sim'),
-                              'launch', 'ign_gazebo.launch.py')]),
-            launch_arguments=[('ign_args', [' -r -v 4 empty.sdf'])]),
+                              'launch', 'gz_sim.launch.py')]),
+            launch_arguments=[('gz_args', [' -r -v 4 empty.sdf'])]),
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=ignition_spawn_entity,

@@ -53,6 +53,12 @@ ament_target_dependencies(example_diff_drive
   geometry_msgs
 )
 
+add_executable(example_tricycle_drive examples/example_tricycle_drive.cpp)
+ament_target_dependencies(example_tricycle_drive
+  rclcpp
+  geometry_msgs
+)
+
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
@@ -67,6 +73,7 @@ install(
     example_velocity
     example_effort
     example_diff_drive
+    example_tricycle_drive
   DESTINATION
     lib/${PROJECT_NAME}
 )
