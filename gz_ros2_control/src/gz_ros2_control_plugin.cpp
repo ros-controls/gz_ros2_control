@@ -357,10 +357,10 @@ void GazeboSimROS2ControlPlugin::Configure(
   // setup actuators and mechanism control node.
   // This call will block if ROS is not properly initialized.
   std::string urdf_string;
-  std::vector<hardware_interface::HardwareInfo> control_hardware;
+  std::vector<hardware_interface::HardwareInfo> control_hardware_info;
   try {
     urdf_string = this->dataPtr->getURDF();
-    control_hardware = hardware_interface::parse_control_resources_from_urdf(urdf_string);
+    control_hardware_info = hardware_interface::parse_control_resources_from_urdf(urdf_string);
   } catch (const std::runtime_error & ex) {
     RCLCPP_ERROR_STREAM(
       this->dataPtr->node_->get_logger(),
@@ -383,15 +383,15 @@ void GazeboSimROS2ControlPlugin::Configure(
     return;
   }
 
-  for (unsigned int i = 0; i < control_hardware.size(); ++i) {
-    std::string robot_hw_sim_type_str_ = control_hardware[i].hardware_class_type;
-    auto gzSimSystem = std::unique_ptr<gz_ros2_control::GazeboSimSystemInterface>(
+  for (unsigned int i = 0; i < control_hardware_info.size(); ++i) {
+    std::string robot_hw_sim_type_str_ = control_hardware_info[i].hardware_class_type;
+    auto gzSimSystem = std::unique_ptr<ign_ros2_control::GazeboSimSystemInterface>(
       this->dataPtr->robot_hw_sim_loader_->createUnmanagedInstance(robot_hw_sim_type_str_));
 
     if (!gzSimSystem->initSim(
         this->dataPtr->node_,
         enabledJoints,
-        control_hardware[i],
+        control_hardware_info[i],
         _ecm,
         this->dataPtr->update_rate))
     {
@@ -400,8 +400,14 @@ void GazeboSimROS2ControlPlugin::Configure(
       return;
     }
 
-    resource_manager_->import_component(std::move(gzSimSystem), control_hardware[i]);
+    resource_manager_->import_component(std::move(gzSimSystem), control_hardware_info[i]);
+
+    rclcpp_lifecycle::State state(
+      lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE,
+      hardware_interface::lifecycle_state_names::ACTIVE);
+    resource_manager_->set_component_state(control_hardware_info[i].name, state);
   }
+
   // Create the controller manager
   RCLCPP_INFO(this->dataPtr->node_->get_logger(), "Loading controller_manager");
   this->dataPtr->controller_manager_.reset(

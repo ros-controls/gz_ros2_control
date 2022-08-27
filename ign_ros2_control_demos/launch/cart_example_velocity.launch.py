@@ -61,18 +61,18 @@ def generate_launch_description():
     )
 
     load_joint_state_broadcaster = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'start',
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
              'joint_state_broadcaster'],
         output='screen'
     )
 
     load_joint_trajectory_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'start', 'velocity_controller'],
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'velocity_controller'],
         output='screen'
     )
 
     load_imu_sensor_broadcaster = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'start',
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
              'imu_sensor_broadcaster'],
         output='screen'
     )

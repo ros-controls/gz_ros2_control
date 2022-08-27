@@ -2,6 +2,17 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix setting initial values if command interfaces are not defined. (`#73 <https://github.com/ros-controls/gz_ros2_control/issues/73>`_)
+* fix demo launch (`#75 <https://github.com/ros-controls/gz_ros2_control/issues/75>`_)
+* Adjust URLs (`#65 <https://github.com/ros-controls/gz_ros2_control/issues/65>`_)
+* ign_ros2_control_demos: Install urdf dir (`#61 <https://github.com/ros-controls/gz_ros2_control/issues/61>`_)
+* Remove URDF dependency (`#56 <https://github.com/ros-controls/gz_ros2_control/issues/56>`_)
+* Use Ubuntu Jammy in CI (`#47 <https://github.com/ros-controls/gz_ros2_control/issues/47>`_)
+* Add support for initial_values for hardware interfaces when starting simulation. (`#27 <https://github.com/ros-controls/gz_ros2_control/issues/27>`_)
+* Contributors: Alejandro Hernández Cordero, Andrej Orsula, Bence Magyar, Denis Štogl, Maciej Bednarczyk, ahcorde
+
 0.4.0 (2022-03-18)
 ------------------
 

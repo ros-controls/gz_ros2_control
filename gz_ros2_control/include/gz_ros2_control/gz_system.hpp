@@ -56,17 +56,20 @@ public:
   // Documentation Inherited
   CallbackReturn on_deactivate(const rclcpp_lifecycle::State & previous_state) override;
 
-  // // Documentation Inherited
-  // hardware_interface::return_type read(
-  //   const rclcpp::Time & time,
-  //   const rclcpp::Duration & period) override;
-  //
-  // // Documentation Inherited
-  // hardware_interface::return_type write(
-  //   const rclcpp::Time & time,
-  //   const rclcpp::Duration & period) override;
-  hardware_interface::return_type read(const rclcpp::Time & time, const rclcpp::Duration & period);
-  hardware_interface::return_type write(const rclcpp::Time & time, const rclcpp::Duration & period);
+  // Documentation Inherited
+  hardware_interface::return_type perform_command_mode_switch(
+    const std::vector<std::string> & start_interfaces,
+    const std::vector<std::string> & stop_interfaces) override;
+
+  // Documentation Inherited
+  hardware_interface::return_type read(
+    const rclcpp::Time & time,
+    const rclcpp::Duration & period) override;
+
+  // Documentation Inherited
+  hardware_interface::return_type write(
+    const rclcpp::Time & time,
+    const rclcpp::Duration & period) override;
 
   // Documentation Inherited
   bool initSim(
