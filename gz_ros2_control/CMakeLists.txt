@@ -24,39 +24,30 @@ find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
 
-if("$ENV{GZ_VERSION}" STREQUAL "citadel")
-  find_package(ignition-gazebo3 REQUIRED)
-  set(GZ_SIM_VER ${ignition-gazebo3_VERSION_MAJOR})
-  message(STATUS "Compiling against Gazebo Citadel")
-
-elseif("$ENV{GZ_VERSION}" STREQUAL "edifice")
-  find_package(ignition-gazebo5 REQUIRED)
-  set(GZ_SIM_VER ${ignition-gazebo5_VERSION_MAJOR})
-  message(STATUS "Compiling against Gazebo Edifice")
-
-elseif("$ENV{GZ_VERSION}" STREQUAL "fortress")
+if("$ENV{GZ_VERSION}" STREQUAL "fortress")
   find_package(ignition-gazebo6 REQUIRED)
   set(GZ_SIM_VER ${ignition-gazebo6_VERSION_MAJOR})
   message(STATUS "Compiling against Gazebo Fortress")
 
-elseif("$ENV{GZ_VERSION}" STREQUAL "garden")
+else()
   find_package(gz-sim7 REQUIRED)
   set(GZ_SIM_VER ${gz-sim7_VERSION_MAJOR})
   message(STATUS "Compiling against Gazebo Garden")
-
-else()
-  find_package(ignition-gazebo6 REQUIRED)
-  set(GZ_SIM_VER ${ignition-gazebo6_VERSION_MAJOR})
-  message(STATUS "Compiling against Gazebo Fortress")
 endif()
 
-if("$ENV{GZ_VERSION}" STREQUAL "garden")
-  find_package(gz-plugin2 REQUIRED)
-  set(IGN_PLUGIN_VER ${gz-plugin2_VERSION_MAJOR})
-
-else()
+SET(GZ_PLUGIN)
+SET(GZ_SIM)
+if("$ENV{GZ_VERSION}" STREQUAL "fortress")
   find_package(ignition-plugin1 REQUIRED)
-  set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
+  set(GZ_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
+  set(GZ_PLUGIN ignition-plugin${GZ_PLUGIN_VER}::register)
+  set(GZ_SIM ignition-gazebo${GZ_SIM_VER}::core)
+else()
+  find_package(gz-plugin2 REQUIRED)
+  set(GZ_PLUGIN_VER ${gz-plugin2_VERSION_MAJOR})
+  set(GZ_PLUGIN gz-plugin${GZ_PLUGIN_VER}::register)
+  set(GZ_SIM gz-sim${GZ_SIM_VER}::core)
+  add_definitions(-DGZ_HEADERS)
 endif()
 
 include_directories(include)
@@ -66,8 +57,8 @@ add_library(${PROJECT_NAME}-system SHARED
 )
 
 target_link_libraries(${PROJECT_NAME}-system
-  gz-sim${GZ_SIM_VER}::core
-  gz-plugin${IGN_PLUGIN_VER}::register
+  ${GZ_SIM}
+  ${GZ_PLUGIN}
 )
 ament_target_dependencies(${PROJECT_NAME}-system
   ament_index_cpp
@@ -90,7 +81,7 @@ ament_target_dependencies(gz_hardware_plugins
   rclcpp
 )
 target_link_libraries(gz_hardware_plugins
-  gz-sim${GZ_SIM_VER}::core
+  ${GZ_SIM}
 )
 
 ## Install

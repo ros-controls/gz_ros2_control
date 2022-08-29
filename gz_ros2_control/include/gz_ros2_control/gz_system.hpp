@@ -74,9 +74,9 @@ public:
   // Documentation Inherited
   bool initSim(
     rclcpp::Node::SharedPtr & model_nh,
-    std::map<std::string, gz::sim::Entity> & joints,
+    std::map<std::string, GZ_SIM_NAMESPACE Entity> & joints,
     const hardware_interface::HardwareInfo & hardware_info,
-    gz::sim::EntityComponentManager & _ecm,
+    GZ_SIM_NAMESPACE EntityComponentManager & _ecm,
     int & update_rate) override;
 
 private:

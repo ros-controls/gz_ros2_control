@@ -11,14 +11,13 @@
 
   <depend>ament_index_cpp</depend>
   <!-- default version to use in official ROS2 packages is Ignition Fortress for ROS2 Rolling -->
-  <depend condition="$IGNITION_VERSION == ''">ignition-gazebo6</depend>
-  <depend condition="$IGNITION_VERSION == citadel">ignition-gazebo3</depend>
-  <depend condition="$IGNITION_VERSION == edifice">ignition-gazebo5</depend>
+  <depend condition="$IGNITION_VERSION == ''">gz-sim7</depend>
   <depend condition="$IGNITION_VERSION == fortress">ignition-gazebo6</depend>
-  <depend condition="$IGNITION_VERSION == garden">ignition-gazebo7</depend>
+  <depend condition="$IGNITION_VERSION == garden">gz-sim7</depend>
 
-  <depend condition="$IGNITION_VERSION == ''">ignition-plugin1</depend>
-  <depend condition="$IGNITION_VERSION == garden">ignition-plugin2</depend>
+  <depend condition="$IGNITION_VERSION == ''">gz-plugin2</depend>
+  <depend condition="$IGNITION_VERSION == fortress">gz-plugin1</depend>
+  <depend condition="$IGNITION_VERSION == garden">gz-plugin2</depend>
   <depend>ignition-plugin</depend>
   <depend>pluginlib</depend>
   <depend>rclcpp</depend>
