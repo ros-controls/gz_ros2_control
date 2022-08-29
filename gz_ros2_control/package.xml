@@ -16,7 +16,7 @@
   <depend condition="$IGNITION_VERSION == garden">gz-sim7</depend>
 
   <depend condition="$IGNITION_VERSION == ''">gz-plugin2</depend>
-  <depend condition="$IGNITION_VERSION == fortress">gz-plugin1</depend>
+  <depend condition="$IGNITION_VERSION == fortress">ignition-plugin1</depend>
   <depend condition="$IGNITION_VERSION == garden">gz-plugin2</depend>
   <depend>ignition-plugin</depend>
   <depend>pluginlib</depend>
