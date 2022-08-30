@@ -10,11 +10,22 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: [fortress]
+        include:
+          - docker-image: "ubuntu:22.04"
+            gz-version: "fortress"
+            ros-distro: "humble"
+          - docker-image: "ubuntu:22.04"
+            gz-version: "fortress"
+            ros-distro: "rolling"
+          - docker-image: "ubuntu:22.04"
+            gz-version: "garden"
+            ros-distro: "rolling"
     env:
-      IGNITION_VERSION: ${{ matrix.version }}
+      DOCKER_IMAGE: ${{ matrix.docker-image }}
+      GZ_VERSION: ${{ matrix.gz-version  }}
+      ROS_DISTRO: ${{ matrix.ros-distro }}
     container:
-      image: ubuntu:22.04
+      image: ${{ matrix.docker-image }}
     steps:
     - uses: actions/checkout@v2
     - name: Setup colcon workspace
@@ -38,17 +49,17 @@ jobs:
         cd /home/ros2_ws/src/
         rosdep init
         rosdep update
-        rosdep install --from-paths ./ -i -y --rosdistro rolling --ignore-src
+        rosdep install --from-paths ./ -i -y --rosdistro ${ROS_DISTRO} --ignore-src
     - name: Build project
       id: build
       run: |
         cd /home/ros2_ws/
-        . /opt/ros/rolling/local_setup.sh
+        . /opt/ros/${ROS_DISTRO}/local_setup.sh
         colcon build --packages-up-to gz_ros2_control_demos
     - name: Run tests
       id: test
       run: |
         cd /home/ros2_ws/
-        . /opt/ros/rolling/local_setup.sh
+        . /opt/ros/${ROS_DISTRO}/local_setup.sh
         colcon test --event-handlers console_direct+ --packages-select gz_ros2_control gz_ros2_control_demos
         colcon test-result
