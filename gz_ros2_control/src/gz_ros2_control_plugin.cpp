@@ -66,7 +66,7 @@ public:
   /// joints are returned
   /// \param[in] _entity Entity of the model that the plugin is being
   /// configured for
-  /// \param[in] _ecm Ignition Entity Component Manager
+  /// \param[in] _ecm Gazebo Entity Component Manager
   /// \return List of entities containing all enabled joints
   std::map<std::string, GZ_SIM_NAMESPACE Entity> GetEnabledJoints(
     const GZ_SIM_NAMESPACE Entity & _entity,
@@ -267,7 +267,7 @@ void GazeboSimROS2ControlPlugin::Configure(
     RCLCPP_ERROR(
       this->dataPtr->node_->get_logger(),
       "[Ignition ROS 2 Control] Failed to initialize because [%s] (Entity=%lu)] is not a model."
-      "Please make sure that Ignition ROS 2 Control is attached to a valid model.",
+      "Please make sure that Gazebo ROS 2 Control is attached to a valid model.",
       model.Name(_ecm).c_str(), _entity);
     return;
   }

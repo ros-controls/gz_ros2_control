@@ -150,7 +150,7 @@
     <axis xyz="0 0 1" />
   </joint>
 
-  <ros2_control name="IgnitionSystem" type="system">
+  <ros2_control name="GazeboSystem" type="system">
     <hardware>
       <plugin>gz_ros2_control/GazeboSimSystem</plugin>
     </hardware>

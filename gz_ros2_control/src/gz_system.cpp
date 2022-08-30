@@ -155,7 +155,7 @@ public:
   /// \brief controller update rate
   int * update_rate;
 
-  /// \brief Ignition communication node.
+  /// \brief Gazebo communication node.
   GZ_TRANSPORT_NAMESPACE Node node;
 };
 
@@ -436,7 +436,7 @@ hardware_interface::return_type GazeboSimSystem::read(
       this->dataPtr->ecm->Component<GZ_SIM_NAMESPACE components::JointVelocity>(
       this->dataPtr->joints_[i].sim_joint);
 
-    // TODO(ahcorde): Revisit this part ignitionrobotics/ign-physics#124
+    // TODO(ahcorde): Revisit this part gazebosim/ign-physics#124
     // Get the joint force
     // const auto * jointForce =
     //   _ecm.Component<GZ_SIM_NAMESPACE components::JointForce>(
