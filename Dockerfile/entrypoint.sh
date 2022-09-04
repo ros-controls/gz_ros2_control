@@ -1,5 +1,5 @@
 #!/bin/sh
 
-. /opt/ros/"${ROS_DISTRO}"/setup.sh
+. /opt/ros/rolling/setup.sh
 . /home/ros2_ws/install/setup.sh
 exec "$@"
