@@ -355,7 +355,6 @@ bool GazeboSimSystem::initSim(
           this->dataPtr->joints_[j].joint_velocity_cmd = initial_velocity;
         }
       } else if (joint_info.command_interfaces[i].name == "effort") {
-        this->dataPtr->joints_[j].joint_control_method |= EFFORT;
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
         this->dataPtr->command_interfaces_.emplace_back(
           joint_name + suffix,
