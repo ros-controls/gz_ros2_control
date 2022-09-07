@@ -168,7 +168,7 @@
 
   <gazebo>
     <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-      <parameters>$(find ign_ros2_control_demos)/config/tricycle_drive_controller.yaml</parameters>
+      <parameters>$(find gz_ros2_control_demos)/config/tricycle_drive_controller.yaml</parameters>
     </plugin>
   </gazebo>
 
