@@ -591,24 +591,21 @@ hardware_interface::return_type IgnitionSystem::write(
     }
 
     if (this->dataPtr->joints_[i].joint_control_method & POSITION) {
-      // Get error in position
-      double error;
-      error = (this->dataPtr->joints_[i].joint_position -
-        this->dataPtr->joints_[i].joint_position_cmd) * *this->dataPtr->update_rate;
+      // Shouldn't hardcode this with "/joint_positions/"!
+      auto topic = ignition::transport::TopicUtils::AsValidTopic(
+        "/joint_positions/" + this->dataPtr->joints_[i].name);
 
-      // Calculate target velcity
-      double targetVel = -error;
+      if (topic.empty()) {
+        ignerr << "Failed to create valid topic for joint [" << this->dataPtr->joints_[i].name << "]"
+               << std::endl;
+        // return;
+      } else {
 
-      auto vel =
-        this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
-        this->dataPtr->joints_[i].sim_joint);
+        ignition::msgs::Double msg;
+        msg.set_data(this->dataPtr->joints_[i].joint_position_cmd);
 
-      if (vel == nullptr) {
-        this->dataPtr->ecm->CreateComponent(
-          this->dataPtr->joints_[i].sim_joint,
-          ignition::gazebo::components::JointVelocityCmd({targetVel}));
-      } else if (!vel->Data().empty()) {
-        vel->Data()[0] = targetVel;
+        auto pub = this->dataPtr->node.Advertise<ignition::msgs::Double>(topic);
+        pub.Publish(msg);
       }
     }
 
