@@ -2,6 +2,7 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV IGNITION_VERSION fortress
+ENV ROS_DISTRO rolling
 
 # Make sure everything is up to date before building from source
 RUN apt-get update \
@@ -30,10 +31,10 @@ RUN mkdir -p /home/ros2_ws/src \
     && cd /home/ros2_ws/src \
     && git clone https://github.com/ros-controls/gz_ros2_control/ \
     && rosdep init && rosdep update \
-    && rosdep install --from-paths ./ -i -y --rosdistro rolling
+    && rosdep install --from-paths ./ -i -y --rosdistro ${ROS_DISTRO}
 
 RUN cd /home/ros2_ws/ \
-  && . /opt/ros/rolling/setup.sh \
+  && . /opt/ros/"${ROS_DISTRO}"/setup.sh \
   && colcon build --merge-install
 
 COPY entrypoint.sh /entrypoint.sh
