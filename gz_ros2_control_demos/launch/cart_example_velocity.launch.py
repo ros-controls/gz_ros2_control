@@ -66,7 +66,7 @@ def generate_launch_description():
         output='screen'
     )
 
-    load_joint_trajectory_controller = ExecuteProcess(
+    load_joint_velocity_controller = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'velocity_controller'],
         output='screen'
     )
@@ -93,12 +93,12 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=load_joint_state_broadcaster,
-                on_exit=[load_joint_trajectory_controller],
+                on_exit=[load_joint_velocity_controller],
             )
         ),
         RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action=load_joint_trajectory_controller,
+                target_action=load_joint_velocity_controller,
                 on_exit=[load_imu_sensor_broadcaster],
             )
         ),

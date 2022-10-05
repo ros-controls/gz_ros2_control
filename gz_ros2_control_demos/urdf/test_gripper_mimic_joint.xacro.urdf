@@ -11,6 +11,12 @@
         <color rgba="0.4 0.18 0.57 1.0" />
       </material>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.5 1 1"/>
+      </geometry>
+      <origin xyz="0 0 0.5"/>
+    </collision>
     <inertial>
       <origin xyz="0 0 0.5"/>
       <mass value="50"/>
@@ -59,7 +65,7 @@
     <origin xyz="0.0 -0.48 1" rpy="0.0 0.0 0.0"/>
     <parent link="base"/>
     <child link="finger_right"/>
-    <limit effort="100000.0" lower="-0.05" upper="0.39" velocity="1"/>
+    <limit effort="1000.0" lower="0" upper="0.38" velocity="10"/>
   </joint>
   <joint name="left_finger_joint" type="prismatic">
     <mimic joint="right_finger_joint"/>
@@ -67,7 +73,7 @@
     <origin xyz="0.0 0.48 1" rpy="0.0 0.0 3.1415926535"/>
     <parent link="base"/>
     <child link="finger_left"/>
-    <limit effort="100000.0" lower="-0.05" upper="0.39" velocity="1"/>
+    <limit effort="1000.0" lower="0" upper="0.38" velocity="10"/>
   </joint>
   <ros2_control name="GazeboSystem" type="system">
     <hardware>
