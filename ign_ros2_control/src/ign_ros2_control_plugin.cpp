@@ -87,16 +87,13 @@ public:
   std::shared_ptr<controller_manager::ControllerManager>
   controller_manager_{nullptr};
 
-  /// \brief String with the name of the controller manager node 
-  std::string controller_manager_node_ = "controller_manager";
-
   /// \brief String with the robot description param_name
   // TODO(ahcorde): Add param in plugin tag
   std::string robot_description_ = "robot_description";
 
   /// \brief String with the name of the node that contains the robot_description
   // TODO(ahcorde): Add param in plugin tag
-  std::string robot_description_node_ = "robot_state_publisher";
+  std::string robot_description_node_name_ = "robot_state_publisher";
 
   /// \brief String with the namespace of the robot to cascade to all sub-nodes
   std::string robot_namespace_ = "";
@@ -181,34 +178,35 @@ IgnitionROS2ControlPluginPrivate::GetEnabledJoints(
 std::string IgnitionROS2ControlPluginPrivate::getURDF() const
 {
   std::string urdf_string;
+
   using namespace std::chrono_literals;
   auto parameters_client = std::make_shared<rclcpp::AsyncParametersClient>(
-    node_, robot_description_node_);
+    node_, robot_description_node_name_);
   while (!parameters_client->wait_for_service(0.5s)) {
     if (!rclcpp::ok()) {
       RCLCPP_ERROR(
         node_->get_logger(), "Interrupted while waiting for %s service. Exiting.",
-        robot_description_node_.c_str());
+        robot_description_node_name_.c_str());
       return 0;
     }
     RCLCPP_ERROR(
       node_->get_logger(), "%s service not available, waiting again...",
-      robot_description_node_.c_str());
+      robot_description_node_name_.c_str());
   }
 
   RCLCPP_INFO(
     node_->get_logger(), "connected to service!! %s asking for %s",
-    robot_description_node_.c_str(),
-    robot_description_.c_str());
+    robot_description_node_name_.c_str(),
+    this->robot_description_.c_str());
 
   // search and wait for robot_description on param server
   while (urdf_string.empty()) {
     RCLCPP_DEBUG(
       node_->get_logger(), "param_name %s",
-      robot_description_.c_str());
+      this->robot_description_.c_str());
 
     try {
-      auto f = parameters_client->get_parameters({robot_description_});
+      auto f = parameters_client->get_parameters({this->robot_description_});
       f.wait();
       std::vector<rclcpp::Parameter> values = f.get();
       urdf_string = values[0].as_string();
@@ -222,7 +220,7 @@ std::string IgnitionROS2ControlPluginPrivate::getURDF() const
       RCLCPP_ERROR(
         node_->get_logger(), "ign_ros2_control plugin is waiting for model"
         " URDF in parameter [%s] on the ROS param server.",
-        robot_description_.c_str());
+        this->robot_description_.c_str());
     }
     usleep(100000);
   }
@@ -311,7 +309,7 @@ void IgnitionROS2ControlPlugin::Configure(
       }
       if (ns.length() > 1) {
         this->dataPtr->robot_namespace_ = ns;
-        this->dataPtr->robot_description_node_ = ns + "/robot_state_publisher";
+        this->dataPtr->robot_description_node_name_ = ns + "/robot_state_publisher";
       }
     }
 
@@ -423,7 +421,7 @@ void IgnitionROS2ControlPlugin::Configure(
     new controller_manager::ControllerManager(
       std::move(resource_manager_),
       this->dataPtr->executor_,
-      this->dataPtr->controller_manager_node_,
+      "controller_manager",
       this->dataPtr->robot_namespace_));
   this->dataPtr->executor_->add_node(this->dataPtr->controller_manager_);
 
