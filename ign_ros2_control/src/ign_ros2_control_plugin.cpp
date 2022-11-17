@@ -270,20 +270,17 @@ void IgnitionROS2ControlPlugin::Configure(
     return;
   }
 
-  // There's currently no direct way to set parameters to the plugin's node
-  // So we have to parse the plugin file manually and set it to the node's context.
-  auto rcl_context =
-    this->dataPtr->node_->get_node_base_interface()->get_context()->get_rcl_context();
   std::vector<std::string> arguments = {"--ros-args"};
 
-  const sdf::ElementPtr argument_sdf = _sdf->GetElement("parameters");
-  while (argument_sdf) {
-    std::string argument = argument_sdf->Get<std::string>();
-    RCLCPP_INFO(this->dataPtr->node_->get_logger(), "Loading parameter files %s", argument.c_str());
-    arguments.push_back(RCL_PARAM_FILE_FLAG);
-    arguments.push_back(argument);
-    argument_sdf = argument_sdf->GetNextElement("parameters");
-  }
+  auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
+
+   sdf::ElementPtr argument_sdf = sdfPtr->GetElement("parameters");
+   while (argument_sdf) {
+     std::string argument = argument_sdf->Get<std::string>();
+     arguments.push_back(RCL_PARAM_FILE_FLAG);
+     arguments.push_back(argument);
+     argument_sdf = argument_sdf->GetNextElement("parameters");
+   }
 
   // Get controller manager node name
   std::string controllerManagerNodeName{"controller_manager"};
@@ -293,8 +290,6 @@ void IgnitionROS2ControlPlugin::Configure(
   if (!controllerManagerPrefixNodeName.empty()) {
     controllerManagerNodeName = controllerManagerPrefixNodeName + "_" + controllerManagerNodeName;
   }
-
-  auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
 
   if (sdfPtr->HasElement("ros")) {
     sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
