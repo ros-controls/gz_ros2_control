@@ -276,7 +276,7 @@ void IgnitionROS2ControlPlugin::Configure(
     this->dataPtr->node_->get_node_base_interface()->get_context()->get_rcl_context();
   std::vector<std::string> arguments = {"--ros-args"};
 
-  sdf::ElementPtr argument_sdf = _sdf->GetElement("parameters");
+  const sdf::ElementPtr argument_sdf = _sdf->GetElement("parameters");
   while (argument_sdf) {
     std::string argument = argument_sdf->Get<std::string>();
     RCLCPP_INFO(this->dataPtr->node_->get_logger(), "Loading parameter files %s", argument.c_str());
