@@ -296,11 +296,20 @@ void IgnitionROS2ControlPlugin::Configure(
     argv.push_back(reinterpret_cast<const char *>(arg.data()));
   }
 
+  // Get controller manager node name
+  std::string controllerManagerNodeName{"controller_manager"};
+  std::string controllerManagerPrefixNodeName =
+    _sdf->Get<std::string>("controller_manager_prefix_node_name");
+  if (!controllerManagerPrefixNodeName.empty()) {
+    controllerManagerNodeName = controllerManagerPrefixNodeName + "_" + controllerManagerNodeName;
+  }
+
   auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
+
   if (sdfPtr->HasElement("ros")) {
     sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
 
-    // Set namespace if tag is present 
+    // Set namespace if tag is present
     if (sdfRos->HasElement("namespace")) {
       std::string ns = sdfRos->GetElement("namespace")->Get<std::string>();
       // prevent exception: namespace must be absolute, it must lead with a '/'
@@ -421,7 +430,7 @@ void IgnitionROS2ControlPlugin::Configure(
     new controller_manager::ControllerManager(
       std::move(resource_manager_),
       this->dataPtr->executor_,
-      "controller_manager",
+      controllerManagerNodeName,
       this->dataPtr->robot_namespace_));
   this->dataPtr->executor_->add_node(this->dataPtr->controller_manager_);
 
