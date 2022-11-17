@@ -274,13 +274,13 @@ void IgnitionROS2ControlPlugin::Configure(
 
   auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
 
-   sdf::ElementPtr argument_sdf = sdfPtr->GetElement("parameters");
-   while (argument_sdf) {
-     std::string argument = argument_sdf->Get<std::string>();
-     arguments.push_back(RCL_PARAM_FILE_FLAG);
-     arguments.push_back(argument);
-     argument_sdf = argument_sdf->GetNextElement("parameters");
-   }
+  sdf::ElementPtr argument_sdf = sdfPtr->GetElement("parameters");
+  while (argument_sdf) {
+    std::string argument = argument_sdf->Get<std::string>();
+    arguments.push_back(RCL_PARAM_FILE_FLAG);
+    arguments.push_back(argument);
+    argument_sdf = argument_sdf->GetNextElement("parameters");
+  }
 
   // Get controller manager node name
   std::string controllerManagerNodeName{"controller_manager"};
