@@ -17,7 +17,14 @@ jobs:
       with:
         python-version: 3.9.7
     - name: Install system hooks
-      run: sudo apt install -qq cppcheck ament-cmake-uncrustify
+      run: |
+        export DEBIAN_FRONTEND=noninteractive
+        apt update -qq
+        apt install -qq -y lsb-release wget curl gnupg2
+        sh -c 'echo "deb http://packages.ros.org/ros2/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list'
+        curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
+        apt-get update && apt-get upgrade -q -y
+        sudo apt install -qq cppcheck ament-cmake-uncrustify
     - uses: pre-commit/action@v2.0.3
       with:
         extra_args: --all-files --hook-stage manual
