@@ -341,7 +341,9 @@ void IgnitionROS2ControlPlugin::Configure(
   }
 
   // Instanciate and start node with namespace
-  this->dataPtr->node_ = rclcpp::Node::make_shared("ignition_ros_control", this->dataPtr->robot_namespace_);
+  this->dataPtr->node_ = rclcpp::Node::make_shared(
+    "ignition_ros_control",
+    this->dataPtr->robot_namespace_);
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   this->dataPtr->executor_->add_node(this->dataPtr->node_);
   this->dataPtr->stop_ = false;
