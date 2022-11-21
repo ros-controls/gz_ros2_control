@@ -1,4 +1,4 @@
-name: Ignition ros2 control CI
+name: Gazebo ros2 control CI
 
 on:
   pull_request:

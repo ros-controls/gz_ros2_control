@@ -1,28 +1,28 @@
 # gz_ros2_control
 
-This is a ROS 2 package for integrating the `ros2_control` controller architecture with the [Ignition Gazebo](http://ignitionrobotics.org/) simulator.
+This is a ROS 2 package for integrating the `ros2_control` controller architecture with the [Gazebo](http://gazebosim.org/) simulator.
 More information about `ros2_control` can be found here: https://control.ros.org/
 
-This package provides an Ignition Gazebo system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.
+This package provides an Gazebo system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.
 
 Tested on:
 
  - Debs:
-   - [Ignition Edifice](https://ignitionrobotics.org/docs/edifice) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
+   - [Gazebo Edifice](https://gazebosim.org/docs/edifice) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
  - From source:
-   - [Ignition Citadel](https://ignitionrobotics.org/docs/citadel) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
-   - [Ignition Fortress](https://ignitionrobotics.org/docs/fortress) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
+   - [Gazebo Citadel](https://gazebosim.org/docs/citadel) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
+   - [Gazebo Fortress](https://gazebosim.org/docs/fortress) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
 
 If you want to run this with `ROS 2 Foxy` please check the branch `foxy`.
 
 # Compile from source
 
-If you want compile this from source, you should choose the Ignition version. The default one is `citadel`:
+If you want compile this from source, you should choose the Gazebo version. The default one is `citadel`:
 
 ```bash
-export IGNITION_VERSION=citadel
-export IGNITION_VERSION=edifice
-export IGNITION_VERSION=fortress
+export GZ_VERSION=citadel
+export GZ_VERSION=edifice
+export GZ_VERSION=fortress
 ```
 
 Then create a workspace, clone the repo and compile it:
@@ -61,7 +61,7 @@ docker build -t gz_ros2_control .
 Docker allows us to run the demo without the GUI if configured properly. The following command runs the demo without the GUI:
 
 ```bash
-docker run -it --rm --name ignition_ros2_control_demo --net host gz_ros2_control ros2 launch gz_ros2_control_demos cart_example_position.launch.py gui:=false
+docker run -it --rm --name gz_ros2_control_demo --net host gz_ros2_control ros2 launch gz_ros2_control_demos cart_example_position.launch.py gui:=false
 ```
 
 Then on your local machine, you can run the Gazebo client:
@@ -76,16 +76,16 @@ To run the demo with the GUI, we are going to use [rocker](https://github.com/os
 images with customized local support injected for things like nvidia support. Rocker also supports user id specific files for cleaner
 mounting file permissions. You can install this tool with the following [instructions](https://github.com/osrf/rocker/#installation) (make sure you meet all of the [prerequisites](https://github.com/osrf/rocker/#prerequisites)).
 
-The following command will launch Ignition:
+The following command will launch Gazebo:
 
 ```bash
-rocker --x11 --nvidia --name ignition_ros2_control_demo gz_ros2_control:latest
+rocker --x11 --nvidia --name gz_ros2_control_demo gz_ros2_control:latest
 ```
 
 The following commands allow the cart to be moved along the rail:
 
 ```bash
-docker exec -it ignition_ros2_control_demo bash
+docker exec -it gz_ros2_control_demo bash
 source /home/ros2_ws/install/setup.bash
 ros2 run gz_ros2_control_demos example_position
 ```

@@ -162,7 +162,7 @@ public:
   /// \brief controller update rate
   int * update_rate;
 
-  /// \brief Ignition communication node.
+  /// \brief Gazebo communication node.
   GZ_TRANSPORT_NAMESPACE Node node;
 
   /// \brief mapping of mimicked joints to index of joint they mimic

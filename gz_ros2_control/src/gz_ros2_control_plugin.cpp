@@ -266,7 +266,7 @@ void GazeboSimROS2ControlPlugin::Configure(
   if (!model.Valid(_ecm)) {
     RCLCPP_ERROR(
       this->dataPtr->node_->get_logger(),
-      "[Ignition ROS 2 Control] Failed to initialize because [%s] (Entity=%lu)] is not a model."
+      "[Gazebo ROS 2 Control] Failed to initialize because [%s] (Entity=%lu)] is not a model."
       "Please make sure that Gazebo ROS 2 Control is attached to a valid model.",
       model.Name(_ecm).c_str(), _entity);
     return;
@@ -278,7 +278,7 @@ void GazeboSimROS2ControlPlugin::Configure(
   if (paramFileName.empty()) {
     RCLCPP_ERROR(
       this->dataPtr->node_->get_logger(),
-      "Ignition ros2 control found an empty parameters file. Failed to initialize.");
+      "Gazebo ros2 control found an empty parameters file. Failed to initialize.");
     return;
   }
 
@@ -359,7 +359,7 @@ void GazeboSimROS2ControlPlugin::Configure(
   if (enabledJoints.size() == 0) {
     RCLCPP_DEBUG_STREAM(
       this->dataPtr->node_->get_logger(),
-      "[Ignition ROS 2 Control] There are no available Joints.");
+      "[Gazebo ROS 2 Control] There are no available Joints.");
     return;
   }
 

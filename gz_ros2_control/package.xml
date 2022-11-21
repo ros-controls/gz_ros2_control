@@ -10,7 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>ament_index_cpp</depend>
-  <!-- default version to use in official ROS2 packages is Ignition Fortress for ROS2 Rolling -->
+  <!-- default version to use in official ROS2 packages is GAzebo Fortress for ROS2 Rolling -->
   <depend condition="$GZ_VERSION == ''">gz-sim7</depend>
   <depend condition="$GZ_VERSION == fortress">ignition-gazebo6</depend>
   <depend condition="$GZ_VERSION == garden">gz-sim7</depend>
@@ -18,7 +18,6 @@
   <depend condition="$GZ_VERSION == ''">gz-plugin2</depend>
   <depend condition="$GZ_VERSION == fortress">ignition-plugin</depend>
   <depend condition="$GZ_VERSION == garden">gz-plugin2</depend>
-  <depend>ignition-plugin</depend>
   <depend>pluginlib</depend>
   <depend>rclcpp</depend>
   <depend>yaml_cpp_vendor</depend>
