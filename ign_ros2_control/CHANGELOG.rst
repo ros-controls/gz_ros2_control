@@ -2,6 +2,14 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Force setting use_sim_time parameter when using plugin. (`#100 <https://github.com/ros-controls/gz_ros2_control//issues/100>`_) (`#102 <https://github.com/ros-controls/gz_ros2_control//issues/102>`_)
+  Co-authored-by: Denis Štogl <denis@stogl.de>
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Enable loading params from multiple yaml files (`#94 <https://github.com/ros-controls/gz_ros2_control//issues/94>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.1.3 (2022-05-27)
 ------------------
 * Remove URDF dependency (`#56 <https://github.com/ignitionrobotics/ign_ros2_control/issues/56>`_)

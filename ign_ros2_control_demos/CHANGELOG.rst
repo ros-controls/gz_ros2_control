@@ -2,6 +2,11 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fixed URIS (`#93 <https://github.com/ros-controls/gz_ros2_control//issues/93>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.1.4 (2022-06-06)
 ------------------
 * ign_ros2_control_demos: Install urdf dir (`#61 <https://github.com/ignitionrobotics/ign_ros2_control/issues/61>`_)
