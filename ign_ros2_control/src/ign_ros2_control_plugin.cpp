@@ -428,6 +428,9 @@ void IgnitionROS2ControlPlugin::Configure(
     std::chrono::duration_cast<std::chrono::nanoseconds>(
       std::chrono::duration<double>(1.0 / static_cast<double>(this->dataPtr->update_rate))));
 
+  // Force setting of use_sime_time parameter
+  this->dataPtr->controller_manager_->set_parameter(rclcpp::Parameter("use_sim_time", rclcpp::ParameterValue(true)));
+
   this->dataPtr->entity_ = _entity;
 }
 
