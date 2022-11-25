@@ -22,6 +22,12 @@ Changelog for package ign_ros2_control
 * Add support for initial_values for hardware interfaces when starting simulation. (`#27 <https://github.com/ros-controls/gz_ros2_control/issues/27>`_)
 * Contributors: Alejandro Hernández Cordero, Denis Štogl, Guillaume Beuzeboc, Tianyu Li
 
+0.4.1 (2022-06-06)
+------------------
+* Remove URDF dependency (`#56 <https://github.com/ignitionrobotics/ign_ros2_control/issues/56>`_)
+* typo in citadel name (`#54 <https://github.com/ignitionrobotics/ign_ros2_control/issues/54>`_)
+* Contributors: Alejandro Hernández Cordero, Guillaume Beuzeboc, ahcorde
+
 0.4.0 (2022-03-18)
 ------------------
 * Fix default ign gazebo version Galactic (`#44 <https://github.com/ignitionrobotics/ign_ros2_control/issues/44>`_)
