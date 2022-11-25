@@ -270,6 +270,18 @@ void IgnitionROS2ControlPlugin::Configure(
     return;
   }
 
+  std::vector<std::string> arguments = {"--ros-args"};
+
+  auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
+
+  sdf::ElementPtr argument_sdf = sdfPtr->GetElement("parameters");
+  while (argument_sdf) {
+    std::string argument = argument_sdf->Get<std::string>();
+    arguments.push_back(RCL_PARAM_FILE_FLAG);
+    arguments.push_back(argument);
+    argument_sdf = argument_sdf->GetNextElement("parameters");
+  }
+
   // Get controller manager node name
   std::string controllerManagerNodeName{"controller_manager"};
 
@@ -278,9 +290,6 @@ void IgnitionROS2ControlPlugin::Configure(
   if (!controllerManagerPrefixNodeName.empty()) {
     controllerManagerNodeName = controllerManagerPrefixNodeName + "_" + controllerManagerNodeName;
   }
-
-  std::vector<std::string> arguments = {"--ros-args", "--params-file", paramFileName};
-  auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
 
   if (sdfPtr->HasElement("ros")) {
     sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
@@ -421,6 +430,10 @@ void IgnitionROS2ControlPlugin::Configure(
   this->dataPtr->control_period_ = rclcpp::Duration(
     std::chrono::duration_cast<std::chrono::nanoseconds>(
       std::chrono::duration<double>(1.0 / static_cast<double>(this->dataPtr->update_rate))));
+
+  // Force setting of use_sime_time parameter
+  this->dataPtr->controller_manager_->set_parameter(
+    rclcpp::Parameter("use_sim_time", rclcpp::ParameterValue(true)));
 
   this->dataPtr->entity_ = _entity;
 }
