@@ -1,5 +1,9 @@
 # ign_ros2_control
 
+ROS2 Distro | Build Status | Package build |
+:---------: | :----: | :----------: |
+[![Licence](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) |  [![Build Status](http://build.ros2.org/buildStatus/icon?job=Fdev__ign_ros2_control__ubuntu_focal_amd64)](http://build.ros2.org/job/Fdev__ign_ros2_control__ubuntu_focal_amd64) |  [![Build Status](http://build.ros2.org/buildStatus/icon?job=Fbin_uF64__ign_ros2_control__ubuntu_focal_amd64__binary)](http://build.ros2.org/job/Fbin_uF64__ign_ros2_control__ubuntu_focal_amd64__binary) |
+
 This is a ROS 2 package for integrating the `ros2_control` controller architecture with the [Ignition Gazebo](http://ignitionrobotics.org/) simulator.
 More information about `ros2_control` can be found here: https://control.ros.org/
 
