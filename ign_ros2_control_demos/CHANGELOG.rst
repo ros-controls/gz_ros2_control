@@ -2,8 +2,8 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.5 (2022-11-25)
+------------------
 * Fixed URIS (`#93 <https://github.com/ros-controls/gz_ros2_control//issues/93>`_)
 * Contributors: Alejandro Hernández Cordero
 
