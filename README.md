@@ -1,19 +1,27 @@
 # gz_ros2_control
 
-This is a ROS 2 package for integrating the `ros2_control` controller architecture with the [Gazebo](http://gazebosim.org/) simulator.
+ROS2 Distro | Build Status | Package build |
+:---------: | :----: | :----------: |
+[![Licence](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) |  [![Build Status](http://build.ros2.org/buildStatus/icon?job=Hdev__ign_ros2_control__ubuntu_focal_amd64)](http://build.ros2.org/job/Hdev__ign_ros2_control__ubuntu_focal_amd64) |  [![Build Status](http://build.ros2.org/buildStatus/icon?job=Hbin_uF64__ign_ros2_control__ubuntu_focal_amd64__binary)](http://build.ros2.org/job/Hbin_uF64__ign_ros2_control__ubuntu_focal_amd64__binary) |
+
+This is a ROS 2 package for integrating the `ros2_control` controller architecture with the [Ignition Gazebo](http://ignitionrobotics.org/) simulator.
 More information about `ros2_control` can be found here: https://control.ros.org/
 
 This package provides an Gazebo system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.
 
-Tested on:
+[![Build Status](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci.yaml/badge.svg?branch=galactic)](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci.yaml)
 
- - Debs:
-   - [Gazebo Edifice](https://gazebosim.org/docs/edifice) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
- - From source:
-   - [Gazebo Citadel](https://gazebosim.org/docs/citadel) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
-   - [Gazebo Fortress](https://gazebosim.org/docs/fortress) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
+ROS version | Ignition version | Branch | Binaries hosted at
+-- | -- | -- | --
+Foxy | Citadel | [foxy](https://github.com/ros-controls/gz_ros2_control/tree/foxy) | https://packages.ros.org
+Foxy | Edifice | [foxy](https://github.com/ros-controls/gz_ros2_control/tree/foxy) | only from source
+Galactic | Edifice | [galactic](https://github.com/ros-controls/gz_ros2_control/tree/galactic) | https://packages.ros.org
+Galactic | Fortress | [galactic](https://github.com/ros-controls/gz_ros2_control/tree/galactic) | only from source
+Humble | Fortress | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org
+Rolling | Edifice | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
+Rolling | Fortress | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org
+Rolling | Garden (not released) | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
 
-If you want to run this with `ROS 2 Foxy` please check the branch `foxy`.
 
 # Compile from source
 
