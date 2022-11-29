@@ -275,6 +275,7 @@ void IgnitionROS2ControlPlugin::Configure(
 
   std::vector<std::string> arguments = {"--ros-args", "--params-file", paramFileName};
   auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
+  
   sdf::ElementPtr argument_sdf = sdfPtr->GetElement("parameters");
   while (argument_sdf) {
     std::string argument = argument_sdf->Get<std::string>();
@@ -290,6 +291,7 @@ void IgnitionROS2ControlPlugin::Configure(
     _sdf->Get<std::string>("controller_manager_prefix_node_name");
   if (!controllerManagerPrefixNodeName.empty()) {
     controllerManagerNodeName = controllerManagerPrefixNodeName + "_" + controllerManagerNodeName;
+  }
 
   if (sdfPtr->HasElement("ros")) {
     sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
