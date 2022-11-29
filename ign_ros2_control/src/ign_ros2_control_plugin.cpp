@@ -265,7 +265,6 @@ void IgnitionROS2ControlPlugin::Configure(
 
   // Get params from SDF
   std::string paramFileName = _sdf->Get<std::string>("parameters");
-  std::vector<std::string> arguments = {"--ros-args", "--params-file", paramFileName};
 
   if (paramFileName.empty()) {
     RCLCPP_ERROR(
@@ -274,6 +273,7 @@ void IgnitionROS2ControlPlugin::Configure(
     return;
   }
 
+  std::vector<std::string> arguments = {"--ros-args", "--params-file", paramFileName};
   auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
   sdf::ElementPtr argument_sdf = sdfPtr->GetElement("parameters");
   while (argument_sdf) {
@@ -290,21 +290,6 @@ void IgnitionROS2ControlPlugin::Configure(
     _sdf->Get<std::string>("controller_manager_prefix_node_name");
   if (!controllerManagerPrefixNodeName.empty()) {
     controllerManagerNodeName = controllerManagerPrefixNodeName + "_" + controllerManagerNodeName;
-  
-  std::vector<const char *> argv;
-  for (const auto & arg : arguments) {
-    argv.push_back(reinterpret_cast<const char *>(arg.data()));
-  }
-
-  // Get controller manager node name
-  std::string controllerManagerNodeName{"controller_manager"};
-  std::string controllerManagerPrefixNodeName =
-    _sdf->Get<std::string>("controller_manager_prefix_node_name");
-  if (!controllerManagerPrefixNodeName.empty()) {
-    controllerManagerNodeName = controllerManagerPrefixNodeName + "_" + controllerManagerNodeName;
-  }
-
-  auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
 
   if (sdfPtr->HasElement("ros")) {
     sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
@@ -325,6 +310,7 @@ void IgnitionROS2ControlPlugin::Configure(
     // Get list of remapping rules from SDF
     if (sdfRos->HasElement("remapping")) {
       sdf::ElementPtr argument_sdf = sdfRos->GetElement("remapping");
+
       arguments.push_back(RCL_ROS_ARGS_FLAG);
       while (argument_sdf) {
         std::string argument = argument_sdf->Get<std::string>();
@@ -333,6 +319,11 @@ void IgnitionROS2ControlPlugin::Configure(
         argument_sdf = argument_sdf->GetNextElement("remapping");
       }
     }
+  }
+
+  std::vector<const char *> argv;
+  for (const auto & arg : arguments) {
+    argv.push_back(reinterpret_cast<const char *>(arg.data()));
   }
 
   // Create a default context, if not already
