@@ -93,10 +93,7 @@ public:
 
   /// \brief String with the name of the node that contains the robot_description
   // TODO(ahcorde): Add param in plugin tag
-  std::string robot_description_node_name_ = "robot_state_publisher";
-
-  /// \brief String with the namespace of the robot to cascade to all sub-nodes
-  std::string robot_namespace_ = "";
+  std::string robot_description_node_ = "robot_state_publisher";
 
   /// \brief Last time the update method was called
   rclcpp::Time last_update_sim_time_ros_ =
@@ -181,22 +178,22 @@ std::string IgnitionROS2ControlPluginPrivate::getURDF() const
 
   using namespace std::chrono_literals;
   auto parameters_client = std::make_shared<rclcpp::AsyncParametersClient>(
-    node_, robot_description_node_name_);
+    node_, robot_description_node_);
   while (!parameters_client->wait_for_service(0.5s)) {
     if (!rclcpp::ok()) {
       RCLCPP_ERROR(
         node_->get_logger(), "Interrupted while waiting for %s service. Exiting.",
-        robot_description_node_name_.c_str());
+        robot_description_node_.c_str());
       return 0;
     }
     RCLCPP_ERROR(
       node_->get_logger(), "%s service not available, waiting again...",
-      robot_description_node_name_.c_str());
+      robot_description_node_.c_str());
   }
 
   RCLCPP_INFO(
     node_->get_logger(), "connected to service!! %s asking for %s",
-    robot_description_node_name_.c_str(),
+    robot_description_node_.c_str(),
     this->robot_description_.c_str());
 
   // search and wait for robot_description on param server
@@ -273,7 +270,7 @@ void IgnitionROS2ControlPlugin::Configure(
     return;
   }
 
-  std::vector<std::string> arguments = {"--ros-args", "--params-file", paramFileName};
+  std::vector<std::string> arguments = {"--ros-args"};
 
   auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
 
@@ -294,19 +291,19 @@ void IgnitionROS2ControlPlugin::Configure(
     controllerManagerNodeName = controllerManagerPrefixNodeName + "_" + controllerManagerNodeName;
   }
 
+  std::string ns = "/";
   if (sdfPtr->HasElement("ros")) {
     sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
 
     // Set namespace if tag is present
     if (sdfRos->HasElement("namespace")) {
-      std::string ns = sdfRos->GetElement("namespace")->Get<std::string>();
+      ns = sdfRos->GetElement("namespace")->Get<std::string>();
       // prevent exception: namespace must be absolute, it must lead with a '/'
       if (ns.empty() || ns[0] != '/') {
         ns = '/' + ns;
       }
       if (ns.length() > 1) {
-        this->dataPtr->robot_namespace_ = ns;
-        this->dataPtr->robot_description_node_name_ = ns + "/robot_state_publisher";
+        this->dataPtr->robot_description_node_ = ns + "/" + this->dataPtr->robot_description_node_;
       }
     }
 
@@ -334,10 +331,12 @@ void IgnitionROS2ControlPlugin::Configure(
     rclcpp::init(static_cast<int>(argv.size()), argv.data());
   }
 
-  // Instanciate and start node with namespace
-  this->dataPtr->node_ = rclcpp::Node::make_shared(
-    "ignition_ros_control",
-    this->dataPtr->robot_namespace_);
+  std::string node_name = "ignition_ros_control";
+  if (!controllerManagerPrefixNodeName.empty()) {
+    node_name = controllerManagerPrefixNodeName + "_" + node_name;
+  }
+
+  this->dataPtr->node_ = rclcpp::Node::make_shared(node_name, ns);
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   this->dataPtr->executor_->add_node(this->dataPtr->node_);
   this->dataPtr->stop_ = false;
@@ -427,7 +426,7 @@ void IgnitionROS2ControlPlugin::Configure(
       std::move(resource_manager_),
       this->dataPtr->executor_,
       controllerManagerNodeName,
-      this->dataPtr->robot_namespace_));
+      this->dataPtr->node_->get_namespace()));
   this->dataPtr->executor_->add_node(this->dataPtr->controller_manager_);
 
   if (!this->dataPtr->controller_manager_->has_parameter("update_rate")) {
