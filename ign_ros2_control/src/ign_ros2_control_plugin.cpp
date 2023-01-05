@@ -391,7 +391,7 @@ void IgnitionROS2ControlPlugin::Configure(
   }
 
   for (unsigned int i = 0; i < control_hardware_info.size(); ++i) {
-    std::string robot_hw_sim_type_str_ = control_hardware_info[i].hardware_class_type;
+    std::string robot_hw_sim_type_str_ = control_hardware_info[i].hardware_plugin_name;
     auto ignitionSystem = std::unique_ptr<ign_ros2_control::IgnitionSystemInterface>(
       this->dataPtr->robot_hw_sim_loader_->createUnmanagedInstance(robot_hw_sim_type_str_));
 
