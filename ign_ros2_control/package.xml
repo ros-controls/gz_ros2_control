@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>ign_ros2_control</name>
-  <version>0.5.0</version>
+  <version>0.6.0</version>
   <description>Ignition ros2_control package allows to control simulated robots using ros2_control framework.</description>
   <maintainer email="alejandro@openrobotics.com">Alejandro Hernández</maintainer>
   <author>Alejandro Hernández</author>
