@@ -285,12 +285,6 @@ void IgnitionROS2ControlPlugin::Configure(
   // Get controller manager node name
   std::string controllerManagerNodeName{"controller_manager"};
 
-  std::string controllerManagerPrefixNodeName =
-    _sdf->Get<std::string>("controller_manager_prefix_node_name");
-  if (!controllerManagerPrefixNodeName.empty()) {
-    controllerManagerNodeName = controllerManagerPrefixNodeName + "_" + controllerManagerNodeName;
-  }
-
   std::string ns = "/";
   if (sdfPtr->HasElement("ros")) {
     sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
@@ -332,9 +326,6 @@ void IgnitionROS2ControlPlugin::Configure(
   }
 
   std::string node_name = "ignition_ros_control";
-  if (!controllerManagerPrefixNodeName.empty()) {
-    node_name = controllerManagerPrefixNodeName + "_" + node_name;
-  }
 
   this->dataPtr->node_ = rclcpp::Node::make_shared(node_name, ns);
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
