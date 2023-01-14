@@ -5,6 +5,9 @@ controller_manager:
     gripper_controller:
       type: forward_command_controller/ForwardCommandController
 
+    gripper_action_controller:
+      type: position_controllers/GripperActionController
+
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
@@ -13,3 +16,8 @@ gripper_controller:
     joints:
       - right_finger_joint
     interface_name: position
+
+gripper_action_controller:
+  ros__parameters:
+    default: true
+    joint: right_finger_joint

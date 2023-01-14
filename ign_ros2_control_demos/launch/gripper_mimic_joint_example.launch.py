@@ -75,13 +75,20 @@ def generate_launch_description():
         output='screen'
     )
 
+    # load action controller but don't start it
+    load_gripper_action_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'configured',
+             'gripper_action_controller'],
+        output='screen'
+    )
+
     return LaunchDescription([
         # Launch gazebo environment
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 [os.path.join(get_package_share_directory('ros_ign_gazebo'),
                               'launch', 'ign_gazebo.launch.py')]),
-            launch_arguments=[('ign_args', [' -r -v 4 empty.sdf'])]),
+            launch_arguments=[('ign_args', [' -r -v 3 empty.sdf'])]),
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=ignition_spawn_entity,
@@ -92,6 +99,12 @@ def generate_launch_description():
             event_handler=OnProcessExit(
                 target_action=load_joint_state_broadcaster,
                 on_exit=[load_gripper_controller],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_gripper_controller,
+                on_exit=[load_gripper_action_controller],
             )
         ),
         node_robot_state_publisher,
