@@ -148,6 +148,9 @@ public:
 
   /// \brief mapping of mimicked joints to index of joint they mimic
   std::vector<MimicJoint> mimic_joints_;
+
+  /// \brief Gain which converts position error to a velocity command
+  double position_proportional_gain_;
 };
 
 namespace ign_ros2_control
@@ -172,8 +175,14 @@ bool IgnitionSystem::initSim(
 
   this->dataPtr->joints_.resize(this->dataPtr->n_dof_);
 
+  constexpr double default_gain = 0.1;
+  if (!this->nh_->get_parameter_or("position_proportional_gain", this->dataPtr->position_proportional_gain_, default_gain))
+  {
+    RCLCPP_WARN_STREAM(this->nh_->get_logger(), "The position_proportional_gain parameter was not defined, defaulting to: " << default_gain);
+  }
+
   if (this->dataPtr->n_dof_ == 0) {
-    RCLCPP_WARN_STREAM(this->nh_->get_logger(), "There is not joint available ");
+    RCLCPP_ERROR_STREAM(this->nh_->get_logger(), "There is no joint available");
     return false;
   }
 
@@ -550,17 +559,17 @@ IgnitionSystem::perform_command_mode_switch(
       if (interface_name == (this->dataPtr->joints_[j].name + "/" +
         hardware_interface::HW_IF_POSITION))
       {
-        this->dataPtr->joints_[j].joint_control_method = POSITION;
+        this->dataPtr->joints_[j].joint_control_method |= POSITION;
       }
       else if (interface_name == (this->dataPtr->joints_[j].name + "/" +
         hardware_interface::HW_IF_VELOCITY))
       {
-        this->dataPtr->joints_[j].joint_control_method = VELOCITY;
+        this->dataPtr->joints_[j].joint_control_method |= VELOCITY;
       }
       else if (interface_name == (this->dataPtr->joints_[j].name + "/" +
         hardware_interface::HW_IF_EFFORT))
       {
-        this->dataPtr->joints_[j].joint_control_method = EFFORT;
+        this->dataPtr->joints_[j].joint_control_method |= EFFORT;
       }
     }
   }
@@ -597,8 +606,7 @@ hardware_interface::return_type IgnitionSystem::write(
         this->dataPtr->joints_[i].joint_position_cmd) * *this->dataPtr->update_rate;
 
       // Calculate target velcity
-      constexpr double DEFAULT_PROPORTIONAL_GAIN = 0.1;
-      double target_vel = -DEFAULT_PROPORTIONAL_GAIN * error;
+      double target_vel = -this->dataPtr->position_proportional_gain_ * error;
 
       auto vel =
         this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
