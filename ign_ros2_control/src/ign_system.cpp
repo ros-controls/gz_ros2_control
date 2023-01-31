@@ -152,7 +152,6 @@ public:
 
 namespace ign_ros2_control
 {
-
 bool IgnitionSystem::initSim(
   rclcpp::Node::SharedPtr & model_nh,
   std::map<std::string, ignition::gazebo::Entity> & enableJoints,
@@ -574,6 +573,7 @@ hardware_interface::return_type IgnitionSystem::write(
   const rclcpp::Duration & /*period*/)
 {
   for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
+
     if (this->dataPtr->joints_[i].joint_control_method & VELOCITY) {
       if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
           this->dataPtr->joints_[i].sim_joint))
@@ -590,14 +590,15 @@ hardware_interface::return_type IgnitionSystem::write(
       }
     }
 
-    if (this->dataPtr->joints_[i].joint_control_method & POSITION) {
+    else if (this->dataPtr->joints_[i].joint_control_method & POSITION) {
       // Get error in position
       double error;
       error = (this->dataPtr->joints_[i].joint_position -
         this->dataPtr->joints_[i].joint_position_cmd) * *this->dataPtr->update_rate;
 
       // Calculate target velcity
-      double targetVel = -error;
+      constexpr double DEFAULT_PROPORTIONAL_GAIN = 0.1;
+      double target_vel = -DEFAULT_PROPORTIONAL_GAIN * error;
 
       auto vel =
         this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
@@ -606,13 +607,13 @@ hardware_interface::return_type IgnitionSystem::write(
       if (vel == nullptr) {
         this->dataPtr->ecm->CreateComponent(
           this->dataPtr->joints_[i].sim_joint,
-          ignition::gazebo::components::JointVelocityCmd({targetVel}));
+          ignition::gazebo::components::JointVelocityCmd({target_vel}));
       } else if (!vel->Data().empty()) {
-        vel->Data()[0] = targetVel;
+        vel->Data()[0] = target_vel;
       }
     }
 
-    if (this->dataPtr->joints_[i].joint_control_method & EFFORT) {
+    else if (this->dataPtr->joints_[i].joint_control_method & EFFORT) {
       if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointForceCmd>(
           this->dataPtr->joints_[i].sim_joint))
       {
@@ -625,6 +626,25 @@ hardware_interface::return_type IgnitionSystem::write(
           this->dataPtr->joints_[i].sim_joint);
         *jointEffortCmd = ignition::gazebo::components::JointForceCmd(
           {this->dataPtr->joints_[i].joint_effort_cmd});
+      }
+    }
+
+    // Fallback case is a velocity command of zero
+    else {
+      double target_vel = 0.0;
+      auto vel =
+        this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
+        this->dataPtr->joints_[i].sim_joint);
+
+      if (vel == nullptr) {
+        this->dataPtr->ecm->CreateComponent(
+          this->dataPtr->joints_[i].sim_joint,
+          ignition::gazebo::components::JointVelocityCmd({target_vel}));
+      } else if (!vel->Data().empty()) {
+        vel->Data()[0] = target_vel;
+      }
+      else if (!vel->Data().empty()) {
+        vel->Data()[0] = target_vel;
       }
     }
   }
