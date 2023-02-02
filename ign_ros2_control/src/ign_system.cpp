@@ -544,12 +544,12 @@ IgnitionSystem::perform_command_mode_switch(
       {
         this->dataPtr->joints_[j].joint_control_method &=
           static_cast<ControlMethod_>(VELOCITY & EFFORT);
-      } else if (interface_name == (this->dataPtr->joints_[j].name + "/" +
+      } else if (interface_name == (this->dataPtr->joints_[j].name + "/" + // NOLINT
         hardware_interface::HW_IF_VELOCITY))
       {
         this->dataPtr->joints_[j].joint_control_method &=
           static_cast<ControlMethod_>(POSITION & EFFORT);
-      } else if (interface_name == (this->dataPtr->joints_[j].name + "/" +
+      } else if (interface_name == (this->dataPtr->joints_[j].name + "/" + // NOLINT
         hardware_interface::HW_IF_EFFORT))
       {
         this->dataPtr->joints_[j].joint_control_method &=
@@ -563,11 +563,11 @@ IgnitionSystem::perform_command_mode_switch(
         hardware_interface::HW_IF_POSITION))
       {
         this->dataPtr->joints_[j].joint_control_method |= POSITION;
-      } else if (interface_name == (this->dataPtr->joints_[j].name + "/" +
+      } else if (interface_name == (this->dataPtr->joints_[j].name + "/" + // NOLINT
         hardware_interface::HW_IF_VELOCITY))
       {
         this->dataPtr->joints_[j].joint_control_method |= VELOCITY;
-      } else if (interface_name == (this->dataPtr->joints_[j].name + "/" +
+      } else if (interface_name == (this->dataPtr->joints_[j].name + "/" + // NOLINT
         hardware_interface::HW_IF_EFFORT))
       {
         this->dataPtr->joints_[j].joint_control_method |= EFFORT;
