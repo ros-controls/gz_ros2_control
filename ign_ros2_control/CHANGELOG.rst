@@ -2,6 +2,17 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#57 <https://github.com/ros-controls/gz_ros2_control/issues/57>`_ from gazebosim/ahcorde/galactic_to_main_25_5_2022
+  Galactic to main
+* Remove URDF dependency (`#56 <https://github.com/ros-controls/gz_ros2_control/issues/56>`_)
+* ros2_control is now having usings under its namespace. (`#43 <https://github.com/ros-controls/gz_ros2_control/issues/43>`_)
+* Fix ignition version in package.xml - Rolling (`#41 <https://github.com/ros-controls/gz_ros2_control/issues/41>`_)
+* Fixed position control (`#29 <https://github.com/ros-controls/gz_ros2_control/issues/29>`_)
+* Add support for initial_values for hardware interfaces when starting simulation. (`#27 <https://github.com/ros-controls/gz_ros2_control/issues/27>`_)
+* Contributors: Alejandro Hernández Cordero, Denis Štogl, Guillaume Beuzeboc
+
 0.4.0 (2022-03-18)
 ------------------
 * Fix default ign gazebo version Galactic (`#44 <https://github.com/ignitionrobotics/ign_ros2_control/issues/44>`_)

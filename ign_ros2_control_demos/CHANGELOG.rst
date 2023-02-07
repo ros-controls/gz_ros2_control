@@ -2,6 +2,18 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Adjust URLs (`#65 <https://github.com/ros-controls/gz_ros2_control/issues/65>`_)
+* ign_ros2_control_demos: Install urdf dir (`#61 <https://github.com/ros-controls/gz_ros2_control/issues/61>`_)
+* Merge pull request `#58 <https://github.com/ros-controls/gz_ros2_control/issues/58>`_ from gazebosim/ahcorde/foxy_to_galactic_25_5_2022
+  Foxy to Galactic
+* Merge pull request `#57 <https://github.com/ros-controls/gz_ros2_control/issues/57>`_ from gazebosim/ahcorde/galactic_to_main_25_5_2022
+  Galactic to main
+* Remove URDF dependency (`#56 <https://github.com/ros-controls/gz_ros2_control/issues/56>`_)
+* Add support for initial_values for hardware interfaces when starting simulation. (`#27 <https://github.com/ros-controls/gz_ros2_control/issues/27>`_)
+* Contributors: Alejandro Hernández Cordero, Andrej Orsula, Bence Magyar, Denis Štogl
+
 0.4.0 (2022-03-18)
 ------------------
 
