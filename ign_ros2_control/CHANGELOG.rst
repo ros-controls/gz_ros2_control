@@ -2,8 +2,8 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.1 (2023-02-07)
+------------------
 * Various bug fixes (`#114 <https://github.com/ros-controls/gz_ros2_control/issues/114>`_)
 * Contributors: AndyZe
 
