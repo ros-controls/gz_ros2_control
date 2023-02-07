@@ -2,6 +2,11 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Various bug fixes (`#114 <https://github.com/ros-controls/gz_ros2_control/issues/114>`_)
+* Contributors: AndyZe
+
 0.6.0 (2023-01-06)
 ------------------
 * Fix API braking of hardware plugin name. (`#108 <https://github.com/ros-controls/gz_ros2_control/issues/108>`_)
