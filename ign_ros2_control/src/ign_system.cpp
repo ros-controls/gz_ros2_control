@@ -589,7 +589,7 @@ hardware_interface::return_type IgnitionSystem::write(
       {
         this->dataPtr->ecm->CreateComponent(
           this->dataPtr->joints_[i].sim_joint,
-          ignition::gazebo::components::JointVelocityCmd({0}));
+          ignition::gazebo::components::JointVelocityCmd({this->dataPtr->joints_[i].joint_velocity_cmd}));
       } else {
         const auto jointVelCmd =
           this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
@@ -606,16 +606,18 @@ hardware_interface::return_type IgnitionSystem::write(
       // Calculate target velcity
       double target_vel = -this->dataPtr->position_proportional_gain_ * error;
 
-      auto vel =
-        this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
-        this->dataPtr->joints_[i].sim_joint);
-
-      if (vel == nullptr) {
+      if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
+          this->dataPtr->joints_[i].sim_joint))
+      {
         this->dataPtr->ecm->CreateComponent(
           this->dataPtr->joints_[i].sim_joint,
           ignition::gazebo::components::JointVelocityCmd({target_vel}));
-      } else if (!vel->Data().empty()) {
-        vel->Data()[0] = target_vel;
+      } else {
+        const auto jointVelCmd =
+          this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
+          this->dataPtr->joints_[i].sim_joint);
+        *jointVelCmd = ignition::gazebo::components::JointVelocityCmd(
+          {target_vel});
       }
     } else if (this->dataPtr->joints_[i].joint_control_method & EFFORT) {
       if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointForceCmd>(
@@ -623,7 +625,7 @@ hardware_interface::return_type IgnitionSystem::write(
       {
         this->dataPtr->ecm->CreateComponent(
           this->dataPtr->joints_[i].sim_joint,
-          ignition::gazebo::components::JointForceCmd({0}));
+          ignition::gazebo::components::JointForceCmd({this->dataPtr->joints_[i].joint_effort_cmd}));
       } else {
         const auto jointEffortCmd =
           this->dataPtr->ecm->Component<ignition::gazebo::components::JointForceCmd>(
