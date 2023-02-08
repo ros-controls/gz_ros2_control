@@ -644,10 +644,12 @@ hardware_interface::return_type IgnitionSystem::write(
         this->dataPtr->ecm->CreateComponent(
           this->dataPtr->joints_[i].sim_joint,
           ignition::gazebo::components::JointVelocityCmd({target_vel}));
-      } else if (!vel->Data().empty()) {
-        vel->Data()[0] = target_vel;
-      } else if (!vel->Data().empty()) {
-        vel->Data()[0] = target_vel;
+      } else {
+        const auto jointVelCmd =
+          this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
+          this->dataPtr->joints_[i].sim_joint);
+        *jointVelCmd = ignition::gazebo::components::JointVelocityCmd(
+          {target_vel});
       }
     }
   }
