@@ -15,13 +15,14 @@
   <depend condition="$IGNITION_VERSION == citadel">ignition-gazebo3</depend>
   <depend condition="$IGNITION_VERSION == edifice">ignition-gazebo5</depend>
   <depend condition="$IGNITION_VERSION == fortress">ignition-gazebo6</depend>
+  <depend>control_toolbox</depend>
+  <depend>controller_manager</depend>
+  <depend>hardware_interface</depend>
   <depend>ignition-plugin</depend>
   <depend>pluginlib</depend>
+  <depend>rclcpp_lifecycle</depend>
   <depend>rclcpp</depend>
   <depend>yaml_cpp_vendor</depend>
-  <depend>rclcpp_lifecycle</depend>
-  <depend>hardware_interface</depend>
-  <depend>controller_manager</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

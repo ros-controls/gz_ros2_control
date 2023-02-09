@@ -19,6 +19,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(controller_manager REQUIRED)
+find_package(control_toolbox REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -53,19 +54,19 @@ include_directories(include)
 add_library(${PROJECT_NAME}-system SHARED
   src/ign_ros2_control_plugin.cpp
 )
-
 target_link_libraries(${PROJECT_NAME}-system
   ignition-gazebo${IGN_GAZEBO_VER}::core
   ignition-plugin${IGN_PLUGIN_VER}::register
 )
 ament_target_dependencies(${PROJECT_NAME}-system
   ament_index_cpp
+  control_toolbox
   controller_manager
   hardware_interface
   pluginlib
   rclcpp
-  yaml_cpp_vendor
   rclcpp_lifecycle
+  yaml_cpp_vendor
 )
 
 #########
@@ -74,15 +75,15 @@ add_library(ign_hardware_plugins SHARED
   src/ign_system.cpp
 )
 ament_target_dependencies(ign_hardware_plugins
-  rclcpp_lifecycle
+  control_toolbox
   hardware_interface
   rclcpp
+  rclcpp_lifecycle
 )
 target_link_libraries(ign_hardware_plugins
   ignition-gazebo${IGN_GAZEBO_VER}::core
 )
 
-## Install
 install(TARGETS
   ign_hardware_plugins
   ARCHIVE DESTINATION lib
@@ -90,7 +91,6 @@ install(TARGETS
   RUNTIME DESTINATION bin
 )
 
-# Testing and linting
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
@@ -106,5 +106,4 @@ install(TARGETS ${PROJECT_NAME}-system
 
 pluginlib_export_plugin_description_file(ign_ros2_control ign_hardware_plugins.xml)
 
-# Setup the project
 ament_package()

@@ -38,7 +38,7 @@
 
 #include <ignition/transport/Node.hh>
 
-
+#include <control_toolbox/pid.hpp>
 #include <hardware_interface/hardware_info.hpp>
 
 struct jointData
@@ -149,8 +149,9 @@ public:
   /// \brief mapping of mimicked joints to index of joint they mimic
   std::vector<MimicJoint> mimic_joints_;
 
-  /// \brief Gain which converts position error to a velocity command
-  double position_proportional_gain_;
+  /// \brief PID controllers for each joint, used in converting position commands to Gazebo joint
+  // velocities
+  std::vector<control_toolbox::Pid> joint_position_pids_;
 };
 
 namespace ign_ros2_control
@@ -174,17 +175,6 @@ bool IgnitionSystem::initSim(
   RCLCPP_DEBUG(this->nh_->get_logger(), "n_dof_ %lu", this->dataPtr->n_dof_);
 
   this->dataPtr->joints_.resize(this->dataPtr->n_dof_);
-
-  constexpr double default_gain = 0.1;
-  if (!this->nh_->get_parameter_or(
-      "position_proportional_gain",
-      this->dataPtr->position_proportional_gain_, default_gain))
-  {
-    RCLCPP_WARN_STREAM(
-      this->nh_->get_logger(),
-      "The position_proportional_gain parameter was not defined, defaulting to: " <<
-        default_gain);
-  }
 
   if (this->dataPtr->n_dof_ == 0) {
     RCLCPP_ERROR_STREAM(this->nh_->get_logger(), "There is no joint available");
@@ -371,6 +361,49 @@ bool IgnitionSystem::initSim(
 
   registerSensors(hardware_info);
 
+  // Initialize PID controllers for converting position commands to Gazebo joint velocities
+  double proportional_gain = 1.0;
+  double integral_gain = 0.1;
+  double derivative_gain = 0.1;
+  this->dataPtr->joint_position_pids_.resize(this->dataPtr->n_dof_);
+  for (unsigned int j = 0; j < this->dataPtr->n_dof_; j++) {
+    const std::string joint_name = this->dataPtr->joints_[j].name;
+    if (!this->nh_->get_parameter_or(
+        joint_name + "/position_proportional_gain", proportional_gain,
+        proportional_gain))
+    {
+      RCLCPP_WARN_STREAM(
+        this->nh_->get_logger(),
+        "The position_proportional_gain parameter was not defined for joint " << joint_name <<
+          ", defaulting to: " << proportional_gain);
+    }
+
+    if (!this->nh_->get_parameter_or(
+        joint_name + "/position_integral_gain", integral_gain,
+        integral_gain))
+    {
+      RCLCPP_WARN_STREAM(
+        this->nh_->get_logger(),
+        "The position_integral_gain parameter was not defined for joint " << joint_name <<
+          ", defaulting to: " << integral_gain);
+    }
+
+    if (!this->nh_->get_parameter_or(
+        joint_name + "/position_derivative_gain", derivative_gain,
+        derivative_gain))
+    {
+      RCLCPP_WARN_STREAM(
+        this->nh_->get_logger(),
+        "The position_derivative_gain parameter was not defined for joint " << joint_name <<
+          ", defaulting to: " << derivative_gain);
+    }
+
+    this->dataPtr->joint_position_pids_.at(j) = control_toolbox::Pid(
+      proportional_gain,
+      integral_gain,
+      derivative_gain);
+  }
+
   return true;
 }
 
@@ -476,13 +509,17 @@ IgnitionSystem::export_command_interfaces()
 
 CallbackReturn IgnitionSystem::on_activate(const rclcpp_lifecycle::State & previous_state)
 {
-  return CallbackReturn::SUCCESS;
+  for (unsigned int j = 0; j < this->dataPtr->n_dof_; j++) {
+    this->dataPtr->joint_position_pids_.at(j).reset();
+  }
   return hardware_interface::SystemInterface::on_activate(previous_state);
 }
 
 CallbackReturn IgnitionSystem::on_deactivate(const rclcpp_lifecycle::State & previous_state)
 {
-  return CallbackReturn::SUCCESS;
+  for (unsigned int j = 0; j < this->dataPtr->n_dof_; j++) {
+    this->dataPtr->joint_position_pids_.at(j).reset();
+  }
   return hardware_interface::SystemInterface::on_deactivate(previous_state);
 }
 
@@ -589,7 +626,9 @@ hardware_interface::return_type IgnitionSystem::write(
       {
         this->dataPtr->ecm->CreateComponent(
           this->dataPtr->joints_[i].sim_joint,
-          ignition::gazebo::components::JointVelocityCmd({this->dataPtr->joints_[i].joint_velocity_cmd}));
+          ignition::gazebo::components::JointVelocityCmd(
+            {this->dataPtr->joints_[i].
+              joint_velocity_cmd}));
       } else {
         const auto jointVelCmd =
           this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
@@ -599,12 +638,17 @@ hardware_interface::return_type IgnitionSystem::write(
       }
     } else if (this->dataPtr->joints_[i].joint_control_method & POSITION) {
       // Get error in position
-      double error;
-      error = (this->dataPtr->joints_[i].joint_position -
-        this->dataPtr->joints_[i].joint_position_cmd) * *this->dataPtr->update_rate;
+      double error = this->dataPtr->joints_[i].joint_position_cmd -
+        this->dataPtr->joints_[i].joint_position;
 
       // Calculate target velcity
-      double target_vel = -this->dataPtr->position_proportional_gain_ * error;
+      double target_vel =
+        this->dataPtr->joint_position_pids_.at(i).computeCommand(
+        error,
+        uint64_t(1e9 / *this->dataPtr->update_rate));
+
+      double e_p, e_i, e_d;
+      this->dataPtr->joint_position_pids_.at(i).getCurrentPIDErrors(e_p, e_i, e_d);
 
       if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
           this->dataPtr->joints_[i].sim_joint))
@@ -625,7 +669,8 @@ hardware_interface::return_type IgnitionSystem::write(
       {
         this->dataPtr->ecm->CreateComponent(
           this->dataPtr->joints_[i].sim_joint,
-          ignition::gazebo::components::JointForceCmd({this->dataPtr->joints_[i].joint_effort_cmd}));
+          ignition::gazebo::components::JointForceCmd(
+            {this->dataPtr->joints_[i].joint_effort_cmd}));
       } else {
         const auto jointEffortCmd =
           this->dataPtr->ecm->Component<ignition::gazebo::components::JointForceCmd>(
