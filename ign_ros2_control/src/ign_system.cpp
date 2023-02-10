@@ -362,9 +362,9 @@ bool IgnitionSystem::initSim(
   registerSensors(hardware_info);
 
   // Initialize PID controllers for converting position commands to Gazebo joint velocities
-  double proportional_gain = 1.0;
-  double integral_gain = 0.1;
-  double derivative_gain = 0.1;
+  double proportional_gain = 10.0;
+  double integral_gain = 1.0;
+  double derivative_gain = 0.0;
   this->dataPtr->joint_position_pids_.resize(this->dataPtr->n_dof_);
   for (unsigned int j = 0; j < this->dataPtr->n_dof_; j++) {
     const std::string joint_name = this->dataPtr->joints_[j].name;
@@ -387,7 +387,9 @@ bool IgnitionSystem::initSim(
         "The position_integral_gain parameter was not defined for joint " << joint_name <<
           ", defaulting to: " << integral_gain);
     }
-
+    // TODO(andyz): a nonzero derivative gain seems to be destabilizing. Investigate in the
+    // control_toolbox.
+/*
     if (!this->nh_->get_parameter_or(
         joint_name + "/position_derivative_gain", derivative_gain,
         derivative_gain))
@@ -397,7 +399,7 @@ bool IgnitionSystem::initSim(
         "The position_derivative_gain parameter was not defined for joint " << joint_name <<
           ", defaulting to: " << derivative_gain);
     }
-
+*/
     this->dataPtr->joint_position_pids_.at(j) = control_toolbox::Pid(
       proportional_gain,
       integral_gain,
