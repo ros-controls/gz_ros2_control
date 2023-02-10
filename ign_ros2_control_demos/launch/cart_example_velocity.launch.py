@@ -52,7 +52,7 @@ def generate_launch_description():
     )
 
     ignition_spawn_entity = Node(
-        package='ros_ign_gazebo',
+        package='ros_gz_sim',
         executable='create',
         output='screen',
         arguments=['-string', doc.toxml(),
@@ -83,7 +83,7 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(
                 [os.path.join(get_package_share_directory('ros_ign_gazebo'),
                               'launch', 'ign_gazebo.launch.py')]),
-            launch_arguments=[('ign_args', [' -r -v 4 empty.sdf'])]),
+            launch_arguments=[('gz_args', [' -r -v 4 empty.sdf'])]),
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=ignition_spawn_entity,
