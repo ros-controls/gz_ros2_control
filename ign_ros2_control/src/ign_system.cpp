@@ -366,11 +366,12 @@ bool IgnitionSystem::initSim(
   double integral_gain = 1.0;
   double derivative_gain = 0.0;
   this->dataPtr->joint_position_pids_.resize(this->dataPtr->n_dof_);
-  for (unsigned int j = 0; j < this->dataPtr->n_dof_; j++) {
+  for (unsigned int j = 0; j < this->dataPtr->n_dof_; ++j) {
     const std::string joint_name = this->dataPtr->joints_[j].name;
-    if (!this->nh_->get_parameter_or(
-        joint_name + "/position_proportional_gain", proportional_gain,
-        proportional_gain))
+
+    this->nh_->declare_parameter<double>(joint_name + "/position_proportional_gain", proportional_gain);
+    if (!this->nh_->get_parameter(
+        joint_name + "/position_proportional_gain", proportional_gain))
     {
       RCLCPP_WARN_STREAM(
         this->nh_->get_logger(),
@@ -378,9 +379,9 @@ bool IgnitionSystem::initSim(
           ", defaulting to: " << proportional_gain);
     }
 
-    if (!this->nh_->get_parameter_or(
-        joint_name + "/position_integral_gain", integral_gain,
-        integral_gain))
+    this->nh_->declare_parameter<double>(joint_name + "/position_integral_gain", integral_gain);
+    if (!this->nh_->get_parameter(
+        joint_name + "/position_integral_gain", integral_gain))
     {
       RCLCPP_WARN_STREAM(
         this->nh_->get_logger(),
@@ -390,9 +391,9 @@ bool IgnitionSystem::initSim(
     // TODO(andyz): a nonzero derivative gain seems to be destabilizing. Investigate in the
     // control_toolbox.
 /*
-    if (!this->nh_->get_parameter_or(
-        joint_name + "/position_derivative_gain", derivative_gain,
-        derivative_gain))
+    this->nh_->declare_parameter<double>(joint_name + "/position_derivative_gain", derivative_gain);
+    if (!this->nh_->get_parameter(
+        joint_name + "/position_derivative_gain", derivative_gain))
     {
       RCLCPP_WARN_STREAM(
         this->nh_->get_logger(),
