@@ -325,7 +325,7 @@ void IgnitionROS2ControlPlugin::Configure(
     rclcpp::init(static_cast<int>(argv.size()), argv.data());
   }
 
-  std::string node_name = "ignition_ros_control";
+  std::string node_name = "gz_ros2_control";
 
   this->dataPtr->node_ = rclcpp::Node::make_shared(node_name, ns);
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
