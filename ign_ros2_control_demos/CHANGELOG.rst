@@ -2,8 +2,8 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.3 (2023-02-16)
+------------------
 * Add tricycle example to the `humble` branch `#119 <https://github.com/ros-controls/gz_ros2_control/issues/119>`_ from azazdeaz/humble
 * Replace ros_ign_gazebo with ros_gz_sim
 * Add tricycle demo (`#80 <https://github.com/ros-controls/gz_ros2_control/issues/80>`_)
