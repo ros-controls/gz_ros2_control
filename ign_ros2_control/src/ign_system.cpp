@@ -30,11 +30,16 @@
 #include <ignition/gazebo/components/JointPosition.hh>
 #include <ignition/gazebo/components/JointVelocity.hh>
 #include <ignition/gazebo/components/JointVelocityCmd.hh>
+#include <ignition/gazebo/components/JointAxis.hh>
+
 #include <ignition/gazebo/components/LinearAcceleration.hh>
 #include <ignition/gazebo/components/Name.hh>
 #include <ignition/gazebo/components/ParentEntity.hh>
 #include <ignition/gazebo/components/Pose.hh>
 #include <ignition/gazebo/components/Sensor.hh>
+
+// pid stuff
+#include <gz/math/PID.hh>
 
 #include <ignition/transport/Node.hh>
 
@@ -66,6 +71,9 @@ struct jointData
 
   /// \brief handles to the joints from within Gazebo
   ignition::gazebo::Entity sim_joint;
+
+  /// \brief PID for position and velocity control
+  gz::math::PID pid;
 
   /// \brief Control method defined in the URDF for each joint.
   ign_ros2_control::IgnitionSystemInterface::ControlMethod joint_control_method;
@@ -276,7 +284,8 @@ bool IgnitionSystem::initSim(
         "Joint '" << joint_name << "'is mimicking joint '" << mimicked_joint << "' with mutiplier: "
                   << mimic_joint.multiplier);
       this->dataPtr->mimic_joints_.push_back(mimic_joint);
-      suffix = "_mimic";
+      // TODO (livanov93): add parameter if suffix is used or not
+      // suffix = "_mimic";
     }
 
     RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\tState:");
@@ -339,6 +348,37 @@ bool IgnitionSystem::initSim(
         if (!std::isnan(initial_position)) {
           this->dataPtr->joints_[j].joint_position_cmd = initial_position;
         }
+
+        // init position PID
+
+        // assuming every joint has axis
+          const auto * jointAxis =
+                  this->dataPtr->ecm->Component<ignition::gazebo::components::JointAxis>(
+                          this->dataPtr->joints_[i].sim_joint);
+        // PID parameters
+        double p_gain         = 100.0;
+        double i_gain         = 0.0;
+        double d_gain         = 50.0;
+        // set integral max and min component to 10 percent of the max effort
+        double iMax      = std::isnan(jointAxis->Data().Effort()) ? 1.0 : jointAxis->Data().Effort() * 0.1;
+        double iMin      = std::isnan(jointAxis->Data().Effort()) ? 1.0 : -jointAxis->Data().Effort() * 0.1;
+        double cmdMax    = std::isnan(jointAxis->Data().Effort()) ? 1000.0 : jointAxis->Data().Effort();
+        double cmdMin    = std::isnan(jointAxis->Data().Effort()) ? -1000.0 : -jointAxis->Data().Effort();
+        double cmdOffset = 0.0;
+
+        igndbg << "[JointController "<<joint_name<<"] Position based PID with Force/Torque output:" << std::endl;
+        igndbg << "p_gain: ["     << p_gain         << "]"             << std::endl;
+        igndbg << "i_gain: ["     << i_gain         << "]"             << std::endl;
+        igndbg << "d_gain: ["     << d_gain         << "]"             << std::endl;
+        igndbg << "i_max: ["      << iMax      << "]"             << std::endl;
+        igndbg << "i_min: ["      << iMin      << "]"             << std::endl;
+        igndbg << "cmd_max: ["    << cmdMax    << "]"             << std::endl;
+        igndbg << "cmd_min: ["    << cmdMin    << "]"             << std::endl;
+        igndbg << "cmd_offset: [" << cmdOffset << "]"             << std::endl;
+
+
+        this->dataPtr->joints_[j].pid.Init(p_gain, i_gain, d_gain, iMax, iMin, cmdMax, cmdMin, cmdOffset);
+
       } else if (joint_info.command_interfaces[i].name == "velocity") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
         this->dataPtr->command_interfaces_.emplace_back(
@@ -580,9 +620,14 @@ IgnitionSystem::perform_command_mode_switch(
 
 hardware_interface::return_type IgnitionSystem::write(
   const rclcpp::Time & /*time*/,
-  const rclcpp::Duration & /*period*/)
+  const rclcpp::Duration & period)
 {
   for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
+      // assuming every joint has axis
+      const auto * jointAxis =
+              this->dataPtr->ecm->Component<ignition::gazebo::components::JointAxis>(
+                      this->dataPtr->joints_[i].sim_joint);
+
     if (this->dataPtr->joints_[i].joint_control_method & VELOCITY) {
       if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
           this->dataPtr->joints_[i].sim_joint))
@@ -598,25 +643,28 @@ hardware_interface::return_type IgnitionSystem::write(
           {this->dataPtr->joints_[i].joint_velocity_cmd});
       }
     } else if (this->dataPtr->joints_[i].joint_control_method & POSITION) {
-      // Get error in position
-      double error;
-      error = (this->dataPtr->joints_[i].joint_position -
-        this->dataPtr->joints_[i].joint_position_cmd) * *this->dataPtr->update_rate;
 
-      // Calculate target velcity
-      double target_vel = -this->dataPtr->position_proportional_gain_ * error;
+        // calculate error with clamped position command
+        double error = this->dataPtr->joints_[i].joint_position - std::clamp(this->dataPtr->joints_[i].joint_position_cmd, jointAxis->Data().Lower(), jointAxis->Data().Upper());
 
-      auto vel =
-        this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
-        this->dataPtr->joints_[i].sim_joint);
+        // error can be maximal 10 percent of the range
+        error = copysign(1.0, error) * std::clamp(std::abs(error), 0.0, std::abs(jointAxis->Data().Upper() - jointAxis->Data().Lower())*0.1);
 
-      if (vel == nullptr) {
-        this->dataPtr->ecm->CreateComponent(
-          this->dataPtr->joints_[i].sim_joint,
-          ignition::gazebo::components::JointVelocityCmd({target_vel}));
-      } else if (!vel->Data().empty()) {
-        vel->Data()[0] = target_vel;
-      }
+        // calculate target force/torque
+        double target_force = this->dataPtr->joints_[i].pid.Update(error, std::chrono::duration<double>(period.to_chrono<std::chrono::nanoseconds>()));
+
+        auto forceCmd =
+                this->dataPtr->ecm->Component<ignition::gazebo::components::JointForceCmd>(this->dataPtr->joints_[i].sim_joint);
+
+        if (forceCmd == nullptr)
+        {
+            this->dataPtr->ecm->CreateComponent(
+                    this->dataPtr->joints_[i].sim_joint,
+                    ignition::gazebo::components::JointForceCmd({0}));
+        } else {
+            *forceCmd = ignition::gazebo::components::JointForceCmd(
+                    {target_force});
+        }
     } else if (this->dataPtr->joints_[i].joint_control_method & EFFORT) {
       if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointForceCmd>(
           this->dataPtr->joints_[i].sim_joint))
@@ -631,7 +679,7 @@ hardware_interface::return_type IgnitionSystem::write(
         *jointEffortCmd = ignition::gazebo::components::JointForceCmd(
           {this->dataPtr->joints_[i].joint_effort_cmd});
       }
-    } else {
+    } /*else {
       // Fallback case is a velocity command of zero
       double target_vel = 0.0;
       auto vel =
@@ -647,39 +695,46 @@ hardware_interface::return_type IgnitionSystem::write(
       } else if (!vel->Data().empty()) {
         vel->Data()[0] = target_vel;
       }
-    }
+    }*/
   }
 
   // set values of all mimic joints with respect to mimicked joint
   for (const auto & mimic_joint : this->dataPtr->mimic_joints_) {
     for (const auto & mimic_interface : mimic_joint.interfaces_to_mimic) {
+        // assuming every mimic joint has axis
+        const auto * jointAxis =
+                this->dataPtr->ecm->Component<ignition::gazebo::components::JointAxis>(
+                        this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
+
       if (mimic_interface == "position") {
         // Get the joint position
-        double position_mimicked_joint =
-          this->dataPtr->ecm->Component<ignition::gazebo::components::JointPosition>(
-          this->dataPtr->joints_[mimic_joint.mimicked_joint_index].sim_joint)->Data()[0];
+        double position_mimicked_joint = this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_position;
 
-        double position_mimic_joint =
-          this->dataPtr->ecm->Component<ignition::gazebo::components::JointPosition>(
-          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint)->Data()[0];
+        double position_mimic_joint = this->dataPtr->joints_[mimic_joint.joint_index].joint_position;
 
-        double position_error =
-          position_mimic_joint - position_mimicked_joint * mimic_joint.multiplier;
+          // calculate error with clamped position command
+          double position_error =
+          position_mimic_joint - std::clamp(position_mimicked_joint * mimic_joint.multiplier,  jointAxis->Data().Lower(), jointAxis->Data().Upper());
 
-        double velocity_sp = (-1.0) * position_error * (*this->dataPtr->update_rate);
+          // error can be maximal 10 percent of the range
+          position_error = copysign(1.0, position_error) * std::clamp(std::abs(position_error), 0.0, std::abs(jointAxis->Data().Upper() - jointAxis->Data().Lower())*0.1);
 
-        auto vel =
-          this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
-          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
+          // calculate target force/torque
+          double target_force = this->dataPtr->joints_[mimic_joint.joint_index].pid.Update(position_error, std::chrono::duration<double>(period.to_chrono<std::chrono::nanoseconds>()));
 
-        if (vel == nullptr) {
-          this->dataPtr->ecm->CreateComponent(
-            this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
-            ignition::gazebo::components::JointVelocityCmd({velocity_sp}));
-        } else if (!vel->Data().empty()) {
-          vel->Data()[0] = velocity_sp;
-        }
-      }
+          auto forceCmd =
+                  this->dataPtr->ecm->Component<ignition::gazebo::components::JointForceCmd>(this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
+
+          if (forceCmd == nullptr)
+          {
+              this->dataPtr->ecm->CreateComponent(
+                      this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
+                      ignition::gazebo::components::JointForceCmd({0}));
+          } else {
+              *forceCmd = ignition::gazebo::components::JointForceCmd(
+                      {target_force});
+          }
+      }/*
       if (mimic_interface == "velocity") {
         // get the velocity of mimicked joint
         double velocity_mimicked_joint =
@@ -720,7 +775,7 @@ hardware_interface::return_type IgnitionSystem::write(
             {mimic_joint.multiplier *
               this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_effort});
         }
-      }
+      }*/
     }
   }
 
