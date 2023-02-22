@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>ign_ros2_control_demos</name>
-  <version>0.4.0</version>
+  <version>0.4.1</version>
   <description>ign_ros2_control_demos</description>
 
   <maintainer email="ahcorde@osrfoundation.org">Alejandro Hernandez</maintainer>
 
   <license>Apache License 2.0</license>
-  
+
+
   <url type="website">https://github.com/ros-controls/gz_ros2_control/blob/master/README.md</url>
   <url type="bugtracker">https://github.com/ros-controls/gz_ros2_control/issues</url>
   <url type="repository">https://github.com/ros-controls/gz_ros2_control</url>
