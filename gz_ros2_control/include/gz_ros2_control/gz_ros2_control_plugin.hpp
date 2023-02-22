@@ -12,51 +12,57 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef IGN_ROS2_CONTROL__IGN_ROS2_CONTROL_PLUGIN_HPP_
-#define IGN_ROS2_CONTROL__IGN_ROS2_CONTROL_PLUGIN_HPP_
+#ifndef GZ_ROS2_CONTROL__GZ_ROS2_CONTROL_PLUGIN_HPP_
+#define GZ_ROS2_CONTROL__GZ_ROS2_CONTROL_PLUGIN_HPP_
 
 #include <memory>
 
+#ifdef GZ_HEADERS
+#include <gz/sim/System.hh>
+namespace sim = gz::sim;
+#else
 #include <ignition/gazebo/System.hh>
+namespace sim = ignition::gazebo;
+#endif
 
-namespace ign_ros2_control
+namespace gz_ros2_control
 {
 // Forward declarations.
-class IgnitionROS2ControlPluginPrivate;
+class GazeboSimROS2ControlPluginPrivate;
 
-class IgnitionROS2ControlPlugin
-  : public ignition::gazebo::System,
-  public ignition::gazebo::ISystemConfigure,
-  public ignition::gazebo::ISystemPreUpdate,
-  public ignition::gazebo::ISystemPostUpdate
+class GazeboSimROS2ControlPlugin
+  : public sim::System,
+  public sim::ISystemConfigure,
+  public sim::ISystemPreUpdate,
+  public sim::ISystemPostUpdate
 {
 public:
   /// \brief Constructor
-  IgnitionROS2ControlPlugin();
+  GazeboSimROS2ControlPlugin();
 
   /// \brief Destructor
-  ~IgnitionROS2ControlPlugin() override;
+  ~GazeboSimROS2ControlPlugin() override;
 
   // Documentation inherited
   void Configure(
-    const ignition::gazebo::Entity & _entity,
+    const sim::Entity & _entity,
     const std::shared_ptr<const sdf::Element> & _sdf,
-    ignition::gazebo::EntityComponentManager & _ecm,
-    ignition::gazebo::EventManager & _eventMgr) override;
+    sim::EntityComponentManager & _ecm,
+    sim::EventManager & _eventMgr) override;
 
   // Documentation inherited
   void PreUpdate(
-    const ignition::gazebo::UpdateInfo & _info,
-    ignition::gazebo::EntityComponentManager & _ecm) override;
+    const sim::UpdateInfo & _info,
+    sim::EntityComponentManager & _ecm) override;
 
   void PostUpdate(
-    const ignition::gazebo::UpdateInfo & _info,
-    const ignition::gazebo::EntityComponentManager & _ecm) override;
+    const sim::UpdateInfo & _info,
+    const sim::EntityComponentManager & _ecm) override;
 
 private:
   /// \brief Private data pointer.
-  std::unique_ptr<IgnitionROS2ControlPluginPrivate> dataPtr;
+  std::unique_ptr<GazeboSimROS2ControlPluginPrivate> dataPtr;
 };
-}  // namespace ign_ros2_control
+}  // namespace gz_ros2_control
 
-#endif  // IGN_ROS2_CONTROL__IGN_ROS2_CONTROL_PLUGIN_HPP_
+#endif  // GZ_ROS2_CONTROL__GZ_ROS2_CONTROL_PLUGIN_HPP_

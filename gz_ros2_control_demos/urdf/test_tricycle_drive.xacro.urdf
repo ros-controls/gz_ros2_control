@@ -150,9 +150,9 @@
     <axis xyz="0 0 1" />
   </joint>
 
-  <ros2_control name="IgnitionSystem" type="system">
+  <ros2_control name="GazeboSystem" type="system">
     <hardware>
-      <plugin>ign_ros2_control/IgnitionSystem</plugin>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
     </hardware>
     <joint name="steering_joint">
       <command_interface name="position" />
@@ -167,8 +167,8 @@
 
 
   <gazebo>
-    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
-      <parameters>$(find ign_ros2_control_demos)/config/tricycle_drive_controller.yaml</parameters>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(find gz_ros2_control_demos)/config/tricycle_drive_controller.yaml</parameters>
     </plugin>
   </gazebo>
 

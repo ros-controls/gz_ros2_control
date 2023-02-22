@@ -13,29 +13,29 @@
 // limitations under the License.
 
 
-#ifndef IGN_ROS2_CONTROL__IGN_SYSTEM_HPP_
-#define IGN_ROS2_CONTROL__IGN_SYSTEM_HPP_
+#ifndef GZ_ROS2_CONTROL__GZ_SYSTEM_HPP_
+#define GZ_ROS2_CONTROL__GZ_SYSTEM_HPP_
 
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "ign_ros2_control/ign_system_interface.hpp"
+#include "gz_ros2_control/gz_system_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 
-namespace ign_ros2_control
+namespace gz_ros2_control
 {
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
 // Forward declaration
-class IgnitionSystemPrivate;
+class GazeboSimSystemPrivate;
 
-// These class must inherit `ign_ros2_control::IgnitionSystemInterface` which implements a
+// These class must inherit `gz_ros2_control::GazeboSimSystemInterface` which implements a
 // simulated `ros2_control` `hardware_interface::SystemInterface`.
 
-class IgnitionSystem : public IgnitionSystemInterface
+class GazeboSimSystem : public GazeboSimSystemInterface
 {
 public:
   // Documentation Inherited
@@ -74,9 +74,9 @@ public:
   // Documentation Inherited
   bool initSim(
     rclcpp::Node::SharedPtr & model_nh,
-    std::map<std::string, ignition::gazebo::Entity> & joints,
+    std::map<std::string, sim::Entity> & joints,
     const hardware_interface::HardwareInfo & hardware_info,
-    ignition::gazebo::EntityComponentManager & _ecm,
+    sim::EntityComponentManager & _ecm,
     int & update_rate) override;
 
 private:
@@ -87,9 +87,9 @@ private:
     const hardware_interface::HardwareInfo & hardware_info);
 
   /// \brief Private data class
-  std::unique_ptr<IgnitionSystemPrivate> dataPtr;
+  std::unique_ptr<GazeboSimSystemPrivate> dataPtr;
 };
 
-}  // namespace ign_ros2_control
+}  // namespace gz_ros2_control
 
-#endif  // IGN_ROS2_CONTROL__IGN_SYSTEM_HPP_
+#endif  // GZ_ROS2_CONTROL__GZ_SYSTEM_HPP_

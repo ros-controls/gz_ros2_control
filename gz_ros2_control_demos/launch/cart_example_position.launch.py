@@ -33,10 +33,10 @@ def generate_launch_description():
     # Launch Arguments
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
 
-    ignition_ros2_control_demos_path = os.path.join(
-        get_package_share_directory('ign_ros2_control_demos'))
+    gz_ros2_control_demos_path = os.path.join(
+        get_package_share_directory('gz_ros2_control_demos'))
 
-    xacro_file = os.path.join(ignition_ros2_control_demos_path,
+    xacro_file = os.path.join(gz_ros2_control_demos_path,
                               'urdf',
                               'test_cart_position.xacro.urdf')
 
@@ -51,8 +51,8 @@ def generate_launch_description():
         parameters=[params]
     )
 
-    ignition_spawn_entity = Node(
-        package='ros_ign_gazebo',
+    gz_spawn_entity = Node(
+        package='ros_gz_sim',
         executable='create',
         output='screen',
         arguments=['-string', doc.toxml(),
@@ -76,12 +76,12 @@ def generate_launch_description():
         # Launch gazebo environment
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                [os.path.join(get_package_share_directory('ros_ign_gazebo'),
-                              'launch', 'ign_gazebo.launch.py')]),
-            launch_arguments=[('ign_args', [' -r -v 4 empty.sdf'])]),
+                [os.path.join(get_package_share_directory('ros_gz_sim'),
+                              'launch', 'gz_sim.launch.py')]),
+            launch_arguments=[('gz_args', [' -r -v 4 empty.sdf'])]),
         RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action=ignition_spawn_entity,
+                target_action=gz_spawn_entity,
                 on_exit=[load_joint_state_broadcaster],
             )
         ),
@@ -92,7 +92,7 @@ def generate_launch_description():
             )
         ),
         node_robot_state_publisher,
-        ignition_spawn_entity,
+        gz_spawn_entity,
         # Launch Arguments
         DeclareLaunchArgument(
             'use_sim_time',
