@@ -25,6 +25,8 @@
 #include "rclcpp_lifecycle/state.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 
+#include "ign_ros2_control_parameters.hpp"
+
 namespace ign_ros2_control
 {
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
@@ -88,6 +90,14 @@ private:
 
   /// \brief Private data class
   std::unique_ptr<IgnitionSystemPrivate> dataPtr;
+
+  // Parameters from ROS for ign_ros2_control
+  std::shared_ptr<ParamListener> param_listener_;
+  Params params_;
+
+  rclcpp::Node::SharedPtr node_;
+
+  std::thread spin_thread_;
 };
 
 }  // namespace ign_ros2_control

@@ -1,0 +1,51 @@
+ign_ros2_control:
+  joints: {
+    type: string_array,
+    default_value: [],
+    description: "Names of joints used by the controller",
+    validation: {
+      unique<>: null,
+    }
+  }
+  gains:
+    __map_joints:
+      p: {
+        type: double,
+        default_value: 0.0,
+        description: "Proportional gain for PID"
+      }
+      i: {
+        type: double,
+        default_value: 0.0,
+        description: "Integral gain for PID"
+      }
+      d: {
+        type: double,
+        default_value: 0.0,
+        description: "Derivative gain for PID"
+      }
+      iMax: {
+        type: double,
+        default_value: 0.0,
+        description: "Integral positive clamp."
+      }
+      iMin: {
+        type: double,
+        default_value: 0.0,
+        description: "Integral negative clamp."
+      }
+      cmdMax: {
+        type: double,
+        default_value: 0.0,
+        description: "Maximum value for the PID command."
+      }
+      cmdMin: {
+        type: double,
+        default_value: 0.0,
+        description: "Maximum value for the PID command."
+      }
+      cmdOffset: {
+        type: double,
+        default_value: 0.0,
+        description: "Offset value for the command which is added to the result of the PID controller."
+      }
