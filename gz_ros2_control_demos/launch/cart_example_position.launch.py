@@ -1,4 +1,4 @@
-# Copyright 2022 Open Source Robotics Foundation, Inc.
+# Copyright 2021 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,9 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Author: Denis Stogl (Stogl Robotics Consulting)
-#
 
 import os
 
@@ -33,15 +30,15 @@ import xacro
 
 
 def generate_launch_description():
-    # Launch arguments
+    # Launch Arguments
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
 
-    ignition_ros2_control_demos_path = os.path.join(
-        get_package_share_directory('ign_ros2_control_demos'))
+    gz_ros2_control_demos_path = os.path.join(
+        get_package_share_directory('gz_ros2_control_demos'))
 
-    xacro_file = os.path.join(ignition_ros2_control_demos_path,
+    xacro_file = os.path.join(gz_ros2_control_demos_path,
                               'urdf',
-                              'test_gripper_mimic_joint.xacro.urdf')
+                              'test_cart_position.xacro.urdf')
 
     doc = xacro.parse(open(xacro_file))
     xacro.process_doc(doc)
@@ -54,12 +51,12 @@ def generate_launch_description():
         parameters=[params]
     )
 
-    ignition_spawn_entity = Node(
-        package='ros_ign_gazebo',
+    gz_spawn_entity = Node(
+        package='ros_gz_sim',
         executable='create',
         output='screen',
         arguments=['-string', doc.toxml(),
-                   '-name', 'gripper',
+                   '-name', 'cartpole',
                    '-allow_renaming', 'true'],
     )
 
@@ -69,9 +66,9 @@ def generate_launch_description():
         output='screen'
     )
 
-    load_gripper_controller = ExecuteProcess(
+    load_joint_trajectory_controller = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-             'gripper_controller'],
+             'joint_trajectory_controller'],
         output='screen'
     )
 
@@ -79,23 +76,23 @@ def generate_launch_description():
         # Launch gazebo environment
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                [os.path.join(get_package_share_directory('ros_ign_gazebo'),
-                              'launch', 'ign_gazebo.launch.py')]),
-            launch_arguments=[('ign_args', [' -r -v 4 empty.sdf'])]),
+                [os.path.join(get_package_share_directory('ros_gz_sim'),
+                              'launch', 'gz_sim.launch.py')]),
+            launch_arguments=[('gz_args', [' -r -v 4 empty.sdf'])]),
         RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action=ignition_spawn_entity,
+                target_action=gz_spawn_entity,
                 on_exit=[load_joint_state_broadcaster],
             )
         ),
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=load_joint_state_broadcaster,
-                on_exit=[load_gripper_controller],
+                on_exit=[load_joint_trajectory_controller],
             )
         ),
         node_robot_state_publisher,
-        ignition_spawn_entity,
+        gz_spawn_entity,
         # Launch Arguments
         DeclareLaunchArgument(
             'use_sim_time',

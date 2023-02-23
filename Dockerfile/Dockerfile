@@ -1,7 +1,7 @@
 FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV IGNITION_VERSION fortress
+ENV GZ_VERSION fortress
 ENV ROS_DISTRO rolling
 
 # Make sure everything is up to date before building from source
@@ -40,4 +40,4 @@ RUN cd /home/ros2_ws/ \
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ros2 launch ign_ros2_control_demos cart_example_position.launch.py
+CMD ros2 launch gz_ros2_control_demos cart_example_position.launch.py
