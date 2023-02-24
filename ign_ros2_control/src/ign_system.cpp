@@ -246,10 +246,10 @@ bool IgnitionSystem::initSim(
       this->dataPtr->ecm->Component<ignition::gazebo::components::JointAxis>(
       this->dataPtr->joints_[j].sim_joint);
     // PID parameters
-    double p_gain = 100.0;
-    double i_gain = 1.0;
-    double d_gain = 50.0;
-    // set integral max and min component to 10 percent of the max effort
+    double p_gain = 1000.0;
+    double i_gain = 0.0;
+    double d_gain = 0.0;
+    // set integral max and min component to 50 percent of the max effort
     double iMax = std::isnan(jointAxis->Data().Effort()) ? 500.0 : jointAxis->Data().Effort() *
       0.5;
     double iMin = std::isnan(jointAxis->Data().Effort()) ? 500.0 : -jointAxis->Data().Effort() *
@@ -710,14 +710,13 @@ hardware_interface::return_type IgnitionSystem::write(
         this->dataPtr->joints_[i].joint_position_cmd, jointAxis->Data().Lower(),
         jointAxis->Data().Upper());
 
-      // error can be maximal 10 percent of the range
       error =
         copysign(
         1.0,
         error) *
         std::clamp(
         std::abs(error), 0.0,
-        std::abs(jointAxis->Data().Upper() - jointAxis->Data().Lower()) * 0.1);
+        std::abs(jointAxis->Data().Upper() - jointAxis->Data().Lower()));
 
       // calculate target force/torque
       double target_force = this->dataPtr->joints_[i].pid.Update(
@@ -791,11 +790,10 @@ hardware_interface::return_type IgnitionSystem::write(
           position_mimicked_joint * mimic_joint.multiplier,
           jointAxis->Data().Lower(), jointAxis->Data().Upper());
 
-        // error can be maximal 10 percent of the range
         position_error = copysign(1.0, position_error) * std::clamp(
           std::abs(
             position_error), 0.0, std::abs(
-            jointAxis->Data().Upper() - jointAxis->Data().Lower()) * 0.1);
+            jointAxis->Data().Upper() - jointAxis->Data().Lower()));
 
         // calculate target force/torque
         double target_force = this->dataPtr->joints_[mimic_joint.joint_index].pid.Update(
