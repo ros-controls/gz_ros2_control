@@ -95,8 +95,7 @@ private:
   std::shared_ptr<ParamListener> param_listener_;
   Params params_;
 
-  rclcpp::Node::SharedPtr node_;
-
+  rclcpp::Node::SharedPtr param_node_;
   std::thread spin_thread_;
 };
 

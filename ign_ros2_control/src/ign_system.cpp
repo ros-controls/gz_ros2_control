@@ -199,9 +199,19 @@ bool IgnitionSystem::initSim(
     return false;
   }
 
+  // parameters needed for joint control
+  std::vector<std::string> joint_names;
+  this->param_node_ = rclcpp::Node::make_shared(
+    hardware_info.name,
+    rclcpp::NodeOptions().allow_undeclared_parameters(true));
+  std::vector<rclcpp::Parameter> param_vec;
+
   for (unsigned int j = 0; j < this->dataPtr->n_dof_; j++) {
     auto & joint_info = hardware_info.joints[j];
     std::string joint_name = this->dataPtr->joints_[j].name = joint_info.name;
+
+    // add as one of node parameters
+    joint_names.push_back(joint_name);
 
     ignition::gazebo::Entity simjoint = enableJoints[joint_name];
     this->dataPtr->joints_[j].sim_joint = simjoint;
@@ -229,6 +239,39 @@ bool IgnitionSystem::initSim(
     {
       _ecm.CreateComponent(simjoint, ignition::gazebo::components::JointForce());
     }
+
+    // init PID
+    // assuming every joint has axis
+    const auto * jointAxis =
+      this->dataPtr->ecm->Component<ignition::gazebo::components::JointAxis>(
+      this->dataPtr->joints_[j].sim_joint);
+    // PID parameters
+    double p_gain = 100.0;
+    double i_gain = 1.0;
+    double d_gain = 50.0;
+    // set integral max and min component to 10 percent of the max effort
+    double iMax = std::isnan(jointAxis->Data().Effort()) ? 500.0 : jointAxis->Data().Effort() *
+      0.5;
+    double iMin = std::isnan(jointAxis->Data().Effort()) ? 500.0 : -jointAxis->Data().Effort() *
+      0.5;
+    double cmdMax =
+      std::isnan(jointAxis->Data().Effort()) ? 1000.0 : jointAxis->Data().Effort();
+    double cmdMin =
+      std::isnan(jointAxis->Data().Effort()) ? -1000.0 : -jointAxis->Data().Effort();
+    double cmdOffset = 0.0;
+
+    param_vec.push_back(rclcpp::Parameter{"gains." + joint_name + ".p", p_gain});
+    param_vec.push_back(rclcpp::Parameter{"gains." + joint_name + ".i", i_gain});
+    param_vec.push_back(rclcpp::Parameter{"gains." + joint_name + ".d", d_gain});
+    param_vec.push_back(rclcpp::Parameter{"gains." + joint_name + ".iMax", iMax});
+    param_vec.push_back(rclcpp::Parameter{"gains." + joint_name + ".iMin", iMin});
+    param_vec.push_back(rclcpp::Parameter{"gains." + joint_name + ".cmdMax", cmdMax});
+    param_vec.push_back(rclcpp::Parameter{"gains." + joint_name + ".cmdMin", cmdMin});
+    param_vec.push_back(rclcpp::Parameter{"gains." + joint_name + ".cmdOffset", cmdOffset});
+
+    this->dataPtr->joints_[j].pid.Init(
+      p_gain, i_gain, d_gain, iMax, iMin, cmdMax, cmdMin,
+      cmdOffset);
 
     // Accept this joint and continue configuration
     RCLCPP_INFO_STREAM(this->nh_->get_logger(), "Loading joint: " << joint_name);
@@ -348,44 +391,6 @@ bool IgnitionSystem::initSim(
         if (!std::isnan(initial_position)) {
           this->dataPtr->joints_[j].joint_position_cmd = initial_position;
         }
-
-        // init position PID
-
-        // assuming every joint has axis
-        const auto * jointAxis =
-          this->dataPtr->ecm->Component<ignition::gazebo::components::JointAxis>(
-          this->dataPtr->joints_[i].sim_joint);
-        // PID parameters
-        double p_gain = 100.0;
-        double i_gain = 0.0;
-        double d_gain = 50.0;
-        // set integral max and min component to 10 percent of the max effort
-        double iMax = std::isnan(jointAxis->Data().Effort()) ? 1.0 : jointAxis->Data().Effort() *
-          0.1;
-        double iMin = std::isnan(jointAxis->Data().Effort()) ? 1.0 : -jointAxis->Data().Effort() *
-          0.1;
-        double cmdMax =
-          std::isnan(jointAxis->Data().Effort()) ? 1000.0 : jointAxis->Data().Effort();
-        double cmdMin =
-          std::isnan(jointAxis->Data().Effort()) ? -1000.0 : -jointAxis->Data().Effort();
-        double cmdOffset = 0.0;
-
-        igndbg << "[JointController " << joint_name <<
-          "] Position based PID with Force/Torque output:" << std::endl;
-        igndbg << "p_gain: [" << p_gain << "]" << std::endl;
-        igndbg << "i_gain: [" << i_gain << "]" << std::endl;
-        igndbg << "d_gain: [" << d_gain << "]" << std::endl;
-        igndbg << "i_max: [" << iMax << "]" << std::endl;
-        igndbg << "i_min: [" << iMin << "]" << std::endl;
-        igndbg << "cmd_max: [" << cmdMax << "]" << std::endl;
-        igndbg << "cmd_min: [" << cmdMin << "]" << std::endl;
-        igndbg << "cmd_offset: [" << cmdOffset << "]" << std::endl;
-
-
-        this->dataPtr->joints_[j].pid.Init(
-          p_gain, i_gain, d_gain, iMax, iMin, cmdMax, cmdMin,
-          cmdOffset);
-
       } else if (joint_info.command_interfaces[i].name == "velocity") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
         this->dataPtr->command_interfaces_.emplace_back(
@@ -416,19 +421,32 @@ bool IgnitionSystem::initSim(
     }
   }
 
+  rclcpp::Parameter joint_names_parameter("joints", joint_names);
+  if (!this->param_node_->has_parameter("joints")) {
+    this->param_node_->set_parameter(joint_names_parameter);
+  }
+  for (const auto & p : param_vec) {
+    if (!this->param_node_->has_parameter(p.get_name())) {
+      this->param_node_->set_parameter(p);
+    }
+  }
+
+  spin_thread_ = std::thread([this]() {rclcpp::spin(this->param_node_);});
+
+  try {
+    // Create the parameter listener and get the parameters
+    param_listener_ = std::make_shared<ParamListener>(this->param_node_);
+    params_ = param_listener_->get_params();
+  } catch (const std::exception & e) {
+    fprintf(stderr, "Exception thrown during init stage with message: %s \n", e.what());
+    return false;
+  }
+
+  // update the params
+  param_vec.push_back(joint_names_parameter);
+  param_listener_->update(param_vec);
+
   registerSensors(hardware_info);
-
-  this->node_ = rclcpp::Node::make_shared(
-    hardware_info.name,
-    rclcpp::NodeOptions().allow_undeclared_parameters(
-      true).automatically_declare_parameters_from_overrides(true));
-
-  auto spin = [this]()
-    {
-      rclcpp::spin(node_);
-    };
-
-  spin_thread_ = std::thread(spin);
 
   return true;
 }
@@ -506,14 +524,7 @@ CallbackReturn
 IgnitionSystem::on_init(const hardware_interface::HardwareInfo & system_info)
 {
   RCLCPP_WARN(this->nh_->get_logger(), "On init...");
-  try {
-    // Create the parameter listener and get the parameters
-    param_listener_ = std::make_shared<ParamListener>(this->node_);
-    params_ = param_listener_->get_params();
-  } catch (const std::exception & e) {
-    fprintf(stderr, "Exception thrown during init stage with message: %s \n", e.what());
-    return CallbackReturn::ERROR;
-  }
+
   if (hardware_interface::SystemInterface::on_init(system_info) != CallbackReturn::SUCCESS) {
     return CallbackReturn::ERROR;
   }
@@ -649,11 +660,34 @@ hardware_interface::return_type IgnitionSystem::write(
   const rclcpp::Time & /*time*/,
   const rclcpp::Duration & period)
 {
+  // refresh params
+  param_listener_->refresh_dynamic_parameters();
+  params_ = param_listener_->get_params();
+
   for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
     // assuming every joint has axis
     const auto * jointAxis =
       this->dataPtr->ecm->Component<ignition::gazebo::components::JointAxis>(
       this->dataPtr->joints_[i].sim_joint);
+
+    // update PIDs
+    this->dataPtr->joints_[i].pid.SetPGain(
+      params_.gains.joints_map[this->dataPtr->joints_[i].name].p);
+    this->dataPtr->joints_[i].pid.SetIGain(
+      params_.gains.joints_map[this->dataPtr->joints_[i].name].i);
+    this->dataPtr->joints_[i].pid.SetDGain(
+      params_.gains.joints_map[this->dataPtr->joints_[i].name].d);
+    this->dataPtr->joints_[i].pid.SetIMax(
+      params_.gains.joints_map[this->dataPtr->joints_[i].name].iMax);
+    this->dataPtr->joints_[i].pid.SetIMin(
+      params_.gains.joints_map[this->dataPtr->joints_[i].name].iMin);
+    this->dataPtr->joints_[i].pid.SetCmdMax(
+      params_.gains.joints_map[this->dataPtr->joints_[i].name].cmdMax);
+    this->dataPtr->joints_[i].pid.SetCmdMin(
+      params_.gains.joints_map[this->dataPtr->joints_[i].name].cmdMin);
+    this->dataPtr->joints_[i].pid.SetCmdOffset(
+      params_.gains.joints_map[this->dataPtr->joints_[i].
+      name].cmdOffset);
 
     if (this->dataPtr->joints_[i].joint_control_method & VELOCITY) {
       if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
