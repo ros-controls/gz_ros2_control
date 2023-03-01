@@ -68,31 +68,17 @@ jobs:
         cd /home/ros2_ws/src/
         rosdep init
         rosdep update
-<<<<<<< HEAD
-        rosdep install --from-paths ./ -i -y --rosdistro humble --ignore-src
-=======
         rosdep install --from-paths ./ -i -y --rosdistro ${ROS_DISTRO} --ignore-src ${ROSDEP_ARGS}
->>>>>>> ab810e7 (Renamed ign to gz (#67))
     - name: Build project
       id: build
       run: |
         cd /home/ros2_ws/
-<<<<<<< HEAD
-        . /opt/ros/humble/local_setup.sh
-        colcon build --packages-up-to ign_ros2_control_demos
-=======
         . /opt/ros/${ROS_DISTRO}/local_setup.sh
         colcon build --packages-up-to gz_ros2_control_demos
->>>>>>> ab810e7 (Renamed ign to gz (#67))
     - name: Run tests
       id: test
       run: |
         cd /home/ros2_ws/
-<<<<<<< HEAD
-        . /opt/ros/humble/local_setup.sh
-        colcon test --event-handlers console_direct+ --packages-select ign_ros2_control ign_ros2_control_demos
-=======
         . /opt/ros/${ROS_DISTRO}/local_setup.sh
         colcon test --event-handlers console_direct+ --packages-select gz_ros2_control gz_ros2_control_demos
->>>>>>> ab810e7 (Renamed ign to gz (#67))
         colcon test-result
