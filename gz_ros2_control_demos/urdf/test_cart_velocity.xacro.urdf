@@ -4,6 +4,7 @@
 <!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
 <!-- =================================================================================== -->
 <robot name="cartopole">
+  <link name="world"/>
   <link name="slideBar">
     <visual>
       <geometry>
@@ -66,7 +67,11 @@
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
     </inertial>
   </link>
-
+  <joint name="world_to_base" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 1"/>
+    <parent link="world"/>
+    <child link="slideBar"/>
+  </joint>
   <joint name="slider_to_cart" type="prismatic">
     <axis xyz="1 0 0"/>
     <origin xyz="0.0 0.0 0.0"/>
@@ -111,9 +116,9 @@
     </sensor>
   </gazebo>
 
-  <ros2_control name="IgnitionSystem" type="system">
+  <ros2_control name="GazeboSimSystem" type="system">
     <hardware>
-      <plugin>ign_ros2_control/IgnitionSystem</plugin>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
     </hardware>
     <joint name="slider_to_cart">
       <command_interface name="velocity">
@@ -160,11 +165,11 @@
 
   <gazebo>
     <!-- Joint state publisher -->
-    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
-      <parameters>$(find ign_ros2_control_demos)/config/cartpole_controller_velocity.yaml</parameters>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(find gz_ros2_control_demos)/config/cartpole_controller_velocity.yaml</parameters>
     </plugin>
     <plugin
-      filename="ignition-gazebo-imu-system"
+      filename="ignition-sim-imu-system"
       name="ignition::gazebo::systems::Imu">
     </plugin>
   </gazebo>

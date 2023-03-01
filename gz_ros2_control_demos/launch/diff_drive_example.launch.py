@@ -32,12 +32,12 @@ def generate_launch_description():
     # Launch Arguments
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
 
-    ignition_ros2_control_demos_path = os.path.join(
-        get_package_share_directory('ign_ros2_control_demos'))
+    gz_ros2_control_demos_path = os.path.join(
+        get_package_share_directory('gz_ros2_control_demos'))
 
-    xacro_file = os.path.join(ignition_ros2_control_demos_path,
+    xacro_file = os.path.join(gz_ros2_control_demos_path,
                               'urdf',
-                              'test_tricycle_drive.xacro.urdf')
+                              'test_diff_drive.xacro.urdf')
 
     doc = xacro.parse(open(xacro_file))
     xacro.process_doc(doc)
@@ -52,7 +52,11 @@ def generate_launch_description():
         parameters=[params],
     )
 
+<<<<<<< HEAD:ign_ros2_control_demos/launch/diff_drive_example.launch.py
     ignition_spawn_entity = Node(
+=======
+    gz_spawn_entity = Node(
+>>>>>>> ab810e7 (Renamed ign to gz (#67)):gz_ros2_control_demos/launch/diff_drive_example.launch.py
         package='ros_gz_sim',
         executable='create',
         output='screen',
@@ -69,7 +73,7 @@ def generate_launch_description():
 
     load_joint_trajectory_controller = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-             'tricycle_controller'],
+             'diff_drive_base_controller'],
         output='screen'
     )
 
@@ -77,12 +81,17 @@ def generate_launch_description():
         # Launch gazebo environment
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
+<<<<<<< HEAD:ign_ros2_control_demos/launch/diff_drive_example.launch.py
+                [os.path.join(get_package_share_directory('ros_ign_gazebo'),
+                              'launch', 'ign_gazebo.launch.py')]),
+=======
                 [os.path.join(get_package_share_directory('ros_gz_sim'),
                               'launch', 'gz_sim.launch.py')]),
-            launch_arguments=[('ign_args', [' -r -v 4 empty.sdf'])]),
+>>>>>>> ab810e7 (Renamed ign to gz (#67)):gz_ros2_control_demos/launch/diff_drive_example.launch.py
+            launch_arguments=[('gz_args', [' -r -v 4 empty.sdf'])]),
         RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action=ignition_spawn_entity,
+                target_action=gz_spawn_entity,
                 on_exit=[load_joint_state_controller],
             )
         ),
@@ -93,7 +102,7 @@ def generate_launch_description():
             )
         ),
         node_robot_state_publisher,
-        ignition_spawn_entity,
+        gz_spawn_entity,
         # Launch Arguments
         DeclareLaunchArgument(
             'use_sim_time',

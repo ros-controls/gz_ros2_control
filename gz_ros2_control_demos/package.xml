@@ -1,8 +1,15 @@
 <?xml version="1.0"?>
+<<<<<<< HEAD:ign_ros2_control_demos/package.xml
 <package format="2">
   <name>ign_ros2_control_demos</name>
   <version>0.4.3</version>
   <description>ign_ros2_control_demos</description>
+=======
+<package format="3">
+  <name>gz_ros2_control_demos</name>
+  <version>0.5.0</version>
+  <description>gz_ros2_control_demos</description>
+>>>>>>> ab810e7 (Renamed ign to gz (#67)):gz_ros2_control_demos/package.xml
 
   <maintainer email="ahcorde@osrfoundation.org">Alejandro Hernandez</maintainer>
 
@@ -27,7 +34,7 @@
   <exec_depend>effort_controllers</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>hardware_interface</exec_depend>
-  <exec_depend>ign_ros2_control</exec_depend>
+  <exec_depend>gz_ros2_control</exec_depend>
   <exec_depend>imu_sensor_broadcaster</exec_depend>
   <exec_depend>joint_state_broadcaster</exec_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
@@ -35,7 +42,9 @@
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>rclcpp</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
-  <exec_depend>ros_ign_gazebo</exec_depend>
+  <exec_depend condition="$GZ_VERSION == ''">ros_gz_sim</exec_depend>
+  <exec_depend condition="$GZ_VERSION == 'garden'">ros_gz_sim</exec_depend>
+  <exec_depend condition="$GZ_VERSION == fortress">ros_ign_gazebo</exec_depend>
   <exec_depend>ros2controlcli</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>velocity_controllers</exec_depend>

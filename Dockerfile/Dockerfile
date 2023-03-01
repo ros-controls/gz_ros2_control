@@ -1,7 +1,12 @@
 FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND noninteractive
+<<<<<<< HEAD
 ENV IGNITION_VERSION fortress
+=======
+ENV GZ_VERSION fortress
+ENV ROS_DISTRO rolling
+>>>>>>> ab810e7 (Renamed ign to gz (#67))
 
 # Make sure everything is up to date before building from source
 RUN apt-get update \
@@ -39,4 +44,4 @@ RUN cd /home/ros2_ws/ \
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ros2 launch ign_ros2_control_demos cart_example_position.launch.py
+CMD ros2 launch gz_ros2_control_demos cart_example_position.launch.py
