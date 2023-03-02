@@ -143,6 +143,14 @@
       </command_interface>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
+      <param name="p">100.0</param>
+      <param name="i">0.0</param>
+      <param name="d">25.0</param>
+      <param name="iMax">50</param>
+      <param name="iMin">-50</param>
+      <param name="cmdMax">100</param>
+      <param name="cmdMin">-100</param>
+      <param name="cmdOffset">0.0</param>
     </joint>
     <joint name="right_wheel_joint">
       <command_interface name="velocity">
@@ -151,6 +159,14 @@
       </command_interface>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
+      <param name="p">100.0</param>
+      <param name="i">0.0</param>
+      <param name="d">25.0</param>
+      <param name="iMax">50</param>
+      <param name="iMin">-50</param>
+      <param name="cmdMax">100</param>
+      <param name="cmdMin">-100</param>
+      <param name="cmdOffset">0.0</param>
     </joint>
   </ros2_control>
 
