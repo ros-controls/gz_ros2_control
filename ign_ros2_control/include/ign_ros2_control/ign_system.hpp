@@ -27,6 +27,8 @@
 
 #include "ign_ros2_control_parameters.hpp"
 
+#include "rclcpp/executors/single_threaded_executor.hpp"
+
 namespace ign_ros2_control
 {
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
@@ -97,6 +99,8 @@ private:
 
   rclcpp::Node::SharedPtr param_node_;
   std::thread spin_thread_;
+  std::atomic<bool> stop_spin_ = false;
+  rclcpp::executors::SingleThreadedExecutor::SharedPtr exec_;
 };
 
 }  // namespace ign_ros2_control

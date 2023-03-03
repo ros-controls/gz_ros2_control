@@ -9,42 +9,82 @@ ign_ros2_control:
   }
   gains:
     __map_joints:
-      p: {
+      p_pos: {
         type: double,
         default_value: 0.0,
         description: "Proportional gain for PID"
       }
-      i: {
+      i_pos: {
         type: double,
         default_value: 0.0,
         description: "Integral gain for PID"
       }
-      d: {
+      d_pos: {
         type: double,
         default_value: 0.0,
         description: "Derivative gain for PID"
       }
-      iMax: {
+      iMax_pos: {
         type: double,
         default_value: 0.0,
         description: "Integral positive clamp."
       }
-      iMin: {
+      iMin_pos: {
         type: double,
         default_value: 0.0,
         description: "Integral negative clamp."
       }
-      cmdMax: {
+      cmdMax_pos: {
         type: double,
         default_value: 0.0,
         description: "Maximum value for the PID command."
       }
-      cmdMin: {
+      cmdMin_pos: {
         type: double,
         default_value: 0.0,
         description: "Maximum value for the PID command."
       }
-      cmdOffset: {
+      cmdOffset_pos: {
+        type: double,
+        default_value: 0.0,
+        description: "Offset value for the command which is added to the result of the PID controller."
+      }
+      p_vel: {
+        type: double,
+        default_value: 0.0,
+        description: "Proportional gain for PID"
+      }
+      i_vel: {
+        type: double,
+        default_value: 0.0,
+        description: "Integral gain for PID"
+      }
+      d_vel: {
+        type: double,
+        default_value: 0.0,
+        description: "Derivative gain for PID"
+      }
+      iMax_vel: {
+        type: double,
+        default_value: 0.0,
+        description: "Integral positive clamp."
+      }
+      iMin_vel: {
+        type: double,
+        default_value: 0.0,
+        description: "Integral negative clamp."
+      }
+      cmdMax_vel: {
+        type: double,
+        default_value: 0.0,
+        description: "Maximum value for the PID command."
+      }
+      cmdMin_vel: {
+        type: double,
+        default_value: 0.0,
+        description: "Maximum value for the PID command."
+      }
+      cmdOffset_vel: {
         type: double,
         default_value: 0.0,
         description: "Offset value for the command which is added to the result of the PID controller."
