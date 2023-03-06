@@ -1,19 +1,27 @@
 # ign_ros2_control
 
+ROS2 Distro | Build Status | Package build |
+:---------: | :----: | :----------: |
+[![Licence](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) |  [![Build Status](http://build.ros2.org/buildStatus/icon?job=Hdev__gz_ros2_control__ubuntu_focal_amd64)](http://build.ros2.org/job/Hdev__gz_ros2_control__ubuntu_focal_amd64) |  [![Build Status](http://build.ros2.org/buildStatus/icon?job=Hbin_uF64__gz_ros2_control__ubuntu_focal_amd64__binary)](http://build.ros2.org/job/Hbin_uF64__gz_ros2_control__ubuntu_focal_amd64__binary) |
+
 This is a ROS 2 package for integrating the `ros2_control` controller architecture with the [Ignition Gazebo](http://ignitionrobotics.org/) simulator.
 More information about `ros2_control` can be found here: https://control.ros.org/
 
 This package provides an Ignition Gazebo system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.
 
-Tested on:
+[![Build Status](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci.yaml/badge.svg?branch=galactic)](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci.yaml)
 
- - Debs:
-   - [Ignition Edifice](https://ignitionrobotics.org/docs/edifice) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
- - From source:
-   - [Ignition Citadel](https://ignitionrobotics.org/docs/citadel) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
-   - [Ignition Fortress](https://ignitionrobotics.org/docs/fortress) + [ROS 2 Galactic](https://docs.ros.org/en/galactic/Installation.html)
+ROS version | Gazebo version | Branch | Binaries hosted at
+-- | -- | -- | --
+Foxy | Citadel | [foxy](https://github.com/ros-controls/gz_ros2_control/tree/foxy) | https://packages.ros.org
+Foxy | Edifice | [foxy](https://github.com/ros-controls/gz_ros2_control/tree/foxy) | only from source
+Galactic | Edifice | [galactic](https://github.com/ros-controls/gz_ros2_control/tree/galactic) | https://packages.ros.org
+Galactic | Fortress | [galactic](https://github.com/ros-controls/gz_ros2_control/tree/galactic) | only from source
+Humble | Fortress | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org
+Rolling | Edifice | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
+Rolling | Fortress | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org
+Rolling | Garden (not released) | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
 
-If you want to run this with `ROS 2 Foxy` please check the branch `foxy`.
 
 # Compile from source
 
@@ -118,6 +126,38 @@ include:
 </ros2_control>
 ```
 
+
+### Using mimic joints in simulation
+
+To use `mimic` joints in `ign_ros2_control` you should define its parameters to your URDF.
+We should include:
+
+- `<mimic>` tag to the mimicked joint ([detailed manual(https://wiki.ros.org/urdf/XML/joint))
+- `mimic` and `multiplier` parameters to joint definition in `<ros2_control>` tag
+
+```xml
+<joint name="left_finger_joint" type="prismatic">
+  <mimic joint="right_finger_joint"/>
+  <axis xyz="0 1 0"/>
+  <origin xyz="0.0 0.48 1" rpy="0.0 0.0 3.1415926535"/>
+  <parent link="base"/>
+  <child link="finger_left"/>
+  <limit effort="1000.0" lower="0" upper="0.38" velocity="10"/>
+</joint>
+```
+
+```xml
+<joint name="left_finger_joint">
+  <param name="mimic">right_finger_joint</param>
+  <param name="multiplier">1</param>
+  <command_interface name="position"/>
+  <state_interface name="position"/>
+  <state_interface name="velocity"/>
+  <state_interface name="effort"/>
+</joint>
+```
+
+
 ## Add the ign_ros2_control plugin
 
 In addition to the `ros2_control` tags, a Gazebo plugin needs to be added to your URDF that
@@ -128,7 +168,7 @@ robot hardware interfaces between `ros2_control` and Gazebo.
 
 ```xml
 <gazebo>
-    <plugin filename="libign_ros2_control-system.so" name="ign_ros2_control">
+    <plugin filename="libign_ros2_control-system.so" name="ign_ros2_control::IgnitionROS2ControlPlugin">
       <robot_param>robot_description</robot_param>
       <robot_param_node>robot_state_publisher</robot_param_node>
       <parameters>$(find ign_ros2_control_demos)/config/cartpole_controller.yaml</parameters>
@@ -167,7 +207,7 @@ robot model is loaded. For example, the following XML will load the default plug
   ...
 <ros2_control>
 <gazebo>
-  <plugin name="ign_ros2_control" filename="libign_ros2_control-system.so">
+  <plugin name="ign_ros2_control::IgnitionROS2ControlPlugin" filename="libign_ros2_control-system.so">
     ...
   </plugin>
 </gazebo>
@@ -180,7 +220,7 @@ and use the tag `<controller_manager_prefix_node_name>` to set the controller ma
 
 ```xml
 <gazebo>
-  <plugin name="ign_ros2_control" filename="libign_ros2_control-system.so">
+  <plugin name="ign_ros2_control::IgnitionROS2ControlPlugin" filename="libign_ros2_control-system.so">
     <parameters>$(find ign_ros2_control_demos)/config/cartpole_controller.yaml</parameters>
     <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
   </plugin>
@@ -232,4 +272,19 @@ ros2 run ign_ros2_control_demos example_velocity
 ros2 run ign_ros2_control_demos example_effort
 ros2 run ign_ros2_control_demos example_diff_drive
 ros2 run ign_ros2_control_demos example_tricycle_drive
+```
+
+The following example shows parallel gripper with mimic joint:
+
+![](img/gripper.gif)
+
+
+```bash
+ros2 launch ign_ros2_control_demos gripper_mimic_joint_example.launch.py
+```
+
+Send example commands:
+
+```bash
+ros2 run ign_ros2_control_demos example_gripper
 ```
