@@ -73,7 +73,7 @@
     <parent link="slideBar"/>
     <child link="cart"/>
     <limit effort="1000.0" lower="-15" upper="15" velocity="30"/>
-    <dynamics damping="0.0" friction="0.0"/>
+    <dynamics damping="0.5" friction="0.0"/>
   </joint>
   <link name="imu">
     <inertial>
@@ -123,14 +123,7 @@
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
-      <param name="p">100.0</param>
-      <param name="i">0.0</param>
-      <param name="d">25.0</param>
-      <param name="iMax">50</param>
-      <param name="iMin">-50</param>
-      <param name="cmdMax">100</param>
-      <param name="cmdMin">-100</param>
-      <param name="cmdOffset">0.0</param>
+      <param name="p_vel">100.0</param>
     </joint>
     <sensor name="cart_imu_sensor">
       <state_interface name="orientation.x"/>
