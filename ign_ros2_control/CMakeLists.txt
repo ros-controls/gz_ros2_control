@@ -44,10 +44,31 @@ elseif("$ENV{IGNITION_VERSION}" STREQUAL "fortress")
   set(IGN_GAZEBO_VER ${ignition-gazebo6_VERSION_MAJOR})
   message(STATUS "Compiling against Ignition Fortress")
 
+  find_package(ignition-cmake2 REQUIRED)
+  find_package(ignition-plugin1 REQUIRED COMPONENTS register)
+  set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
+  add_library(mimic-joint-system SHARED src/MimicJointSystem.cc)
+    target_link_libraries(mimic-joint-system
+            PRIVATE ignition-plugin${IGN_PLUGIN_VER}::ignition-plugin${IGN_PLUGIN_VER}
+            PRIVATE ignition-gazebo6::ignition-gazebo6)
+  install(TARGETS mimic-joint-system
+          DESTINATION lib)
+
 else()
   find_package(ignition-gazebo6 REQUIRED)
   set(IGN_GAZEBO_VER ${ignition-gazebo6_VERSION_MAJOR})
   message(STATUS "Compiling against Ignition Fortress")
+
+  find_package(ignition-cmake2 REQUIRED)
+  find_package(ignition-plugin1 REQUIRED COMPONENTS register)
+  set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
+  add_library(mimic-joint-system SHARED src/MimicJointSystem.cc)
+  target_link_libraries(mimic-joint-system
+          ignition-gazebo${IGN_GAZEBO_VER}::core
+          ignition-plugin${IGN_PLUGIN_VER}::register
+          )
+  install(TARGETS mimic-joint-system
+          DESTINATION lib)
 endif()
 
 find_package(ignition-plugin1 REQUIRED)
