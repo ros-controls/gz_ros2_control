@@ -263,12 +263,14 @@ void MimicJointSystem::PreUpdate(
     }
   }
 
-  if (this->dataPtr->jointEntity == ignition::gazebo::kNullEntity)
+  if (this->dataPtr->jointEntity == ignition::gazebo::kNullEntity) {
     return;
+  }
 
 
-  if (this->dataPtr->mimicJointEntity == ignition::gazebo::kNullEntity)
+  if (this->dataPtr->mimicJointEntity == ignition::gazebo::kNullEntity) {
     return;
+  }
 
 
   if (_info.paused) {
@@ -329,8 +331,8 @@ void MimicJointSystem::PreUpdate(
 
   // Get error in position
   double error = jointPosComp->Data().at(this->dataPtr->jointIndex) -
-                 (mimicJointPosComp->Data().at(this->dataPtr->mimicJointIndex) *
-                  this->dataPtr->multiplier + this->dataPtr->offset);
+    (mimicJointPosComp->Data().at(this->dataPtr->mimicJointIndex) *
+    this->dataPtr->multiplier + this->dataPtr->offset);
 
   if (fabs(error) > this->dataPtr->deadZone) {
 
