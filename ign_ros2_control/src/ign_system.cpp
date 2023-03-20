@@ -889,7 +889,9 @@ hardware_interface::return_type IgnitionSystem::write(
         position_error, std::chrono::duration<double>(
           period.to_chrono<std::chrono::nanoseconds>()));
 
-      // remember for potential effort state interface
+        target_force = round(target_force * 10000.0)/10000.0;
+
+        // remember for potential effort state interface
       this->dataPtr->joints_[i].joint_effort_cmd = target_force;
 
       auto forceCmd =
@@ -944,6 +946,8 @@ hardware_interface::return_type IgnitionSystem::write(
           mimic_joint.multiplier, jointAxis->Data().Lower(),
           jointAxis->Data().Upper());
 
+          position_error = round(position_error * 10000.0)/10000.0;
+
         position_error =
           copysign(
           1.0,
@@ -952,7 +956,9 @@ hardware_interface::return_type IgnitionSystem::write(
           std::abs(position_error), 0.0,
           std::abs(jointAxis->Data().Upper() - jointAxis->Data().Lower()));
 
-        // calculate target velocity - output of outer pid - input to inner pid
+
+
+          // calculate target velocity - output of outer pid - input to inner pid
         double target_vel = this->dataPtr->joints_[mimic_joint.joint_index].pid_pos.Update(
           position_error, std::chrono::duration<double>(
             period.to_chrono<std::chrono::nanoseconds>()));
@@ -973,6 +979,8 @@ hardware_interface::return_type IgnitionSystem::write(
         double target_force = this->dataPtr->joints_[mimic_joint.joint_index].pid_vel.Update(
           position_error, std::chrono::duration<double>(
             period.to_chrono<std::chrono::nanoseconds>()));
+
+        target_force = round(target_force * 10000.0)/10000.0;
 
         this->dataPtr->joints_[mimic_joint.joint_index].joint_effort_cmd = target_force;
 
