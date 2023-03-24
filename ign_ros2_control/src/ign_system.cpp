@@ -432,8 +432,6 @@ bool IgnitionSystem::initSim(
         "Joint '" << joint_name << "'is mimicking joint '" << mimicked_joint << "' with mutiplier: "
                   << mimic_joint.multiplier);
       this->dataPtr->mimic_joints_.push_back(mimic_joint);
-      // TODO (livanov93): add parameter if suffix is used or not
-      // suffix = "_mimic";
     }
 
     RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\tState:");
