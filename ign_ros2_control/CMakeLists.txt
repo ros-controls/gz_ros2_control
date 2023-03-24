@@ -20,10 +20,10 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(controller_manager REQUIRED)
 find_package(hardware_interface REQUIRED)
+find_package(generate_parameter_library REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
-find_package(generate_parameter_library REQUIRED)
 
 generate_parameter_library(ign_ros2_control_parameters
   src/ign_ros2_control_parameters.yaml
@@ -48,9 +48,9 @@ elseif("$ENV{IGNITION_VERSION}" STREQUAL "fortress")
   find_package(ignition-plugin1 REQUIRED COMPONENTS register)
   set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
   add_library(mimic-joint-system SHARED src/MimicJointSystem.cc)
-    target_link_libraries(mimic-joint-system
-            PRIVATE ignition-plugin${IGN_PLUGIN_VER}::ignition-plugin${IGN_PLUGIN_VER}
-            PRIVATE ignition-gazebo6::ignition-gazebo6)
+  target_link_libraries(mimic-joint-system
+    PRIVATE ignition-plugin${IGN_PLUGIN_VER}::ignition-plugin${IGN_PLUGIN_VER}
+    PRIVATE ignition-gazebo6::ignition-gazebo6)
   install(TARGETS mimic-joint-system
           DESTINATION lib)
 
@@ -64,9 +64,8 @@ else()
   set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
   add_library(mimic-joint-system SHARED src/MimicJointSystem.cc)
   target_link_libraries(mimic-joint-system
-          ignition-gazebo${IGN_GAZEBO_VER}::core
-          ignition-plugin${IGN_PLUGIN_VER}::register
-          )
+    ignition-gazebo${IGN_GAZEBO_VER}::core
+    ignition-plugin${IGN_PLUGIN_VER}::register)
   install(TARGETS mimic-joint-system
           DESTINATION lib)
 endif()

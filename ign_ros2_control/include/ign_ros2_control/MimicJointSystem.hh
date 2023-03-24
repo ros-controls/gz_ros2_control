@@ -32,6 +32,7 @@
 
 #include <ignition/gazebo/System.hh>
 
+// This is an example to go in your urdf (is that correct?)
 //! <plugin filename="mimic-joint-system" name="ign_ros2_control::MimicJointSystem">
 //!     <joint_name>joint_name</joint_name>
 //!     <mimic_joint_name>mimic_joint_name</mimic_joint_name>
@@ -59,7 +60,7 @@ namespace ign_ros2_control
     // This class is a system.
     public ignition::gazebo::System,
     public ignition::gazebo::ISystemConfigure,
-          // This class also implements the ISystemPreUpdate, ISystemUpdate,
+    // This class also implements the ISystemPreUpdate, ISystemUpdate,
     // and ISystemPostUpdate interfaces.
     public ignition::gazebo::ISystemPreUpdate,
     public ignition::gazebo::ISystemUpdate,
@@ -67,10 +68,8 @@ namespace ign_ros2_control
   {
     public: MimicJointSystem();
 
-    public: ~MimicJointSystem() override=default;
-
-      // Documentation inherited
-  public:  void Configure(const ignition::gazebo::Entity &_entity,
+    // Documentation inherited
+    public:  void Configure(const ignition::gazebo::Entity &_entity,
                           const std::shared_ptr<const sdf::Element> &_sdf,
                           ignition::gazebo::EntityComponentManager &_ecm,
                           ignition::gazebo::EventManager &_eventMgr) override;
