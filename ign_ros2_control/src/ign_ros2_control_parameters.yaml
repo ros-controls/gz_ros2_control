@@ -7,6 +7,13 @@ ign_ros2_control:
       unique<>: null,
     }
   }
+  mode:
+    __map_joints:
+      use_cascade_control: {
+        type: bool,
+        default_value: false,
+        description: "Defines if cascade control is ued in position control (outer position based loop and inner velocity based loop with force output)"
+      }
   gains:
     __map_joints:
       p_pos: {

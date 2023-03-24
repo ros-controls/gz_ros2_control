@@ -254,6 +254,21 @@ bool IgnitionSystem::initSim(
       this->dataPtr->ecm->Component<ignition::gazebo::components::JointAxis>(
       this->dataPtr->joints_[j].sim_joint);
 
+    double use_cascade_control =
+        (hardware_info.joints[j].parameters.find("use_cascade_control") ==
+         hardware_info.joints[j].parameters.end() ) ? false : [&](){
+              if(hardware_info.joints[j].parameters.at(
+                  "use_cascade_control") == "true" || hardware_info.joints[j].parameters.at(
+                  "use_cascade_control") == "True"){
+                return true;
+              }else{
+                return false;
+              }
+            }();
+
+    param_vec.push_back(rclcpp::Parameter{"mode." + joint_name + ".use_cascade_control", p_gain_pos});
+
+
     double upper = jointAxis->Data().Upper();
     double lower = jointAxis->Data().Lower();
     double max_velocity = jointAxis->Data().MaxVelocity();
@@ -834,9 +849,12 @@ hardware_interface::return_type IgnitionSystem::write(
 
     if (this->dataPtr->joints_[i].joint_control_method & VELOCITY) {
 
-      double velocity_error = this->dataPtr->joints_[i].joint_velocity - std::clamp(
-        this->dataPtr->joints_[i].joint_velocity_cmd, -1.0 * jointAxis->Data().MaxVelocity(),
-        jointAxis->Data().MaxVelocity());
+      double velocity = this->dataPtr->joints_[i].joint_velocity;
+      double velocity_cmd_clamped = std::clamp(
+          this->dataPtr->joints_[i].joint_velocity_cmd, -1.0 * jointAxis->Data().MaxVelocity(),
+          jointAxis->Data().MaxVelocity());
+
+      double velocity_error = velocity - velocity_cmd_clamped;
 
       // calculate target force/torque - output of inner pid
       double target_force = this->dataPtr->joints_[i].pid_vel.Update(
@@ -862,31 +880,51 @@ hardware_interface::return_type IgnitionSystem::write(
     } else if (this->dataPtr->joints_[i].joint_control_method & POSITION) {
 
       // calculate error with clamped position command
-      double position_error = this->dataPtr->joints_[i].joint_position - std::clamp(
-        this->dataPtr->joints_[i].joint_position_cmd, jointAxis->Data().Lower(),
-        jointAxis->Data().Upper());
-      position_error =
-        copysign(
-        1.0,
-        position_error) *
-        std::clamp(
-        std::abs(position_error), 0.0,
-        std::abs(jointAxis->Data().Upper() - jointAxis->Data().Lower()));
+      double position = this->dataPtr->joints_[i].joint_position;
+      double position_cmd_clamped = std::clamp(
+          this->dataPtr->joints_[i].joint_position_cmd, jointAxis->Data().Lower(),
+          jointAxis->Data().Upper());
 
-      // calculate target velocity - output of outer pid - input to inner pid
-      double target_vel = this->dataPtr->joints_[i].pid_pos.Update(
-        position_error, std::chrono::duration<double>(
-          period.to_chrono<std::chrono::nanoseconds>()));
+      double position_error = position - position_cmd_clamped;
 
-      double velocity_error = this->dataPtr->joints_[i].joint_velocity - std::clamp(
-        target_vel, -1.0 * jointAxis->Data().MaxVelocity(),
-        jointAxis->Data().MaxVelocity());
+      double position_error_sign = copysign(
+          1.0,
+          position_error);
+
+      double position_error_abs_clamped = std::clamp(
+          std::abs(position_error), 0.0,
+          std::abs(jointAxis->Data().Upper() - jointAxis->Data().Lower()));
+
+       // move forward with calculated position error
+      position_error = position_error_sign * position_error_abs_clamped;
+
+      double position_or_velocity_error = 0.0;
+
+      // check if cascade control is used for this joint
+      if( params_.mode.joints_map[this->dataPtr->joints_[i].
+                                   name].use_cascade_control)
+      {
+        // calculate target velocity - output of outer pid - input to inner pid
+        double target_vel = this->dataPtr->joints_[i].pid_pos.Update(
+            position_error, std::chrono::duration<double>(period.to_chrono<std::chrono::nanoseconds>()));
+
+        double velocity_error =
+            this->dataPtr->joints_[i].joint_velocity -
+            std::clamp(target_vel, -1.0 * jointAxis->Data().MaxVelocity(), jointAxis->Data().MaxVelocity());
+
+        // prepare velocity error value for inner pid
+        position_or_velocity_error = velocity_error;
+      }else{
+        // prepare velocity error value for inner pid
+        position_or_velocity_error = position_error;
+      }
 
       // calculate target force/torque - output of inner pid
       double target_force = this->dataPtr->joints_[i].pid_vel.Update(
-        position_error, std::chrono::duration<double>(
+          position_or_velocity_error, std::chrono::duration<double>(
           period.to_chrono<std::chrono::nanoseconds>()));
 
+      // round the force
         target_force = round(target_force * 10000.0)/10000.0;
 
         // remember for potential effort state interface
@@ -939,47 +977,63 @@ hardware_interface::return_type IgnitionSystem::write(
           this->dataPtr->ecm->Component<ignition::gazebo::components::JointPosition>(
           this->dataPtr->joints_[mimic_joint.joint_index].sim_joint)->Data()[0];
 
-        double position_error = position_mimic_joint - std::clamp(
-          position_mimicked_joint *
-          mimic_joint.multiplier, jointAxis->Data().Lower(),
-          jointAxis->Data().Upper());
+        double position_target_from_mimicked_joint = std::clamp(
+            position_mimicked_joint *
+                mimic_joint.multiplier, jointAxis->Data().Lower(),
+            jointAxis->Data().Upper());
 
-          position_error = round(position_error * 10000.0)/10000.0;
+        double position_error = position_mimic_joint - position_target_from_mimicked_joint;
 
-        position_error =
-          copysign(
-          1.0,
-          position_error) *
-          std::clamp(
-          std::abs(position_error), 0.0,
-          std::abs(jointAxis->Data().Upper() - jointAxis->Data().Lower()));
+        // round position error for simulation stability
+        position_error = round(position_error * 10000.0)/10000.0;
 
+        double position_error_sign = copysign(
+            1.0,
+            position_error);
 
+        double position_error_abs_clamped = std::clamp(
+            std::abs(position_error), 0.0,
+            std::abs(jointAxis->Data().Upper() - jointAxis->Data().Lower()));
 
+        position_error = position_error_sign * position_error_abs_clamped;
+
+        double position_or_velocity_error = 0.0;
+
+        // check if cascade control is used for this joint
+        if( params_.mode.joints_map[this->dataPtr->joints_[mimic_joint.joint_index].
+                                    name].use_cascade_control)
+        {
           // calculate target velocity - output of outer pid - input to inner pid
-        double target_vel = this->dataPtr->joints_[mimic_joint.joint_index].pid_pos.Update(
-          position_error, std::chrono::duration<double>(
-            period.to_chrono<std::chrono::nanoseconds>()));
+          double target_vel = this->dataPtr->joints_[mimic_joint.joint_index].pid_pos.Update(
+              position_error, std::chrono::duration<double>(period.to_chrono<std::chrono::nanoseconds>()));
 
-        // get mimic joint velocity
-        double velocity_mimic_joint =
-          this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocity>(
-          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint)->Data()[0];
+          // get mimic joint velocity
+          double velocity_mimic_joint = this->dataPtr->ecm
+                                            ->Component<ignition::gazebo::components::JointVelocity>(
+                                                this->dataPtr->joints_[mimic_joint.joint_index].sim_joint)
+                                            ->Data()[0];
 
-        double velocity_error = velocity_mimic_joint - std::clamp(
-          target_vel, -1.0 * jointAxis->Data().MaxVelocity(),
-          jointAxis->Data().MaxVelocity());
+          position_or_velocity_error = velocity_mimic_joint - std::clamp(target_vel, -1.0 * jointAxis->Data().MaxVelocity(),
+                                                                    jointAxis->Data().MaxVelocity());
+        }else{
+          position_or_velocity_error = position_error;
+        }
 
+        // set command offset - feed forward term added to the pid output that is clamped by pid max command value
+        // while taking into account mimic multiplier
         this->dataPtr->joints_[mimic_joint.joint_index].pid_vel.SetCmdOffset(
           mimic_joint.multiplier *
           this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_effort_cmd);
+
         // calculate target force/torque - output of inner pid
         double target_force = this->dataPtr->joints_[mimic_joint.joint_index].pid_vel.Update(
-          position_error, std::chrono::duration<double>(
+            position_or_velocity_error, std::chrono::duration<double>(
             period.to_chrono<std::chrono::nanoseconds>()));
 
+        // round force value for simulation stability
         target_force = round(target_force * 10000.0)/10000.0;
 
+        // remember for potential effort state interface
         this->dataPtr->joints_[mimic_joint.joint_index].joint_effort_cmd = target_force;
 
         auto forceCmd =
