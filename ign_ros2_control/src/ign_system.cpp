@@ -254,7 +254,7 @@ bool IgnitionSystem::initSim(
       this->dataPtr->ecm->Component<ignition::gazebo::components::JointAxis>(
       this->dataPtr->joints_[j].sim_joint);
 
-    double use_cascade_control =
+    bool use_cascade_control =
         (hardware_info.joints[j].parameters.find("use_cascade_control") ==
          hardware_info.joints[j].parameters.end() ) ? false : [&](){
               if(hardware_info.joints[j].parameters.at(
@@ -266,7 +266,7 @@ bool IgnitionSystem::initSim(
               }
             }();
 
-    param_vec.push_back(rclcpp::Parameter{"mode." + joint_name + ".use_cascade_control", p_gain_pos});
+    param_vec.push_back(rclcpp::Parameter{"mode." + joint_name + ".use_cascade_control", use_cascade_control});
 
 
     double upper = jointAxis->Data().Upper();
