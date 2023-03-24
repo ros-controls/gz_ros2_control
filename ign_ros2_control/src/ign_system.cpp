@@ -956,7 +956,6 @@ hardware_interface::return_type IgnitionSystem::write(
         *jointEffortCmd = ignition::gazebo::components::JointForceCmd(
           {this->dataPtr->joints_[i].joint_effort_cmd});
       }
-    }
   }
 
   // set values of all mimic joints with respect to mimicked joint
