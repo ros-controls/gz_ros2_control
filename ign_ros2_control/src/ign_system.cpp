@@ -43,7 +43,7 @@
 #include <ignition/gazebo/components/Sensor.hh>
 
 // pid_pos stuff
-#include <gz/math/PID.hh>
+#include <ignition/math/PID.hh>
 
 #include <ignition/transport/Node.hh>
 
@@ -79,10 +79,10 @@ struct jointData
   ignition::gazebo::Entity sim_joint;
 
   /// \brief PID for position control
-  gz::math::PID pid_pos;
+  ignition::math::PID pid_pos;
 
   /// \brief PID for velocity control
-  gz::math::PID pid_vel;
+  ignition::math::PID pid_vel;
 
   /// \brief Control method defined in the URDF for each joint.
   ign_ros2_control::IgnitionSystemInterface::ControlMethod joint_control_method;
@@ -1098,9 +1098,8 @@ hardware_interface::return_type IgnitionSystem::write(
         }
       }
     }
-
-    return hardware_interface::return_type::OK;
   }
+  return hardware_interface::return_type::OK;
 }
 
 } // namespace ign_ros2_control

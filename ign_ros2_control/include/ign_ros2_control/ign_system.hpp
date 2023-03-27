@@ -22,12 +22,12 @@
 #include <vector>
 
 #include "ign_ros2_control/ign_system_interface.hpp"
-#include "ign_ros2_control_parameters.hpp"
 
 #include "rclcpp/executors/single_threaded_executor.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 
+#include "ign_ros2_control_parameters.hpp"
 
 namespace ign_ros2_control
 {

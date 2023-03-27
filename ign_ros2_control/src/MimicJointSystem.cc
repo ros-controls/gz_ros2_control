@@ -371,6 +371,9 @@ void MimicJointSystem::PreUpdate(
       return;
     }
 
+    // If the mode is not ABS, default mode is PID
+    // (e.g.) MimicJointSystemPrivate::OperationMode::PID
+
     // Update force command.
     double force = this->dataPtr->posPid.Update(error, _info.dt);
 
@@ -391,14 +394,12 @@ void MimicJointSystem::Update(
   const ignition::gazebo::UpdateInfo & /*_info*/,
   ignition::gazebo::EntityComponentManager & /*_ecm*/)
 {
-//  ignmsg << "MimicJointSystem::Update" << std::endl;
 }
 
 void MimicJointSystem::PostUpdate(
   const ignition::gazebo::UpdateInfo & /*_info*/,
   const ignition::gazebo::EntityComponentManager & /*_ecm*/)
 {
-//  ignmsg << "MimicJointSystem::PostUpdate" << std::endl;
 }
 
 //! [registerMimicJointSystem]
