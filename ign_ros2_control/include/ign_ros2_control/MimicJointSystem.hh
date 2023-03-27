@@ -51,51 +51,53 @@
 
 namespace ign_ros2_control
 {
-class MimicJointSystemPrivate;
 
-class MimicJointSystem:
+// Forward declaration
+  class MimicJointSystemPrivate;  // NOLINT
+
+  class MimicJointSystem:  // NOLINT
 // This class is a system.
-public ignition::gazebo::System,
-public ignition::gazebo::ISystemConfigure,
+  public ignition::gazebo::System,  // NOLINT
+  public ignition::gazebo::ISystemConfigure,  // NOLINT
 // This class also implements the ISystemPreUpdate, ISystemUpdate,
 // and ISystemPostUpdate interfaces.
-public ignition::gazebo::ISystemPreUpdate,
-public ignition::gazebo::ISystemUpdate,
-public ignition::gazebo::ISystemPostUpdate
-{
-  public:
-      MimicJointSystem();
+  public ignition::gazebo::ISystemPreUpdate,  // NOLINT
+  public ignition::gazebo::ISystemUpdate,  // NOLINT
+  public ignition::gazebo::ISystemPostUpdate  // NOLINT
+  {
+public:
+    MimicJointSystem();
 
-      // Documentation inherited
+    // Documentation inherited
 
-  public:
-      void Configure(
-        const ignition::gazebo::Entity & _entity,
-        const std::shared_ptr < const sdf::Element > & _sdf,
-        ignition::gazebo::EntityComponentManager & _ecm,
-        ignition::gazebo::EventManager & _eventMgr) override;
+public:
+    void Configure(
+      const ignition::gazebo::Entity & _entity,
+      const std::shared_ptr < const sdf::Element > & _sdf,
+      ignition::gazebo::EntityComponentManager & _ecm,
+      ignition::gazebo::EventManager & _eventMgr) override;
 
-  public:
-      void PreUpdate(
-        const ignition::gazebo::UpdateInfo & _info,
-        ignition::gazebo::EntityComponentManager & _ecgm) override;
+public:
+    void PreUpdate(
+      const ignition::gazebo::UpdateInfo & _info,
+      ignition::gazebo::EntityComponentManager & _ecgm) override;
 
-  public:
-      void Update(
-        const ignition::gazebo::UpdateInfo & _info,
-        ignition::gazebo::EntityComponentManager & _ecm) override;
+public:
+    void Update(
+      const ignition::gazebo::UpdateInfo & _info,
+      ignition::gazebo::EntityComponentManager & _ecm) override;
 
-  public:
-      void PostUpdate(
-        const ignition::gazebo::UpdateInfo & _info,
-        const ignition::gazebo::EntityComponentManager & _ecm) override;
+public:
+    void PostUpdate(
+      const ignition::gazebo::UpdateInfo & _info,
+      const ignition::gazebo::EntityComponentManager & _ecm) override;
 
-  private:
-      /// \brief Private data pointer
+private:
+    /// \brief Private data pointer
 
-  private:
-      std::unique_ptr < MimicJointSystemPrivate > dataPtr;
-};
+private:
+    std::unique_ptr < MimicJointSystemPrivate > dataPtr;
+  };
 }  // namespace ign_ros2_control
 //! [header]
 
