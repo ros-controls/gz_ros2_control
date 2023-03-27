@@ -1,19 +1,16 @@
-/*
- * Copyright 2023 Open Source Robotics Foundation, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
-*/
+// Copyright 2023 Open Source Robotics Foundation, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 //----------------------------------------------------------------------
 /*!\file
@@ -24,8 +21,8 @@
  */
 //----------------------------------------------------------------------
 
-#ifndef IGNITION_GAZEBO_SYSTEMS_MIMICJOINTSYSTEM_HH_
-#define IGNITION_GAZEBO_SYSTEMS_MIMICJOINTSYSTEM_HH_
+#ifndef IGN_ROS2_CONTROL__MIMICJOINTSYSTEM_HH_
+#define IGN_ROS2_CONTROL__MIMICJOINTSYSTEM_HH_
 
 //! [header]
 #include <memory>
@@ -54,40 +51,52 @@
 
 namespace ign_ros2_control
 {
-  class MimicJointSystemPrivate;
+class MimicJointSystemPrivate;
 
-  class MimicJointSystem:
-    // This class is a system.
-    public ignition::gazebo::System,
-    public ignition::gazebo::ISystemConfigure,
-    // This class also implements the ISystemPreUpdate, ISystemUpdate,
-    // and ISystemPostUpdate interfaces.
-    public ignition::gazebo::ISystemPreUpdate,
-    public ignition::gazebo::ISystemUpdate,
-    public ignition::gazebo::ISystemPostUpdate
-  {
-    public: MimicJointSystem();
+class MimicJointSystem:
+// This class is a system.
+public ignition::gazebo::System,
+public ignition::gazebo::ISystemConfigure,
+// This class also implements the ISystemPreUpdate, ISystemUpdate,
+// and ISystemPostUpdate interfaces.
+public ignition::gazebo::ISystemPreUpdate,
+public ignition::gazebo::ISystemUpdate,
+public ignition::gazebo::ISystemPostUpdate
+{
+  public:
+      MimicJointSystem();
 
-    // Documentation inherited
-    public:  void Configure(const ignition::gazebo::Entity &_entity,
-                          const std::shared_ptr<const sdf::Element> &_sdf,
-                          ignition::gazebo::EntityComponentManager &_ecm,
-                          ignition::gazebo::EventManager &_eventMgr) override;
+      // Documentation inherited
 
-    public: void PreUpdate(const ignition::gazebo::UpdateInfo &_info,
-                ignition::gazebo::EntityComponentManager &_ecm) override;
+  public:
+      void Configure(
+        const ignition::gazebo::Entity & _entity,
+        const std::shared_ptr < const sdf::Element > & _sdf,
+        ignition::gazebo::EntityComponentManager & _ecm,
+        ignition::gazebo::EventManager & _eventMgr) override;
 
-    public: void Update(const ignition::gazebo::UpdateInfo &_info,
-                ignition::gazebo::EntityComponentManager &_ecm) override;
+  public:
+      void PreUpdate(
+        const ignition::gazebo::UpdateInfo & _info,
+        ignition::gazebo::EntityComponentManager & _ecgm) override;
 
-    public: void PostUpdate(const ignition::gazebo::UpdateInfo &_info,
-                const ignition::gazebo::EntityComponentManager &_ecm) override;
+  public:
+      void Update(
+        const ignition::gazebo::UpdateInfo & _info,
+        ignition::gazebo::EntityComponentManager & _ecm) override;
+
+  public:
+      void PostUpdate(
+        const ignition::gazebo::UpdateInfo & _info,
+        const ignition::gazebo::EntityComponentManager & _ecm) override;
 
   private:
       /// \brief Private data pointer
-      private: std::unique_ptr<MimicJointSystemPrivate> dataPtr;
-  };
-}
+
+  private:
+      std::unique_ptr < MimicJointSystemPrivate > dataPtr;
+};
+}  // namespace ign_ros2_control
 //! [header]
 
-#endif
+#endif  // IGN_ROS2_CONTROL__MIMICJOINTSYSTEM_HH_

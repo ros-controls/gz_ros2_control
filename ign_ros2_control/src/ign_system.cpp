@@ -16,6 +16,8 @@
 
 #include <ignition/msgs/imu.pb.h>
 
+#include <iostream>
+
 #include <limits>
 #include <map>
 #include <memory>
@@ -46,8 +48,6 @@
 #include <ignition/math/PID.hh>
 
 #include <ignition/transport/Node.hh>
-
-#include <iostream>
 
 #include <hardware_interface/hardware_info.hpp>
 #include <normApi.h>
@@ -452,7 +452,8 @@ bool IgnitionSystem::initSim(
                 " ' to mimic");
       }
       RCLCPP_INFO_STREAM(
-        this->nh_->get_logger(), "Joint '" << joint_name << "'is mimicking joint '" << mimicked_joint
+        this->nh_->get_logger(), "Joint '" << joint_name <<
+          "'is mimicking joint '" << mimicked_joint
                                            << "' with mutiplier: " << mimic_joint.multiplier);
       this->dataPtr->mimic_joints_.push_back(mimic_joint);
     }
@@ -603,7 +604,8 @@ void IgnitionSystem::registerSensors(const hardware_interface::HardwareInfo & ha
         this->nh_->get_logger(),
         "Loading sensor: " << _name->Data());
 
-      auto sensorTopicComp = this->dataPtr->ecm->Component<ignition::gazebo::components::SensorTopic>(
+      auto sensorTopicComp =
+      this->dataPtr->ecm->Component<ignition::gazebo::components::SensorTopic>(
         _entity);
       if (sensorTopicComp) {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "Topic name: " << sensorTopicComp->Data());
@@ -704,7 +706,8 @@ hardware_interface::return_type IgnitionSystem::read(
 
     this->dataPtr->joints_[i].joint_position = jointPositions->Data()[0];
     this->dataPtr->joints_[i].joint_velocity = jointVelocity->Data()[0];
-    // set effort state interface to computed/propagated effort command - passthrough because of ignitionrobotics/ign-physics#124
+    // set effort state interface to computed/propagated effort command
+    // - passthrough because of ignitionrobotics/ign-physics#124
     this->dataPtr->joints_[i].joint_effort = this->dataPtr->joints_[i].joint_effort_cmd;
   }
 
@@ -1007,7 +1010,8 @@ hardware_interface::return_type IgnitionSystem::write(
             position_or_velocity_error = position_error;
           }
 
-          // set command offset - feed forward term added to the pid output that is clamped by pid max command value
+          // set command offset - feed forward term added to the pid output
+          // that is clamped by pid max command value
           // while taking into account mimic multiplier
           this->dataPtr->joints_[mimic_joint.joint_index].pid_vel.SetCmdOffset(
             mimic_joint.multiplier *
@@ -1101,8 +1105,7 @@ hardware_interface::return_type IgnitionSystem::write(
   }
   return hardware_interface::return_type::OK;
 }
-
-} // namespace ign_ros2_control
+}  // namespace ign_ros2_control
 
 #include "pluginlib/class_list_macros.hpp"  // NOLINT
 PLUGINLIB_EXPORT_CLASS(
