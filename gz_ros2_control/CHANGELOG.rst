@@ -2,6 +2,13 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Context and Namespace Handling for Multi-Robot Sim (`#128 <https://github.com/ros-controls/gz_ros2_control/issues/128>`_)
+* Install include directory since it is exported (`#127 <https://github.com/ros-controls/gz_ros2_control/issues/127>`_)
+* Renamed ign to gz (`#67 <https://github.com/ros-controls/gz_ros2_control/issues/67>`_)
+* Contributors: Alejandro Hernández Cordero, Roni Kreinin, Tim Clephas
+
 0.6.1 (2023-02-07)
 ------------------
 * Various bug fixes (`#114 <https://github.com/ros-controls/gz_ros2_control/issues/114>`_)
