@@ -285,25 +285,20 @@ void IgnitionROS2ControlPlugin::Configure(
   // Get controller manager node name
   std::string controllerManagerNodeName{"controller_manager"};
 
-  std::string controllerManagerPrefixNodeName =
-    _sdf->Get<std::string>("controller_manager_prefix_node_name");
-  if (!controllerManagerPrefixNodeName.empty()) {
-    controllerManagerNodeName = controllerManagerPrefixNodeName + "_" + controllerManagerNodeName;
-  }
-
+  std::string ns = "/";
   if (sdfPtr->HasElement("ros")) {
     sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
 
     // Set namespace if tag is present
     if (sdfRos->HasElement("namespace")) {
-      std::string ns = sdfRos->GetElement("namespace")->Get<std::string>();
+      ns = sdfRos->GetElement("namespace")->Get<std::string>();
       // prevent exception: namespace must be absolute, it must lead with a '/'
       if (ns.empty() || ns[0] != '/') {
         ns = '/' + ns;
       }
-      std::string ns_arg = std::string("__ns:=") + ns;
-      arguments.push_back(RCL_REMAP_FLAG);
-      arguments.push_back(ns_arg);
+      if (ns.length() > 1) {
+        this->dataPtr->robot_description_node_ = ns + "/" + this->dataPtr->robot_description_node_;
+      }
     }
 
     // Get list of remapping rules from SDF
@@ -325,14 +320,14 @@ void IgnitionROS2ControlPlugin::Configure(
     argv.push_back(reinterpret_cast<const char *>(arg.data()));
   }
 
+  // Create a default context, if not already
   if (!rclcpp::ok()) {
     rclcpp::init(static_cast<int>(argv.size()), argv.data());
-    std::string node_name = "ignition_ros_control";
-    if (!controllerManagerPrefixNodeName.empty()) {
-      node_name = controllerManagerPrefixNodeName + "_" + node_name;
-    }
-    this->dataPtr->node_ = rclcpp::Node::make_shared(node_name);
   }
+
+  std::string node_name = "gz_ros2_control";
+
+  this->dataPtr->node_ = rclcpp::Node::make_shared(node_name, ns);
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   this->dataPtr->executor_->add_node(this->dataPtr->node_);
   this->dataPtr->stop_ = false;
@@ -421,7 +416,8 @@ void IgnitionROS2ControlPlugin::Configure(
     new controller_manager::ControllerManager(
       std::move(resource_manager_),
       this->dataPtr->executor_,
-      controllerManagerNodeName));
+      controllerManagerNodeName,
+      this->dataPtr->node_->get_namespace()));
   this->dataPtr->executor_->add_node(this->dataPtr->controller_manager_);
 
   if (!this->dataPtr->controller_manager_->has_parameter("update_rate")) {
