@@ -2,6 +2,23 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Context and Namespace Handling for Multi-Robot Sim (`#92 <https://github.com/ros-controls/gz_ros2_control/issues/92>`_)
+* Various bug fixes (`#114 <https://github.com/ros-controls/gz_ros2_control/issues/114>`_)
+* Force setting use_sim_time parameter when using plugin. (`#100 <https://github.com/ros-controls/gz_ros2_control/issues/100>`_)
+* Enable loading params from multiple yaml files (`#94 <https://github.com/ros-controls/gz_ros2_control/issues/94>`_)
+* Add support for mimic joints. (`#33 <https://github.com/ros-controls/gz_ros2_control/issues/33>`_)
+* Set right initial velocity (`#81 <https://github.com/ros-controls/gz_ros2_control/issues/81>`_)
+* Fix setting initial values if command interfaces are not defined. (`#73 <https://github.com/ros-controls/gz_ros2_control/issues/73>`_)
+* activated all hardware by default and improved variable naming (`#74 <https://github.com/ros-controls/gz_ros2_control/issues/74>`_)
+* Implemented perform_command_mode_switch override in GazeboSystem (`#76 <https://github.com/ros-controls/gz_ros2_control/issues/76>`_)
+* Remove warnings (`#72 <https://github.com/ros-controls/gz_ros2_control/issues/72>`_)
+* change component name for ignition (`#69 <https://github.com/ros-controls/gz_ros2_control/issues/69>`_)
+* Added logic for activating hardware interfaces (`#68 <https://github.com/ros-controls/gz_ros2_control/issues/68>`_)
+* Force setting use_sim_time parameter when using plugin. (`#100 <https://github.com/ros-controls/gz_ros2_control/issues/100>`_) (`#102 <https://github.com/ros-controls/gz_ros2_control/issues/102>`_)
+* Contributors: Alejandro Hernández Cordero, Andy Zelenak, Bence Magyar, Denis Štogl, Lovro, Tianyu Li, sp-sophia-labs
+
 0.4.3 (2023-02-16)
 ------------------
 * Fix example demos in humble branch `#118 <https://github.com/ros-controls/gz_ros2_control/issues/118>`_ from iche033/iche033/fix_humble_demos
