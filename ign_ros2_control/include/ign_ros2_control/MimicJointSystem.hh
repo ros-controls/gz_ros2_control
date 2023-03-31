@@ -29,7 +29,7 @@
 
 #include <ignition/gazebo/System.hh>
 
-// This is an example to go in your urdf (is that correct?)
+// This is an example to go in your urdf
 //! <plugin filename="mimic-joint-system" name="ign_ros2_control::MimicJointSystem">
 //!     <joint_name>joint_name</joint_name>
 //!     <mimic_joint_name>mimic_joint_name</mimic_joint_name>
