@@ -334,7 +334,9 @@ void GazeboSimROS2ControlPlugin::Configure(
   }
   // Create a default context, if not already
   if (!rclcpp::ok()) {
-    rclcpp::init(static_cast<int>(argv.size()), argv.data());
+    rclcpp::init(
+      static_cast<int>(argv.size()), argv.data(), rclcpp::InitOptions(),
+      rclcpp::SignalHandlerOptions::None);
   }
 
   std::string node_name = "gz_ros_control";
