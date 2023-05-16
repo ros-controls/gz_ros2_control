@@ -19,19 +19,17 @@ import unittest
 from ament_index_python.packages import get_package_share_directory
 
 import launch
-from launch.actions import IncludeLaunchDescription, ExecuteProcess
+from launch.actions import ExecuteProcess, IncludeLaunchDescription
 from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 import launch_testing
 from launch_testing.actions import ReadyToTest
 from launch_testing.util import KeepAliveProc
 
-import time
-import pytest
 import psutil
+import pytest
 import xacro
 
 
@@ -118,10 +116,12 @@ def generate_test_description():
 
     return ld
 
+
 class TestFixture(unittest.TestCase):
 
     def test_arm(self, launch_service, proc_info, proc_output):
-        proc_output.assertWaitFor('Sucessfully loaded controller joint_trajectory_controller into state active',
+        proc_output.assertWaitFor('Sucessfully loaded controller joint_trajectory_controller '
+                                  'into state active',
                                   timeout=100, stream='stdout')
 
         proc_action = Node(

@@ -79,8 +79,7 @@ void common_feedback(
   }
 
   std::cout << std::endl;
-  if (fabs(feedback->desired.positions[0] - derired_goals[goal_reached]) < 0.1)
-  {
+  if (fabs(feedback->desired.positions[0] - derired_goals[goal_reached]) < 0.1) {
     std::cout << "Goal " << derired_goals[goal_reached] << " reached" << '\n';
     goal_reached++;
     std::cout << "next goal " << goal_reached << '\n';
@@ -189,8 +188,7 @@ int main(int argc, char * argv[])
   std::cout << "async_send_goal" << std::endl;
   rclcpp::shutdown();
 
-  if ((derired_goals.size()+1) != goal_reached)
-  {
+  if ((derired_goals.size() + 1) != goal_reached) {
     return -1;
   }
 
