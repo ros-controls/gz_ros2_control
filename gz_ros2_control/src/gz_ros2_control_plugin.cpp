@@ -261,11 +261,12 @@ void GazeboSimROS2ControlPlugin::Configure(
   sim::EntityComponentManager & _ecm,
   sim::EventManager &)
 {
+  rclcpp::Logger logger = rclcpp::get_logger("GazeboSimROS2ControlPlugin");
   // Make sure the controller is attached to a valid model
   const auto model = sim::Model(_entity);
   if (!model.Valid(_ecm)) {
     RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(),
+      logger,
       "[Gazebo ROS 2 Control] Failed to initialize because [%s] (Entity=%lu)] is not a model."
       "Please make sure that Gazebo ROS 2 Control is attached to a valid model.",
       model.Name(_ecm).c_str(), _entity);
@@ -277,7 +278,7 @@ void GazeboSimROS2ControlPlugin::Configure(
 
   if (paramFileName.empty()) {
     RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(),
+      logger,
       "Gazebo ros2 control found an empty parameters file. Failed to initialize.");
     return;
   }
