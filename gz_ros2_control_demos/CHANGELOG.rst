@@ -2,8 +2,8 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.1.0 (2023-05-23)
+------------------
 * Clean shutdown example position (`#135 <https://github.com/ros-controls/gz_ros2_control/issues/135>`_)
 * Fixed /clock with gz_ros2_bridge (`#137 <https://github.com/ros-controls/gz_ros2_control/issues/137>`_)
 * Removed tricycle publish rate (`#133 <https://github.com/ros-controls/gz_ros2_control/issues/133>`_)
