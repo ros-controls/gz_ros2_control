@@ -41,7 +41,7 @@ def generate_launch_description():
 
     doc = xacro.parse(open(xacro_file))
     xacro.process_doc(doc)
-    params = {'robot_description': doc.toxml()}
+    params = {'robot_description': doc.toxml(), 'use_sim_time': use_sim_time}
 
     print(params)
 
@@ -73,7 +73,16 @@ def generate_launch_description():
         output='screen'
     )
 
+    # Bridge
+    bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=['/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock'],
+        output='screen'
+    )
+
     return LaunchDescription([
+        bridge,
         # Launch gazebo environment
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
