@@ -2,6 +2,12 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Clean shutdown example position (`#135 <https://github.com/ros-controls/gz_ros2_control/issues/135>`_) (`#139 <https://github.com/ros-controls/gz_ros2_control/issues/139>`_)
+* Fixed /clock with gz_ros2_bridge (`#137 <https://github.com/ros-controls/gz_ros2_control/issues/137>`_) (`#138 <https://github.com/ros-controls/gz_ros2_control/issues/138>`_)
+* Contributors: mergify[bot]
+
 0.4.4 (2023-03-28)
 ------------------
 * Merge pull request `#121 <https://github.com/ros-controls/gz_ros2_control/issues/121>`_ from livanov93/port-master-to-humble

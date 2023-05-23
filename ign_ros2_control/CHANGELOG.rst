@@ -2,6 +2,11 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fixed segmentation fault with logger (backport `#136 <https://github.com/ros-controls/gz_ros2_control/issues/136>`_) (`#140 <https://github.com/ros-controls/gz_ros2_control/issues/140>`_)
+* Contributors: mergify[bot]
+
 0.4.4 (2023-03-28)
 ------------------
 * Context and Namespace Handling for Multi-Robot Sim (`#92 <https://github.com/ros-controls/gz_ros2_control/issues/92>`_)
