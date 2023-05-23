@@ -254,15 +254,9 @@ void IgnitionROS2ControlPlugin::Configure(
   const auto model = ignition::gazebo::Model(_entity);
   if (!model.Valid(_ecm)) {
     RCLCPP_ERROR(
-<<<<<<< HEAD:ign_ros2_control/src/ign_ros2_control_plugin.cpp
-      this->dataPtr->node_->get_logger(),
+      logger,
       "[Ignition ROS 2 Control] Failed to initialize because [%s] (Entity=%lu)] is not a model."
       "Please make sure that Ignition ROS 2 Control is attached to a valid model.",
-=======
-      logger,
-      "[Gazebo ROS 2 Control] Failed to initialize because [%s] (Entity=%lu)] is not a model."
-      "Please make sure that Gazebo ROS 2 Control is attached to a valid model.",
->>>>>>> dc25dd6 (Fixed segmentation fault with logger (#136)):gz_ros2_control/src/gz_ros2_control_plugin.cpp
       model.Name(_ecm).c_str(), _entity);
     return;
   }
@@ -272,13 +266,8 @@ void IgnitionROS2ControlPlugin::Configure(
 
   if (paramFileName.empty()) {
     RCLCPP_ERROR(
-<<<<<<< HEAD:ign_ros2_control/src/ign_ros2_control_plugin.cpp
-      this->dataPtr->node_->get_logger(),
-      "Ignition ros2 control found an empty parameters file. Failed to initialize.");
-=======
       logger,
-      "Gazebo ros2 control found an empty parameters file. Failed to initialize.");
->>>>>>> dc25dd6 (Fixed segmentation fault with logger (#136)):gz_ros2_control/src/gz_ros2_control_plugin.cpp
+      "Ignition ros2 control found an empty parameters file. Failed to initialize.");
     return;
   }
 
