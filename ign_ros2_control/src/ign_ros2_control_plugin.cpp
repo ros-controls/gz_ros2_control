@@ -249,11 +249,12 @@ void IgnitionROS2ControlPlugin::Configure(
   ignition::gazebo::EntityComponentManager & _ecm,
   ignition::gazebo::EventManager &)
 {
+  rclcpp::Logger logger = rclcpp::get_logger("GazeboSimROS2ControlPlugin");
   // Make sure the controller is attached to a valid model
   const auto model = ignition::gazebo::Model(_entity);
   if (!model.Valid(_ecm)) {
     RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(),
+      logger,
       "[Ignition ROS 2 Control] Failed to initialize because [%s] (Entity=%lu)] is not a model."
       "Please make sure that Ignition ROS 2 Control is attached to a valid model.",
       model.Name(_ecm).c_str(), _entity);
@@ -265,7 +266,7 @@ void IgnitionROS2ControlPlugin::Configure(
 
   if (paramFileName.empty()) {
     RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(),
+      logger,
       "Ignition ros2 control found an empty parameters file. Failed to initialize.");
     return;
   }
