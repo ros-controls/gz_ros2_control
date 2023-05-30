@@ -46,10 +46,6 @@ else()
   add_definitions(-DGZ_HEADERS)
 endif()
 
-if("$ENV{ROS_DISTRO}" STREQUAL "rolling")
-  add_definitions(-DROLLING)
-endif()
-
 include_directories(include)
 
 add_library(${PROJECT_NAME}-system SHARED
