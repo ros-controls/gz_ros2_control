@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: [fortress]
+        version: [humble]
     env:
       IGNITION_VERSION: ${{ matrix.version }}
     container:
