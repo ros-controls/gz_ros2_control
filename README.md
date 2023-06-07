@@ -9,8 +9,6 @@ More information about `ros2_control` can be found here: https://control.ros.org
 
 This package provides an Ignition Gazebo system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.
 
-[![Build Status](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci.yaml/badge.svg?branch=galactic)](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci.yaml)
-
 ROS version | Gazebo version | Branch | Binaries hosted at
 -- | -- | -- | --
 Foxy | Citadel | [foxy](https://github.com/ros-controls/gz_ros2_control/tree/foxy) | https://packages.ros.org
