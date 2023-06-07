@@ -22,6 +22,15 @@ Rolling | Edifice | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/
 Rolling | Fortress | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org
 Rolling | Garden (not released) | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
 
+## Build status
+
+ROS 2 Distro | Branch | Build status | Documentation
+:----------: | :----: | :----------: | :-----------:
+**Rolling** | [`master`](https://github.com/ros-controls/gz_ros2_control/tree/master) | [![Gazebo ros2 control CI](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci.yaml) | [Documentation](https://control.ros.org/master/index.html) <br /> [API Reference](https://control.ros.org/master/doc/api/index.html)
+**Iron** | [`master`](https://github.com/ros-controls/gz_ros2_control/tree/master) | [![Gazebo ros2 control CI](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci.yaml) | [Documentation](https://control.ros.org/master/index.html) <br /> [API Reference](https://control.ros.org/master/doc/api/index.html)
+**Humble** | [`humble`](https://github.com/ros-controls/gz_ros2_control/tree/humble) | [![Gazebo ros2 control CI](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci.yaml/badge.svg?branch=humble)](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci.yaml) | [Documentation](https://control.ros.org/humble/index.html) <br /> [API Reference](https://control.ros.org/humble/doc/api/index.html)
+## Documentation
+See the [documentation file](doc/index.rst) or [control.ros.org](https://control.ros.org/master/doc/simulators/gz_ros2_control/doc/index.html)
 
 # Compile from source
 
@@ -43,6 +52,7 @@ rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
 cd ~/ros2_ign
 colcon build
 ```
+<<<<<<< HEAD
 
 # Usage
 
@@ -288,3 +298,5 @@ Send example commands:
 ```bash
 ros2 run ign_ros2_control_demos example_gripper
 ```
+=======
+>>>>>>> 605df15 (ReST: Move documentation to doc/index.rst (#146))
