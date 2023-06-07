@@ -2,6 +2,12 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.0 (2023-05-23)
+------------------
+* Fixed segmentation fault with logger (`#136 <https://github.com/ros-controls/gz_ros2_control/issues/136>`_)
+* Disable ROS signal handlers (`#129 <https://github.com/ros-controls/gz_ros2_control/issues/129>`_)
+* Contributors: Alejandro Hernández Cordero, Carlo Rizzardo
+
 1.0.0 (2023-03-28)
 ------------------
 * Context and Namespace Handling for Multi-Robot Sim (`#128 <https://github.com/ros-controls/gz_ros2_control/issues/128>`_)

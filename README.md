@@ -35,11 +35,11 @@ export GZ_VERSION=garden
 Then create a workspace, clone the repo and compile it:
 
 ```bash
-mkdir -p ~/ros_ign/src
-cd ~/ros_ign/src
+mkdir -p ~/gz_ros2_control_ws/src
+cd ~/gz_ros2_control_ws/src
 git clone https://github.com/ros-controls/gz_ros2_control
 rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
-cd ~/ros2_ign
+cd ~/gz_ros2_control_ws
 colcon build
 ```
 

@@ -150,6 +150,8 @@ int main(int argc, char * argv[])
     rclcpp::FutureReturnCode::SUCCESS)
   {
     RCLCPP_ERROR(node->get_logger(), "send goal call failed :(");
+    action_client.reset();
+    node.reset();
     return 1;
   }
   RCLCPP_ERROR(node->get_logger(), "send goal call ok :)");
@@ -158,6 +160,8 @@ int main(int argc, char * argv[])
     goal_handle = goal_handle_future.get();
   if (!goal_handle) {
     RCLCPP_ERROR(node->get_logger(), "Goal was rejected by server");
+    action_client.reset();
+    node.reset();
     return 1;
   }
   RCLCPP_ERROR(node->get_logger(), "Goal was accepted by server");
@@ -172,7 +176,8 @@ int main(int argc, char * argv[])
     return 1;
   }
 
-  std::cout << "async_send_goal" << std::endl;
+  action_client.reset();
+  node.reset();
   rclcpp::shutdown();
 
   return 0;
