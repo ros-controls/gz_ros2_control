@@ -16,7 +16,7 @@ This package provides a Gazebo-Sim system plugin which instantiates a *ros2_cont
 .. image:: img/diff_drive.gif
   :alt: DiffBot
 
-Usage 
+Usage
 ======
 
 
@@ -38,7 +38,7 @@ To run the demo
   .. code-block:: shell
 
     docker run -it --rm --name gz_ros2_control_demo --net host gz_ros2_control ros2 launch gz_ros2_control_demos cart_example_position.launch.py gui:=false
-    
+
   Then on your local machine, you can run the Gazebo client:
 
   .. code-block:: shell
@@ -141,7 +141,7 @@ extensible via an additional plugin architecture to allow power users to create 
 robot hardware interfaces between *ros2_control* and Gazebo.
 
 .. code-block:: xml
-  
+
   <gazebo>
       <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
         <robot_param>robot_description</robot_param>
@@ -256,7 +256,7 @@ When the Gazebo world is launched, you can run some of the following commands to
 The following example shows parallel gripper with mimic joint:
 
 .. code-block:: shell
-  
+
   ros2 launch gz_ros2_control_demos gripper_mimic_joint_example.launch.py
 
 
@@ -264,6 +264,5 @@ Send example commands:
 
 
 .. code-block:: shell
-  
-  ros2 run gz_ros2_control_demos example_gripper
 
+  ros2 run gz_ros2_control_demos example_gripper
