@@ -73,11 +73,11 @@ jobs:
       run: |
         cd /home/ros2_ws/
         . /opt/ros/${ROS_DISTRO}/local_setup.sh
-        colcon build --packages-up-to gz_ros2_control_demos
+        colcon build --packages-up-to gz_ros2_control_demos gz_ros2_control_tests
     - name: Run tests
       id: test
       run: |
         cd /home/ros2_ws/
         . /opt/ros/${ROS_DISTRO}/local_setup.sh
-        colcon test --event-handlers console_direct+ --packages-select gz_ros2_control gz_ros2_control_demos
+        colcon test --event-handlers console_direct+ --packages-select gz_ros2_control gz_ros2_control_demos gz_ros2_control_tests
         colcon test-result
