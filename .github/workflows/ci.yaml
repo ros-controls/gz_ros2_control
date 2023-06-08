@@ -63,6 +63,13 @@ jobs:
 
         if [ "$GZ_VERSION" == "garden" ]; then
           export ROSDEP_ARGS="--skip-keys ros_gz_sim --skip-keys gz-plugin2 --skip-keys gz-sim7 --skip-keys gz-transport12 --skip-keys gz-math7 --skip-keys gz-msgs9"
+          cd /home/ros2_ws/src/
+          if [ "$ROS_DISTRO" == "rolling" ]; then
+            git clone https://github.com/gazebosim/ros_gz/
+          fi
+          if [ "$ROS_DISTRO" == "iron" ]; then
+            git clone https://github.com/gazebosim/ros_gz/ -b iron
+          fi
         fi
         cd /home/ros2_ws/src/
         rosdep init
