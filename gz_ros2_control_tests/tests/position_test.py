@@ -120,7 +120,7 @@ def generate_test_description():
 class TestFixture(unittest.TestCase):
 
     def test_arm(self, launch_service, proc_info, proc_output):
-        proc_output.assertWaitFor('Sucessfully loaded controller joint_trajectory_controller '
+        proc_output.assertWaitFor('Successfully loaded controller joint_trajectory_controller '
                                   'into state active',
                                   timeout=100, stream='stdout')
 
