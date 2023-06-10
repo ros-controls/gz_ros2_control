@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <chrono>
 #include <memory>
 #include <string>
 #include <vector>
@@ -102,11 +103,19 @@ int main(int argc, char * argv[])
     node->get_node_waitables_interface(),
     "/joint_trajectory_controller/follow_joint_trajectory");
 
-  bool response =
-    action_client->wait_for_action_server(std::chrono::seconds(1));
-  if (!response) {
-    throw std::runtime_error("could not get action server");
+  while (true) {
+    bool response =
+      action_client->wait_for_action_server(std::chrono::seconds(1));
+    if (!response) {
+      using namespace std::chrono_literals;
+      std::this_thread::sleep_for(2000ms);
+      std::cout << "Trying to connect to the server again" << std::endl;
+      continue;
+    } else {
+      break;
+    }
   }
+
   std::cout << "Created action server" << std::endl;
 
   std::vector<std::string> joint_names = {"slider_to_cart"};
