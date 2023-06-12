@@ -31,7 +31,5 @@
 
   <export>
       <build_type>ament_cmake</build_type>
-      <gz_ros2_control plugin="${prefix}/gz_hardware_plugins.xml"/>
-      <ignition_ros2_control plugin="${prefix}/gz_hardware_plugins.xml"/>
   </export>
 </package>
