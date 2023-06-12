@@ -28,6 +28,5 @@
 
   <export>
       <build_type>ament_cmake</build_type>
-      <ign_ros2_control plugin="${prefix}/ign_hardware_plugins.xml"/>
   </export>
 </package>
