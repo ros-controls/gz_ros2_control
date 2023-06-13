@@ -91,7 +91,7 @@ install(TARGETS
 )
 
 install(DIRECTORY
-  include
+  include/
   DESTINATION include
 )
 
