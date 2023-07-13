@@ -2,6 +2,14 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.1 (2023-07-13)
+------------------
+* Remove plugin export from ROS 1 (`#158 <https://github.com/ros-controls/gz_ros2_control//issues/158>`_)
+* Fixed default gazebo version in CMakeLists.txt (`#156 <https://github.com/ros-controls/gz_ros2_control//issues/156>`_)
+* Compile master with iron and rolling (`#142 <https://github.com/ros-controls/gz_ros2_control//issues/142>`_)
+* Update package.xml (`#141 <https://github.com/ros-controls/gz_ros2_control//issues/141>`_)
+* Contributors: Alejandro Hernández Cordero, Bence Magyar, Christoph Fröhlich
+
 1.1.0 (2023-05-23)
 ------------------
 * Fixed segmentation fault with logger (`#136 <https://github.com/ros-controls/gz_ros2_control/issues/136>`_)
@@ -40,14 +48,11 @@ Changelog for package ign_ros2_control
 * change component name for ignition (`#69 <https://github.com/ros-controls/gz_ros2_control/issues/69>`_)
 * Added logic for activating hardware interfaces (`#68 <https://github.com/ros-controls/gz_ros2_control/issues/68>`_)
 * Merge branch 'foxy' into ahcorde/foxy_to_galactic_27_05_2022
-* Remove URDF dependency (`#56 <https://github.com/ros-controls/gz_ros2_control/issues/56>`_)
 * Adapt to ROS 2 Humble
-* typo in citadel name (`#54 <https://github.com/ros-controls/gz_ros2_control/issues/54>`_)
 * typo in citadel name (`#51 <https://github.com/ros-controls/gz_ros2_control/issues/51>`_)
 * ros2_control is now having usings under its namespace. (`#43 <https://github.com/ros-controls/gz_ros2_control/issues/43>`_)
 * Fix default ign gazebo version Rolling (`#45 <https://github.com/ros-controls/gz_ros2_control/issues/45>`_)
 * Fix ignition version in package.xml - Rolling (`#41 <https://github.com/ros-controls/gz_ros2_control/issues/41>`_)
-* Fixed position control (`#29 <https://github.com/ros-controls/gz_ros2_control/issues/29>`_)
 * Add support for initial_values for hardware interfaces when starting simulation. (`#27 <https://github.com/ros-controls/gz_ros2_control/issues/27>`_)
 * Contributors: Alejandro Hernández Cordero, Denis Štogl, Guillaume Beuzeboc, Tianyu Li
 
@@ -72,7 +77,6 @@ Changelog for package ign_ros2_control
 * Merge pull request `#36 <https://github.com/ignitionrobotics/ign_ros2_control/issues/36>`_ from ignitionrobotics/ahcorde/foxy_to_galactic
   Foxy -> Galactic
 * Merge remote-tracking branch 'origin/foxy' into ahcorde/foxy_to_galactic
-* Fixed position control (`#29 <https://github.com/ignitionrobotics/ign_ros2_control/issues/29>`_)
 * typo fix. (`#25 <https://github.com/ignitionrobotics/ign_ros2_control/issues/25>`_)
 * Contributors: Alejandro Hernández Cordero, Tomoya Fujita
 
