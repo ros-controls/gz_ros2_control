@@ -1,0 +1,9 @@
+ros-iron-gz-ros2-control-tests (1.1.1-1jammy) jammy; urgency=high
+
+  * Run end to end test in CI (#152 <https://github.com/ros-controls/gz_ros2_control//issues/152>)
+  * Add test to check position controller (#134 <https://github.com/ros-controls/gz_ros2_control//issues/134>)
+  * Contributors: Alejandro Hernández Cordero
+
+ -- Alejandro Hernández <alejandro@openrobotics.org>  Wed, 12 Jul 2023 22:00:00 -0000
+
+

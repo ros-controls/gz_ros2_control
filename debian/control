@@ -1,0 +1,12 @@
+Source: ros-iron-gz-ros2-control-tests
+Section: misc
+Priority: optional
+Maintainer: Alejandro Hernández <alejandro@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), ros-iron-ament-cmake, ros-iron-ament-cmake-gtest <!nocheck>, ros-iron-ament-lint-auto <!nocheck>, ros-iron-ament-lint-common <!nocheck>, ros-iron-control-msgs, ros-iron-rclcpp, ros-iron-rclcpp-action, ros-iron-ros-workspace
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-iron-gz-ros2-control-tests
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3-psutil, python3-pytest, ros-iron-ament-index-python, ros-iron-control-msgs, ros-iron-geometry-msgs, ros-iron-gz-ros2-control, ros-iron-hardware-interface, ros-iron-joint-state-broadcaster, ros-iron-joint-trajectory-controller, ros-iron-launch, ros-iron-launch-ros, ros-iron-launch-testing-ament-cmake, ros-iron-rclcpp, ros-iron-robot-state-publisher, ros-iron-ros-gz-sim, ros-iron-ros2controlcli, ros-iron-ros2launch, ros-iron-xacro, ros-iron-ros-workspace
+Description: Gazebo ros2 control tests
