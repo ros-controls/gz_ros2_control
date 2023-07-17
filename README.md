@@ -1,3 +1,29 @@
+## gz_ros2_control (iron) - 1.1.1-1
+
+The packages in the `gz_ros2_control` repository were released into the `iron` distro by running `/usr/bin/bloom-release --rosdistro iron --track iron gz_ros2_control -e` on `Mon, 17 Jul 2023 08:50:12 -0000`
+
+These packages were released:
+- `gz_ros2_control`
+- `gz_ros2_control_demos`
+- `gz_ros2_control_tests`
+
+Version of package(s) in repository `gz_ros2_control`:
+
+- upstream repository: https://github.com/ros-controls/gz_ros2_control/
+- release repository: unknown
+- rosdistro version: `null`
+- old version: `null`
+- new version: `1.1.1-1`
+
+Versions of tools used:
+
+- bloom version: `0.11.2`
+- catkin_pkg version: `0.5.2`
+- rosdep version: `0.22.2`
+- rosdistro version: `0.9.0`
+- vcstools version: `0.1.42`
+
+
 # gz_ros2_control
 
 ROS2 Distro | Build Status | Package build |
