@@ -1,0 +1,12 @@
+Source: ros-iron-gz-ros2-control
+Section: misc
+Priority: optional
+Maintainer: Alejandro Hernández <alejandro@openrobotics.com>
+Build-Depends: debhelper (>= 9.0.0), libignition-gazebo6-dev, libignition-plugin-dev, ros-iron-ament-cmake, ros-iron-ament-index-cpp, ros-iron-ament-lint-auto <!nocheck>, ros-iron-ament-lint-common <!nocheck>, ros-iron-controller-manager, ros-iron-hardware-interface, ros-iron-pluginlib, ros-iron-rclcpp, ros-iron-rclcpp-lifecycle, ros-iron-yaml-cpp-vendor, ros-iron-ros-workspace
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-iron-gz-ros2-control
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libignition-gazebo6-dev, libignition-plugin-dev, ros-iron-ament-index-cpp, ros-iron-controller-manager, ros-iron-hardware-interface, ros-iron-pluginlib, ros-iron-rclcpp, ros-iron-rclcpp-lifecycle, ros-iron-yaml-cpp-vendor, ros-iron-ros-workspace
+Description: Gazebo ros2_control package allows to control simulated robots using ros2_control framework.
