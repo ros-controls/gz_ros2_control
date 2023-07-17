@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>gz_ros2_control</name>
+  <version>1.1.1</version>
+  <description>Gazebo ros2_control package allows to control simulated robots using ros2_control framework.</description>
+  <maintainer email="alejandro@openrobotics.com">Alejandro Hernández</maintainer>
+  <maintainer email="bence.magyar.robotics@gmail.com">Bence Magyar</maintainer>
+  <author>Alejandro Hernández</author>
+  <license>Apache 2</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>ament_index_cpp</depend>
+  <!-- default version to use in official ROS2 packages is GAzebo Fortress for ROS2 Rolling -->
+  <depend condition="$GZ_VERSION == ''">ignition-gazebo6</depend>
+  <depend condition="$GZ_VERSION == fortress">ignition-gazebo6</depend>
+  <depend condition="$GZ_VERSION == garden">gz-sim7</depend>
+
+  <depend condition="$GZ_VERSION == ''">ignition-plugin</depend>
+  <depend condition="$GZ_VERSION == fortress">ignition-plugin</depend>
+  <depend condition="$GZ_VERSION == garden">gz-plugin2</depend>
+  <depend>pluginlib</depend>
+  <depend>rclcpp</depend>
+  <depend>yaml_cpp_vendor</depend>
+  <depend>rclcpp_lifecycle</depend>
+  <depend>hardware_interface</depend>
+  <depend>controller_manager</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+      <build_type>ament_cmake</build_type>
+  </export>
+</package>

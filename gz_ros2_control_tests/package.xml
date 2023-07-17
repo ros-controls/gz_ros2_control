@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>gz_ros2_control_tests</name>
+  <version>1.1.1</version>
+  <description>Gazebo ros2 control tests</description>
+  <maintainer email="alejandro@openrobotics.org">Alejandro Hernández</maintainer>
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <build_depend>control_msgs</build_depend>
+  <build_depend>rclcpp</build_depend>
+  <build_depend>rclcpp_action</build_depend>
+
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>control_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>hardware_interface</exec_depend>
+  <exec_depend>gz_ros2_control</exec_depend>
+  <exec_depend>joint_state_broadcaster</exec_depend>
+  <exec_depend>joint_trajectory_controller</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>launch_testing_ament_cmake</exec_depend>
+  <exec_depend>python3-psutil</exec_depend>
+  <exec_depend>python3-pytest</exec_depend>
+  <exec_depend>ros2launch</exec_depend>
+  <exec_depend>rclcpp</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend condition="$GZ_VERSION == ''">ros_gz_sim</exec_depend>
+  <exec_depend condition="$GZ_VERSION == 'garden'">ros_gz_sim</exec_depend>
+  <exec_depend condition="$GZ_VERSION == 'fortress'">ros_ign_gazebo</exec_depend>
+  <exec_depend>ros2controlcli</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <test_depend>ament_cmake_gtest</test_depend>
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -1,0 +1,19 @@
+<library path="gz_hardware_plugins">
+  <class
+    name="gz_ros2_control/GazeboSimSystem"
+    type="gz_ros2_control::GazeboSimSystem"
+    base_class_type="gz_ros2_control::GazeboSimSystemInterface">
+    <description>
+      GazeboPositionJoint
+    </description>
+  </class>
+  <class
+     name="ign_ros2_control/IgnitionSystem"
+     type="gz_ros2_control::GazeboSimSystem"
+     base_class_type="gz_ros2_control::GazeboSimSystemInterface">
+     <description>
+       GazeboPositionJoint
+     </description>
+   </class>
+
+</library>
