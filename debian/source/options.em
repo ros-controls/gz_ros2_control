@@ -1,0 +1,6 @@
+@[if format and format == 'quilt']@
+# Automatically add upstream changes to the quilt overlay.
+# http://manpages.ubuntu.com/manpages/trusty/man1/dpkg-source.1.html
+# This supports reusing the orig.tar.gz for debian increments.
+auto-commit
+@[end if]
