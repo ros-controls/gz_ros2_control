@@ -1,0 +1,12 @@
+Source: ros-iron-gz-ros2-control-demos
+Section: misc
+Priority: optional
+Maintainer: Alejandro Hernandez <ahcorde@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-iron-ament-cmake, ros-iron-ament-cmake-gtest <!nocheck>, ros-iron-ament-lint-auto <!nocheck>, ros-iron-ament-lint-common <!nocheck>, ros-iron-control-msgs, ros-iron-geometry-msgs, ros-iron-rclcpp, ros-iron-rclcpp-action, ros-iron-std-msgs, ros-iron-ros-workspace
+Homepage: https://github.com/ros-controls/gz_ros2_control/blob/master/README.md
+Standards-Version: 3.9.2
+
+Package: ros-iron-gz-ros2-control-demos
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-iron-ament-index-python, ros-iron-control-msgs, ros-iron-diff-drive-controller, ros-iron-effort-controllers, ros-iron-geometry-msgs, ros-iron-gz-ros2-control, ros-iron-hardware-interface, ros-iron-imu-sensor-broadcaster, ros-iron-joint-state-broadcaster, ros-iron-joint-trajectory-controller, ros-iron-launch, ros-iron-launch-ros, ros-iron-rclcpp, ros-iron-robot-state-publisher, ros-iron-ros-gz-sim, ros-iron-ros2controlcli, ros-iron-ros2launch, ros-iron-std-msgs, ros-iron-tricycle-controller, ros-iron-velocity-controllers, ros-iron-xacro, ros-iron-ros-workspace
+Description: gz_ros2_control_demos
