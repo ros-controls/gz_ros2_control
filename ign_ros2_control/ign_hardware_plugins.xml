@@ -7,4 +7,13 @@
       GazeboPositionJoint
     </description>
   </class>
+
+  <class
+  name="ign_ros2_control/IgnitionFts"
+  type="ign_ros2_control::IgnitionFts"
+  base_class_type="ign_ros2_control::IgnitionSensorInterface">
+  <description>
+    GazeboSensorInterface
+  </description>
+</class>
 </library>
