@@ -39,6 +39,7 @@
 
 #include "ign_ros2_control/ign_ros2_control_plugin.hpp"
 #include "ign_ros2_control/ign_system.hpp"
+#include "ign_ros2_control/ign_sensor_interface.hpp"
 
 namespace ign_ros2_control
 {
@@ -78,10 +79,15 @@ public:
   /// \brief Timing
   rclcpp::Duration control_period_ = rclcpp::Duration(1, 0);
 
-  /// \brief Interface loader
+  /// \brief System interface loader
   std::shared_ptr<pluginlib::ClassLoader<
       ign_ros2_control::IgnitionSystemInterface>>
   robot_hw_sim_loader_{nullptr};
+
+  /// \brief Sensor interface loader
+  std::shared_ptr<pluginlib::ClassLoader<
+      ign_ros2_control::IgnitionSensorInterface>> 
+  robot_sensor_sim_loader_{nullptr};
 
   /// \brief Controller manager
   std::shared_ptr<controller_manager::ControllerManager>
@@ -386,24 +392,55 @@ void IgnitionROS2ControlPlugin::Configure(
     return;
   }
 
+  try {
+    this->dataPtr->robot_sensor_sim_loader_.reset(
+        new pluginlib::ClassLoader<ign_ros2_control::IgnitionSensorInterface>(
+            "ign_ros2_control",
+            "ign_ros2_control::IgnitionSensorInterface"));
+  }
+  catch(pluginlib::LibraryLoadException & ex) {
+    RCLCPP_ERROR(
+      this->dataPtr->node_->get_logger(), "Failed to create robot sensor simulation interface loader: %s ",
+      ex.what());
+  }
+  
+
   for (unsigned int i = 0; i < control_hardware_info.size(); ++i) {
     std::string robot_hw_sim_type_str_ = control_hardware_info[i].hardware_class_type;
-    auto ignitionSystem = std::unique_ptr<ign_ros2_control::IgnitionSystemInterface>(
+
+    if (control_hardware_info[i].type == "system")
+    {
+      auto ignitionSystem = std::unique_ptr<ign_ros2_control::IgnitionSystemInterface>(
       this->dataPtr->robot_hw_sim_loader_->createUnmanagedInstance(robot_hw_sim_type_str_));
 
-    if (!ignitionSystem->initSim(
-        this->dataPtr->node_,
-        enabledJoints,
+      if (!ignitionSystem->initSim(
+          this->dataPtr->node_,
+          enabledJoints,
+          control_hardware_info[i],
+          _ecm,
+          this->dataPtr->update_rate))
+      {
+      RCLCPP_FATAL(
+          this->dataPtr->node_->get_logger(), "Could not initialize robot simulation interface");
+      return;
+      }
+        resource_manager_->import_component(std::move(ignitionSystem), control_hardware_info[i]);
+    } else if (control_hardware_info[i].type == "sensor")
+    {
+      auto ignitionSensor = std::unique_ptr<ign_ros2_control::IgnitionSensorInterface>(
+        this->dataPtr->robot_sensor_sim_loader_->createUnmanagedInstance(robot_hw_sim_type_str_));
+      
+      if (!ignitionSensor->InitSensorInterface(
         control_hardware_info[i],
         _ecm,
         this->dataPtr->update_rate))
-    {
-      RCLCPP_FATAL(
-        this->dataPtr->node_->get_logger(), "Could not initialize robot simulation interface");
-      return;
+      {
+        RCLCPP_FATAL(
+          this->dataPtr->node_->get_logger(), "Could not initialize robot sensor simulation interface");
+        return;
+      }
     }
-
-    resource_manager_->import_component(std::move(ignitionSystem), control_hardware_info[i]);
+    
 
     rclcpp_lifecycle::State state(
       lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE,
