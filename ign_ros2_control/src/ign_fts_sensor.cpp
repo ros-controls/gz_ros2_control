@@ -39,9 +39,6 @@ bool IgnitionFts::InitSensorInterface(
             hardware_interface::ComponentInfo component = hardware_info.sensors[j];
             sensor_components_.push_back(component);
         }
-
-        RCLCPP_WARN(this->nh_->get_logger(), "Found number of sensors: %ld", sensor_components_.size());
-
         this->dataPtr->ecm->Each<ignition::gazebo::components::ForceTorque,
             ignition::gazebo::components::Name>(
             [&](const ignition::gazebo::Entity & _entity,
