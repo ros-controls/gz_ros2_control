@@ -21,6 +21,24 @@
 
 namespace ign_ros2_control
 {
+    class FtsData
+    {
+    public:
+        std::string name{};
+        std::string topicName{};
+        ignition::gazebo::Entity sim_fts_sensors_ = ignition::gazebo::kNullEntity;
+        std::array<double, 6> fts_sensor_data_;
+        void OnFts(const ignition::msgs::Wrench & _msg);
+    };
+    void FtsData::OnFts(const ignition::msgs::Wrench & _msg)
+    {
+        this->fts_sensor_data_[0] = _msg.force().x();
+        this->fts_sensor_data_[1] = _msg.force().y();
+        this->fts_sensor_data_[2] = _msg.force().z();
+        this->fts_sensor_data_[3] = _msg.torque().x();
+        this->fts_sensor_data_[4] = _msg.torque().y();
+        this->fts_sensor_data_[5] = _msg.torque().z();
+    }
     using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
     class IgnitionFtsPrivate;
@@ -49,15 +67,12 @@ namespace ign_ros2_control
         ) override;
 
         bool InitSensorInterface(
+            rclcpp::Node::SharedPtr & model_nh,
             const hardware_interface::HardwareInfo & hardware_info,
             ignition::gazebo::EntityComponentManager & _ecm,
-            int & update_rate
-        ) override;
+            int & update_rate) override;
 
     private:
-        // void registerSensors(
-        //     const hardware_interface::HardwareInfo & hardware_info
-        // );
         std::unique_ptr<IgnitionFtsPrivate> dataPtr;
     };
 }  // namespace ign_ros2_control

@@ -1,26 +1,6 @@
 #include "ign_ros2_control/ign_fts_sensor.hpp"
 #include <ignition/transport/Node.hh>
 
-
-class FtsData
-{
-public:
-    std::string name{};
-    std::string topicName{};
-    ignition::gazebo::Entity sim_fts_sensors_ = ignition::gazebo::kNullEntity;
-    std::array<double, 6> fts_sensor_data_;
-    void OnFts(const ignition::msgs::Wrench & _msg);
-};
-void FtsData::OnFts(const ignition::msgs::Wrench & _msg)
-{
-    this->fts_sensor_data_[0] = _msg.force().x();
-    this->fts_sensor_data_[1] = _msg.force().y();
-    this->fts_sensor_data_[2] = _msg.force().z();
-    this->fts_sensor_data_[3] = _msg.torque().x();
-    this->fts_sensor_data_[4] = _msg.torque().y();
-    this->fts_sensor_data_[5] = _msg.torque().z();
-}
-
 class ign_ros2_control::IgnitionFtsPrivate
 {
 public:
@@ -41,6 +21,7 @@ public:
 namespace ign_ros2_control
 {
 bool IgnitionFts::InitSensorInterface(
+    rclcpp::Node::SharedPtr & model_nh,
     const hardware_interface::HardwareInfo & hardware_info,
     ignition::gazebo::EntityComponentManager & _ecm,
     int & update_rate)
@@ -49,6 +30,7 @@ bool IgnitionFts::InitSensorInterface(
         this->dataPtr->last_update_sim_time_ros_ = rclcpp::Time();
         this->dataPtr->ecm = &_ecm;
         this->dataPtr->update_rate = &update_rate;
+        this->nh_ = model_nh;
         size_t n_sensors = hardware_info.sensors.size();
         std::vector<hardware_interface::ComponentInfo> sensor_components_;
 
@@ -57,6 +39,8 @@ bool IgnitionFts::InitSensorInterface(
             hardware_interface::ComponentInfo component = hardware_info.sensors[j];
             sensor_components_.push_back(component);
         }
+
+        RCLCPP_WARN(this->nh_->get_logger(), "Found number of sensors: %ld", sensor_components_.size());
 
         this->dataPtr->ecm->Each<ignition::gazebo::components::ForceTorque,
             ignition::gazebo::components::Name>(
@@ -111,8 +95,8 @@ bool IgnitionFts::InitSensorInterface(
                 }
                 this->dataPtr->fts_.push_back(ftsData);
                 return true;
-            }
-        );
+            });
+        return true;
     }
 
 hardware_interface::return_type IgnitionFts::read(

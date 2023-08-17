@@ -22,6 +22,7 @@ namespace ign_ros2_control
     {
     public:
         virtual bool InitSensorInterface(
+            rclcpp::Node::SharedPtr & model_nh,
             const hardware_interface::HardwareInfo & hardware_info,
             ignition::gazebo::EntityComponentManager & _ecm,
             int & update_rate) = 0;
