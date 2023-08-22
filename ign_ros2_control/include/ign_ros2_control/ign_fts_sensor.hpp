@@ -24,10 +24,15 @@ namespace ign_ros2_control
     class FtsData
     {
     public:
+        /// \brief fts name.
         std::string name{};
+        /// \brief fts topic name.
         std::string topicName{};
+        /// \brief handles to the fts from within Gazebo
         ignition::gazebo::Entity sim_fts_sensors_ = ignition::gazebo::kNullEntity;
+        /// @brief Force Torque Sensor data storage
         std::array<double, 6> fts_sensor_data_;
+        /// \brief callback to get the FTS topic values
         void OnFts(const ignition::msgs::Wrench & _msg);
     };
     void FtsData::OnFts(const ignition::msgs::Wrench & _msg)
@@ -39,8 +44,9 @@ namespace ign_ros2_control
         this->fts_sensor_data_[4] = _msg.torque().y();
         this->fts_sensor_data_[5] = _msg.torque().z();
     }
+    
     using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
-
+    // Forward declaration
     class IgnitionFtsPrivate;
 
     class IgnitionFts : public IgnitionSensorInterface
@@ -73,6 +79,7 @@ namespace ign_ros2_control
             int & update_rate) override;
 
     private:
+        /// \brief Private data pointer.
         std::unique_ptr<IgnitionFtsPrivate> dataPtr;
     };
 }  // namespace ign_ros2_control

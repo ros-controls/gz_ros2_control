@@ -387,7 +387,7 @@ void IgnitionROS2ControlPlugin::Configure(
         "ign_ros2_control::IgnitionSystemInterface"));
   } catch (pluginlib::LibraryLoadException & ex) {
     RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(), "Failed to create robot simulation interface loader: %s ",
+      this->dataPtr->node_->get_logger(), "Failed to create robot system simulation interface loader: %s ",
       ex.what());
     return;
   }
@@ -407,7 +407,7 @@ void IgnitionROS2ControlPlugin::Configure(
 
   for (unsigned int i = 0; i < control_hardware_info.size(); ++i) {
     std::string robot_hw_sim_type_str_ = control_hardware_info[i].hardware_class_type;
-
+    // Load system interface
     if (control_hardware_info[i].type == "system")
     {
       auto ignitionSystem = std::unique_ptr<ign_ros2_control::IgnitionSystemInterface>(
@@ -426,6 +426,7 @@ void IgnitionROS2ControlPlugin::Configure(
       }
         resource_manager_->import_component(std::move(ignitionSystem), control_hardware_info[i]);
     } 
+    // Load sensor interface
     else if (control_hardware_info[i].type == "sensor")
     {
       auto ignitionSensor = std::unique_ptr<ign_ros2_control::IgnitionSensorInterface>(
