@@ -2,6 +2,20 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.1 (2023-08-23)
+------------------
+* Catch pluginlib exceptions (backport `#175 <https://github.com/ros-controls/gz_ros2_control/issues/175>`_) (`#176 <https://github.com/ros-controls/gz_ros2_control/issues/176>`_)
+* Fixed install include (`#162 <https://github.com/ros-controls/gz_ros2_control/issues/162>`_)
+* Install include directory since it is exported (`#127 <https://github.com/ros-controls/gz_ros2_control/issues/127>`_) (`#161 <https://github.com/ros-controls/gz_ros2_control/issues/161>`_)
+  (cherry picked from commit ab33f76d158e533c21537bc408f636831819e875)
+  Co-authored-by: Tim Clephas <tim.clephas@nobleo.nl>
+* Remove plugin export (ROS 1 syntax) (backport `#158 <https://github.com/ros-controls/gz_ros2_control/issues/158>`_) (`#159 <https://github.com/ros-controls/gz_ros2_control/issues/159>`_)
+  * Remove plugin export from ROS 1 (`#158 <https://github.com/ros-controls/gz_ros2_control/issues/158>`_)
+  (cherry picked from commit 223086dea282ea3ff2c432414396952b9cfeec88)
+  Co-authored-by: Christoph Fröhlich <christophfroehlich@users.noreply.github.com>
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Contributors: Alejandro Hernández Cordero, Christoph Fröhlich, mergify[bot]
+
 0.5.0 (2023-05-23)
 ------------------
 * Fixed segmentation fault with logger (backport `#136 <https://github.com/ros-controls/gz_ros2_control/issues/136>`_) (`#140 <https://github.com/ros-controls/gz_ros2_control/issues/140>`_)
@@ -33,7 +47,6 @@ Changelog for package ign_ros2_control
 * ros2_control is now having usings under its namespace. (`#43 <https://github.com/ros-controls/gz_ros2_control/issues/43>`_)
 * Fix default ign gazebo version Rolling (`#45 <https://github.com/ros-controls/gz_ros2_control/issues/45>`_)
 * Fix ignition version in package.xml - Rolling (`#41 <https://github.com/ros-controls/gz_ros2_control/issues/41>`_)
-* Fixed position control (`#29 <https://github.com/ros-controls/gz_ros2_control/issues/29>`_)
 * Add support for initial_values for hardware interfaces when starting simulation. (`#27 <https://github.com/ros-controls/gz_ros2_control/issues/27>`_)
 * Contributors: Alejandro Hernández Cordero, Denis Štogl, Guillaume Beuzeboc, Tianyu Li
 
@@ -52,7 +65,6 @@ Changelog for package ign_ros2_control
 * Merge pull request `#36 <https://github.com/ignitionrobotics/ign_ros2_control/issues/36>`_ from ignitionrobotics/ahcorde/foxy_to_galactic
   Foxy -> Galactic
 * Merge remote-tracking branch 'origin/foxy' into ahcorde/foxy_to_galactic
-* Fixed position control (`#29 <https://github.com/ignitionrobotics/ign_ros2_control/issues/29>`_)
 * typo fix. (`#25 <https://github.com/ignitionrobotics/ign_ros2_control/issues/25>`_)
 * Contributors: Alejandro Hernández Cordero, Tomoya Fujita
 
