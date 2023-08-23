@@ -97,29 +97,29 @@ bool IgnitionFts::InitSensorInterface(
     }
 
 hardware_interface::return_type IgnitionFts::read(
-    const rclcpp::Time & /*time*/,
-    const rclcpp::Duration & /*period*/)
+  const rclcpp::Time & /*time*/,
+  const rclcpp::Duration & /*period*/)
+  {
+    for (unsigned int i = 0; i < this->dataPtr->fts_.size(); ++i)
     {
-        for (unsigned int i = 0; i < this->dataPtr->fts_.size(); ++i)
+      if (this->dataPtr->fts_[i]->topicName.empty())
+      {
+        auto sensorTopicComp = this->dataPtr->ecm->Component<
+        ignition::gazebo::components::SensorTopic>(this->dataPtr->fts_[i]->sim_fts_sensors_);
+        if (sensorTopicComp)
         {
-            if (this->dataPtr->fts_[i]->topicName.empty())
-            {
-                auto sensorTopicComp = this->dataPtr->ecm->Component<
-                ignition::gazebo::components::SensorTopic>(this->dataPtr->fts_[i]->sim_fts_sensors_);
-                if (sensorTopicComp)
-                {
-                    this->dataPtr->fts_[i]->topicName = sensorTopicComp->Data();
-                    RCLCPP_INFO_STREAM(
-                        this->nh_->get_logger(), "FTS " << this->dataPtr->fts_[i]->name << 
-                        " has a topic name: " << sensorTopicComp->Data());
-                    this->dataPtr->node.Subscribe(
-                        this->dataPtr->fts_[i]->topicName, &FtsData::OnFts,
-                        this->dataPtr->fts_[i].get());
-                }
-            }
+          this->dataPtr->fts_[i]->topicName = sensorTopicComp->Data();
+          RCLCPP_INFO_STREAM(
+            this->nh_->get_logger(), "FTS with name: " << this->dataPtr->fts_[i]->name <<
+            " has a topic name: " << sensorTopicComp->Data());
+          this->dataPtr->node.Subscribe(
+            this->dataPtr->fts_[i]->topicName, &FtsData::OnFts,
+            this->dataPtr->fts_[i].get());
         }
-        return hardware_interface::return_type::OK;
+      }
     }
+    return hardware_interface::return_type::OK;
+  }
 
 
 CallbackReturn
