@@ -2,6 +2,11 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.2 (2023-08-23)
+------------------
+* Catch pluginlib exceptions (`#175 <https://github.com/ros-controls/gz_ros2_control/issues/175>`_)
+* Contributors: Alejandro Hernández Cordero
+
 1.1.1 (2023-07-13)
 ------------------
 * Remove plugin export from ROS 1 (`#158 <https://github.com/ros-controls/gz_ros2_control//issues/158>`_)
