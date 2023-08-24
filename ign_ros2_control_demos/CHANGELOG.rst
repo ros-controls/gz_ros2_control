@@ -2,6 +2,16 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.1 (2023-08-23)
+------------------
+* Set C++ version to 17 (`#171 <https://github.com/ros-controls/gz_ros2_control/issues/171>`_) (`#174 <https://github.com/ros-controls/gz_ros2_control/issues/174>`_)
+  (cherry picked from commit 353b5a001733612241049557a907f835b53f35ac)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Update diff_drive_controller_velocity.yaml (`#172 <https://github.com/ros-controls/gz_ros2_control/issues/172>`_) (`#173 <https://github.com/ros-controls/gz_ros2_control/issues/173>`_)
+  (cherry picked from commit 7559d9bfe9dc836a7fc4907cc234554600e54b14)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Contributors: Alejandro Hernández Cordero, mergify[bot]
+
 0.5.0 (2023-05-23)
 ------------------
 * Clean shutdown example position (`#135 <https://github.com/ros-controls/gz_ros2_control/issues/135>`_) (`#139 <https://github.com/ros-controls/gz_ros2_control/issues/139>`_)
@@ -41,7 +51,7 @@ Changelog for package ign_ros2_control_demos
 ------------------
 
 0.3.0 (2022-03-16)
------------
+------------------
 
 0.2.0 (2022-02-17)
 ------------------
