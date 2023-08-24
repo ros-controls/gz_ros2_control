@@ -1,4 +1,4 @@
-#include "ign_ros2_control/ign_fts_sensor.hpp"
+#include "ign_ros2_control/ign_ft_sensor.hpp"
 #include <ignition/transport/Node.hh>
 
 class ign_ros2_control::IgnitionFtsPrivate
