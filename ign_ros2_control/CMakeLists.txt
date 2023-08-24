@@ -72,7 +72,7 @@ ament_target_dependencies(${PROJECT_NAME}-system
 
 add_library(ign_hardware_plugins SHARED
   src/ign_system.cpp
-  src/ign_fts_sensor.cpp
+  src/ign_ft_sensor.cpp
 )
 ament_target_dependencies(ign_hardware_plugins
   rclcpp_lifecycle
