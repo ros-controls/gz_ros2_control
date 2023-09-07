@@ -66,8 +66,13 @@ def generate_launch_description():
         output='screen'
     )
 
+<<<<<<< HEAD:ign_ros2_control_demos/launch/cart_example_effort.launch.py
     load_joint_trajectory_controller = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'effort_controllers'],
+=======
+    load_joint_effort_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'effort_controller'],
+>>>>>>> 2231745 (Cleanup controller config (#180)):gz_ros2_control_demos/launch/cart_example_effort.launch.py
         output='screen'
     )
 

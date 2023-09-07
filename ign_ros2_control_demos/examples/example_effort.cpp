@@ -26,7 +26,7 @@ int main(int argc, char * argv[])
     std::make_shared<rclcpp::Node>("effort_test_node");
 
   auto publisher = node->create_publisher<std_msgs::msg::Float64MultiArray>(
-    "/effort_controllers/commands", 10);
+    "/effort_controller/commands", 10);
 
   RCLCPP_INFO(node->get_logger(), "node created");
 
