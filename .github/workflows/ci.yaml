@@ -30,7 +30,7 @@ jobs:
     container:
       image: ${{ matrix.docker-image }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup colcon workspace
       id: configure
       shell: bash
