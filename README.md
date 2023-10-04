@@ -37,6 +37,7 @@ If you want compile this from source, you should choose the Gazebo version. The 
 ```bash
 export GZ_VERSION=fortress
 export GZ_VERSION=garden
+export GZ_VERSION=harmonic
 ```
 
 Then create a workspace, clone the repo and compile it:
