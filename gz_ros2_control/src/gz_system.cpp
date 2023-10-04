@@ -659,7 +659,7 @@ hardware_interface::return_type GazeboSimSystem::write(
           {this->dataPtr->joints_[i].joint_effort_cmd});
       }
     } else if (this->dataPtr->joints_[i].is_actuated_) {
-      // Fallback case is a velocity command of zero
+      // Fallback case is a velocity command of zero (only for actuated joints)
       double target_vel = 0.0;
       auto vel =
         this->dataPtr->ecm->Component<sim::components::JointVelocityCmd>(
