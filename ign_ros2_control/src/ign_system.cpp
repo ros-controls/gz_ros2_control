@@ -25,11 +25,12 @@
 
 #include <ignition/gazebo/components/AngularVelocity.hh>
 #include <ignition/gazebo/components/Imu.hh>
-#include <ignition/gazebo/components/JointForce.hh>
 #include <ignition/gazebo/components/JointForceCmd.hh>
 #include <ignition/gazebo/components/JointPosition.hh>
-#include <ignition/gazebo/components/JointVelocity.hh>
+#include <ignition/gazebo/components/JointTransmittedWrench.hh>
+#include <ignition/gazebo/components/JointType.hh>
 #include <ignition/gazebo/components/JointVelocityCmd.hh>
+#include <ignition/gazebo/components/JointVelocity.hh>
 #include <ignition/gazebo/components/LinearAcceleration.hh>
 #include <ignition/gazebo/components/Name.hh>
 #include <ignition/gazebo/components/ParentEntity.hh>
@@ -45,6 +46,9 @@ struct jointData
 {
   /// \brief Joint's names.
   std::string name;
+
+  /// \brief Joint's type.
+  sdf::JointType joint_type;
 
   /// \brief Current joint position
   double joint_position;
@@ -200,6 +204,7 @@ bool IgnitionSystem::initSim(
 
     ignition::gazebo::Entity simjoint = enableJoints[joint_name];
     this->dataPtr->joints_[j].sim_joint = simjoint;
+    this->dataPtr->joints_[j].joint_type = _ecm.Component<ignition::gazebo::components::JointType>(simjoint)->Data();
 
     // Create joint position component if one doesn't exist
     if (!_ecm.EntityHasComponentType(
@@ -217,12 +222,12 @@ bool IgnitionSystem::initSim(
       _ecm.CreateComponent(simjoint, ignition::gazebo::components::JointVelocity());
     }
 
-    // Create joint force component if one doesn't exist
+    // Create joint transmitted wrench component if one doesn't exist
     if (!_ecm.EntityHasComponentType(
         simjoint,
-        ignition::gazebo::components::JointForce().TypeId()))
+        ignition::gazebo::components::JointTransmittedWrench().TypeId()))
     {
-      _ecm.CreateComponent(simjoint, ignition::gazebo::components::JointForce());
+      _ecm.CreateComponent(simjoint, ignition::gazebo::components::JointTransmittedWrench());
     }
 
     // Accept this joint and continue configuration
@@ -502,11 +507,10 @@ hardware_interface::return_type IgnitionSystem::read(
       this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocity>(
       this->dataPtr->joints_[i].sim_joint);
 
-    // TODO(ahcorde): Revisit this part ignitionrobotics/ign-physics#124
-    // Get the joint force
-    // const auto * jointForce =
-    //   _ecm.Component<ignition::gazebo::components::JointForce>(
-    //   this->dataPtr->sim_joints_[j]);
+    // Get the joint force via joint transmitted wrench
+    const auto * jointWrench =
+      this->dataPtr->ecm->Component<ignition::gazebo::components::JointTransmittedWrench>(
+      this->dataPtr->joints_[i].sim_joint);
 
     // Get the joint position
     const auto * jointPositions =
@@ -515,7 +519,11 @@ hardware_interface::return_type IgnitionSystem::read(
 
     this->dataPtr->joints_[i].joint_position = jointPositions->Data()[0];
     this->dataPtr->joints_[i].joint_velocity = jointVelocity->Data()[0];
-    // this->dataPtr->joint_effort_[j] = jointForce->Data()[0];
+    if (this->dataPtr->joints_[i].joint_type == sdf::JointType::PRISMATIC) {
+      this->dataPtr->joints_[i].joint_effort = jointWrench->Data().force().z();
+    } else {  // REVOLUTE and CONTINUOUS
+      this->dataPtr->joints_[i].joint_effort = jointWrench->Data().torque().z();
+    }
   }
 
   for (unsigned int i = 0; i < this->dataPtr->imus_.size(); ++i) {
@@ -705,8 +713,8 @@ hardware_interface::return_type IgnitionSystem::write(
         }
       }
       if (mimic_interface == "effort") {
-        // TODO(ahcorde): Revisit this part ignitionrobotics/ign-physics#124
-        // Get the joint force
+        // TODO(ahb):
+        // Get the joint force via joint transmitted wrench
         // const auto * jointForce =
         //   _ecm.Component<ignition::gazebo::components::JointForce>(
         //   this->dataPtr->sim_joints_[j]);
