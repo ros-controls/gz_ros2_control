@@ -19,6 +19,7 @@ Humble | Fortress | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/
 Rolling | Edifice | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
 Rolling | Fortress | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org
 Rolling | Garden (not released) | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
+Rolling | Harmonic (not released) | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
 
 ## Build status
 
