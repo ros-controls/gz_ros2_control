@@ -16,6 +16,10 @@ Foxy | Edifice | [foxy](https://github.com/ros-controls/gz_ros2_control/tree/fox
 Galactic | Edifice | [galactic](https://github.com/ros-controls/gz_ros2_control/tree/galactic) | https://packages.ros.org
 Galactic | Fortress | [galactic](https://github.com/ros-controls/gz_ros2_control/tree/galactic) | only from source
 Humble | Fortress | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org
+Iron | Edifice | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
+Iron | Fortress | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org
+Iron | Garden (not released) | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
+Iron | Harmonic (not released) | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
 Rolling | Edifice | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
 Rolling | Fortress | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org
 Rolling | Garden (not released) | [ros2](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
