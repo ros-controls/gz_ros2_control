@@ -15,10 +15,12 @@
   <depend condition="$GZ_VERSION == ''">ignition-gazebo6</depend>
   <depend condition="$GZ_VERSION == fortress">ignition-gazebo6</depend>
   <depend condition="$GZ_VERSION == garden">gz-sim7</depend>
+  <depend condition="$GZ_VERSION == harmonic">gz-sim8</depend>
 
   <depend condition="$GZ_VERSION == ''">ignition-plugin</depend>
   <depend condition="$GZ_VERSION == fortress">ignition-plugin</depend>
   <depend condition="$GZ_VERSION == garden">gz-plugin2</depend>
+  <depend condition="$GZ_VERSION == harmonic">gz-plugin2</depend>
   <depend>pluginlib</depend>
   <depend>rclcpp</depend>
   <depend>yaml_cpp_vendor</depend>
