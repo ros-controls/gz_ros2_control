@@ -1,7 +1,8 @@
-name: Gazebo-Sim ros2 control CI
+name: gz_ros2_control CI - Rolling
 
 on:
   pull_request:
+    branches: [ master ]
   push:
     branches: [ master ]
 
@@ -13,13 +14,7 @@ jobs:
         include:
           - docker-image: "ubuntu:22.04"
             gz-version: "fortress"
-            ros-distro: "iron"
-          - docker-image: "ubuntu:22.04"
-            gz-version: "fortress"
             ros-distro: "rolling"
-          - docker-image: "ubuntu:22.04"
-            gz-version: "garden"
-            ros-distro: "iron"
           - docker-image: "ubuntu:22.04"
             gz-version: "garden"
             ros-distro: "rolling"
