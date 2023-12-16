@@ -20,9 +20,14 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(controller_manager REQUIRED)
 find_package(hardware_interface REQUIRED)
+find_package(generate_parameter_library REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
+
+generate_parameter_library(ign_ros2_control_parameters
+  src/ign_ros2_control_parameters.yaml
+)
 
 if("$ENV{IGNITION_VERSION}" STREQUAL "citadel")
   find_package(ignition-gazebo3 REQUIRED)
@@ -39,10 +44,30 @@ elseif("$ENV{IGNITION_VERSION}" STREQUAL "fortress")
   set(IGN_GAZEBO_VER ${ignition-gazebo6_VERSION_MAJOR})
   message(STATUS "Compiling against Ignition Fortress")
 
+  find_package(ignition-cmake2 REQUIRED)
+  find_package(ignition-plugin1 REQUIRED COMPONENTS register)
+  set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
+  add_library(mimic-joint-system SHARED src/MimicJointSystem.cc)
+  target_link_libraries(mimic-joint-system
+    PRIVATE ignition-plugin${IGN_PLUGIN_VER}::ignition-plugin${IGN_PLUGIN_VER}
+    PRIVATE ignition-gazebo6::ignition-gazebo6)
+  install(TARGETS mimic-joint-system
+          DESTINATION lib)
+
 else()
   find_package(ignition-gazebo6 REQUIRED)
   set(IGN_GAZEBO_VER ${ignition-gazebo6_VERSION_MAJOR})
   message(STATUS "Compiling against Ignition Fortress")
+
+  find_package(ignition-cmake2 REQUIRED)
+  find_package(ignition-plugin1 REQUIRED COMPONENTS register)
+  set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
+  add_library(mimic-joint-system SHARED src/MimicJointSystem.cc)
+  target_link_libraries(mimic-joint-system
+    ignition-gazebo${IGN_GAZEBO_VER}::core
+    ignition-plugin${IGN_PLUGIN_VER}::register)
+  install(TARGETS mimic-joint-system
+          DESTINATION lib)
 endif()
 
 find_package(ignition-plugin1 REQUIRED)
@@ -58,6 +83,7 @@ target_link_libraries(${PROJECT_NAME}-system
   ignition-gazebo${IGN_GAZEBO_VER}::core
   ignition-plugin${IGN_PLUGIN_VER}::register
 )
+target_link_libraries(${PROJECT_NAME}-system ign_ros2_control_parameters)
 ament_target_dependencies(${PROJECT_NAME}-system
   ament_index_cpp
   controller_manager
@@ -73,6 +99,8 @@ ament_target_dependencies(${PROJECT_NAME}-system
 add_library(ign_hardware_plugins SHARED
   src/ign_system.cpp
 )
+target_include_directories(ign_hardware_plugins PRIVATE include)
+target_link_libraries(ign_hardware_plugins ign_ros2_control_parameters)
 ament_target_dependencies(ign_hardware_plugins
   rclcpp_lifecycle
   hardware_interface
@@ -82,9 +110,14 @@ target_link_libraries(ign_hardware_plugins
   ignition-gazebo${IGN_GAZEBO_VER}::core
 )
 
+install(DIRECTORY include/
+  DESTINATION include
+)
+
 ## Install
 install(TARGETS
-  ign_hardware_plugins
+  ign_hardware_plugins ign_ros2_control_parameters
+  EXPORT export_ign_ros2_control
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -103,7 +136,9 @@ endif()
 
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME} ign_hardware_plugins)
-
+ament_export_targets(
+  export_ign_ros2_control HAS_LIBRARY_TARGET
+)
 # Install directories
 install(TARGETS ${PROJECT_NAME}-system
   DESTINATION lib

@@ -1,0 +1,98 @@
+ign_ros2_control:
+  joints: {
+    type: string_array,
+    default_value: [],
+    description: "Names of joints used by the controller",
+    validation: {
+      unique<>: null,
+    }
+  }
+  mode:
+    __map_joints:
+      use_cascade_control: {
+        type: bool,
+        default_value: false,
+        description: "Defines if cascade control is ued in position control (outer position based loop and inner velocity based loop with force output)"
+      }
+  gains:
+    __map_joints:
+      p_pos: {
+        type: double,
+        default_value: 0.0,
+        description: "Proportional gain for PID"
+      }
+      i_pos: {
+        type: double,
+        default_value: 0.0,
+        description: "Integral gain for PID"
+      }
+      d_pos: {
+        type: double,
+        default_value: 0.0,
+        description: "Derivative gain for PID"
+      }
+      iMax_pos: {
+        type: double,
+        default_value: 0.0,
+        description: "Integral positive clamp."
+      }
+      iMin_pos: {
+        type: double,
+        default_value: 0.0,
+        description: "Integral negative clamp."
+      }
+      cmdMax_pos: {
+        type: double,
+        default_value: 0.0,
+        description: "Maximum value for the PID command."
+      }
+      cmdMin_pos: {
+        type: double,
+        default_value: 0.0,
+        description: "Maximum value for the PID command."
+      }
+      cmdOffset_pos: {
+        type: double,
+        default_value: 0.0,
+        description: "Offset value for the command which is added to the result of the PID controller."
+      }
+      p_vel: {
+        type: double,
+        default_value: 0.0,
+        description: "Proportional gain for PID"
+      }
+      i_vel: {
+        type: double,
+        default_value: 0.0,
+        description: "Integral gain for PID"
+      }
+      d_vel: {
+        type: double,
+        default_value: 0.0,
+        description: "Derivative gain for PID"
+      }
+      iMax_vel: {
+        type: double,
+        default_value: 0.0,
+        description: "Integral positive clamp."
+      }
+      iMin_vel: {
+        type: double,
+        default_value: 0.0,
+        description: "Integral negative clamp."
+      }
+      cmdMax_vel: {
+        type: double,
+        default_value: 0.0,
+        description: "Maximum value for the PID command."
+      }
+      cmdMin_vel: {
+        type: double,
+        default_value: 0.0,
+        description: "Maximum value for the PID command."
+      }
+      cmdOffset_vel: {
+        type: double,
+        default_value: 0.0,
+        description: "Offset value for the command which is added to the result of the PID controller."
+      }

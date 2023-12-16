@@ -22,8 +22,12 @@
 #include <vector>
 
 #include "ign_ros2_control/ign_system_interface.hpp"
+
+#include "rclcpp/executors/single_threaded_executor.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
+
+#include "ign_ros2_control_parameters.hpp"
 
 namespace ign_ros2_control
 {
@@ -88,6 +92,15 @@ private:
 
   /// \brief Private data class
   std::unique_ptr<IgnitionSystemPrivate> dataPtr;
+
+  // Parameters from ROS for ign_ros2_control
+  std::shared_ptr<ParamListener> param_listener_;
+  Params params_;
+
+  rclcpp::Node::SharedPtr param_node_;
+  std::thread spin_thread_;
+  std::atomic<bool> stop_spin_ = false;
+  rclcpp::executors::SingleThreadedExecutor::SharedPtr exec_;
 };
 
 }  // namespace ign_ros2_control
