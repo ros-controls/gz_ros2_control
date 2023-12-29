@@ -64,6 +64,9 @@ struct jointData
   /// \brief Current cmd joint effort
   double joint_effort_cmd;
 
+  /// \brief flag if joint is actuated (has command interfaces) or passive
+  bool is_actuated;
+
   /// \brief handles to the joints from within Gazebo
   ignition::gazebo::Entity sim_joint;
 
@@ -367,6 +370,9 @@ bool IgnitionSystem::initSim(
         this->dataPtr->joints_[j].joint_velocity = initial_velocity;
       }
     }
+
+    // check if joint is actuated (has command interfaces) or passive
+    this->dataPtr->joints_[j].is_actuated = (joint_info.command_interfaces.size() > 0);
   }
 
   registerSensors(hardware_info);
@@ -631,8 +637,8 @@ hardware_interface::return_type IgnitionSystem::write(
         *jointEffortCmd = ignition::gazebo::components::JointForceCmd(
           {this->dataPtr->joints_[i].joint_effort_cmd});
       }
-    } else {
-      // Fallback case is a velocity command of zero
+    } else if (this->dataPtr->joints_[i].is_actuated) {
+      // Fallback case is a velocity command of zero (only for actuated joints)
       double target_vel = 0.0;
       auto vel =
         this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(

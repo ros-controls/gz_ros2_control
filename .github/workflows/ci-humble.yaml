@@ -1,7 +1,10 @@
-name: Ignition ros2 control CI
+name: ign_ros2_control CI - Humble
 
 on:
   pull_request:
+    branches: [ humble ]
+  push:
+    branches: [ humble ]
 
 jobs:
   build:
@@ -14,7 +17,7 @@ jobs:
     container:
       image: ubuntu:22.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Setup colcon workspace
       id: configure
       run: |
