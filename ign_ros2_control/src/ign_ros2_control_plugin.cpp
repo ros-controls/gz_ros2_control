@@ -286,7 +286,7 @@ void IgnitionROS2ControlPlugin::Configure(
   // Get controller manager node name
   std::string controllerManagerNodeName{"controller_manager"};
 
-  if (sdfPtr->HasElement("controller_manager_name")){
+  if (sdfPtr->HasElement("controller_manager_name")) {
     controllerManagerNodeName = sdfPtr->GetElement("controller_manager_name")->Get<std::string>();
   }
 
