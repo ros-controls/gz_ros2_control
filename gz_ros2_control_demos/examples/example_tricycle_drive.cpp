@@ -16,7 +16,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-#include <geometry_msgs/msg/twist.hpp>
+#include <geometry_msgs/msg/twist_stamped.hpp>
 
 using namespace std::chrono_literals;
 
@@ -27,20 +27,22 @@ int main(int argc, char * argv[])
   std::shared_ptr<rclcpp::Node> node =
     std::make_shared<rclcpp::Node>("tricycle_drive_test_node");
 
-  auto publisher = node->create_publisher<geometry_msgs::msg::Twist>(
+  auto publisher = node->create_publisher<geometry_msgs::msg::TwistStamped>(
     "/tricycle_controller/cmd_vel", 10);
 
   RCLCPP_INFO(node->get_logger(), "node created");
 
-  geometry_msgs::msg::Twist command;
+  geometry_msgs::msg::TwistStamped command;
 
-  command.linear.x = 0.2;
-  command.linear.y = 0.0;
-  command.linear.z = 0.0;
+  command.header.stamp = node->now();
 
-  command.angular.x = 0.0;
-  command.angular.y = 0.0;
-  command.angular.z = 0.1;
+  command.twist.linear.x = 0.2;
+  command.twist.linear.y = 0.0;
+  command.twist.linear.z = 0.0;
+
+  command.twist.angular.x = 0.0;
+  command.twist.angular.y = 0.0;
+  command.twist.angular.z = 0.1;
 
   while (1) {
     publisher->publish(command);
