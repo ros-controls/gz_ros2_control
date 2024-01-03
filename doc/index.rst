@@ -209,23 +209,8 @@ This controller publishes the state of all resources registered to a
 ``hardware_interface::StateInterface`` to a topic of type ``sensor_msgs/msg/JointState``.
 The following is a basic configuration of the controller.
 
-.. code-block:: yaml
-
-  joint_state_controller:
-    ros__parameters:
-      type: joint_state_controller/JointStateController
-
-This controller creates an action called ``/cart_controller/follow_joint_trajectory`` of type ``control_msgs::action::FollowJointTrajectory``.
-
-.. code-block:: yaml
-
-  cart_controller:
-    ros__parameters:
-      type: joint_trajectory_controller/JointTrajectoryController
-      joints:
-        - slider_to_cart
-      write_op_modes:
-        - slider_to_cart
+.. literalinclude:: ../gz_ros2_control_demos/config/cart_controller_position.yaml
+   :language: yaml
 
 
 gz_ros2_control_demos
