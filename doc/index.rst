@@ -206,9 +206,10 @@ and use the tag ``<controller_manager_prefix_node_name>`` to set the controller 
     </plugin>
   <gazebo>
 
-This controller publishes the state of all resources registered to a
-``hardware_interface::StateInterface`` to a topic of type ``sensor_msgs/msg/JointState``.
-The following is a basic configuration of the controller.
+The following is a basic configuration of the controllers:
+
+- ``joint_state_broadcaster``: This controller publishes the state of all resources registered to a ``hardware_interface::StateInterface`` to a topic of type ``sensor_msgs/msg/JointState``.
+- ``joint_trajectory_controller``: This controller creates an action called ``/joint_trajectory_controller/follow_joint_trajectory`` of type ``control_msgs::action::FollowJointTrajectory``.
 
 .. literalinclude:: ../gz_ros2_control_demos/config/cart_controller_position.yaml
    :language: yaml
