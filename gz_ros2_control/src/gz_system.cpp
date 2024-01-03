@@ -175,6 +175,9 @@ public:
 
   /// \brief Gain which converts position error to a velocity command
   double position_proportional_gain_;
+
+  // Should hold the joints if no control_mode is active
+  bool hold_joints_ = true;
 };
 
 namespace gz_ros2_control
@@ -195,6 +198,31 @@ bool GazeboSimSystem::initSim(
   this->dataPtr->n_dof_ = hardware_info.joints.size();
 
   this->dataPtr->update_rate = &update_rate;
+
+  try {
+    this->dataPtr->hold_joints_ = this->nh_->get_parameter("hold_joints").as_bool();
+  } catch (rclcpp::exceptions::ParameterUninitializedException & ex) {
+    RCLCPP_ERROR(
+      this->nh_->get_logger(),
+      "Parameter 'hold_joints' not initialized, with error %s", ex.what());
+    RCLCPP_WARN_STREAM(
+      this->nh_->get_logger(), "Using default value: " << this->dataPtr->hold_joints_);
+  } catch (rclcpp::exceptions::ParameterNotDeclaredException & ex) {
+    RCLCPP_ERROR(
+      this->nh_->get_logger(),
+      "Parameter 'hold_joints' not declared, with error %s", ex.what());
+    RCLCPP_WARN_STREAM(
+      this->nh_->get_logger(), "Using default value: " << this->dataPtr->hold_joints_);
+  } catch (rclcpp::ParameterTypeException & ex) {
+    RCLCPP_ERROR(
+      this->nh_->get_logger(),
+      "Parameter 'hold_joints' has wrong type: %s", ex.what());
+    RCLCPP_WARN_STREAM(
+      this->nh_->get_logger(), "Using default value: " << this->dataPtr->hold_joints_);
+  }
+  RCLCPP_DEBUG_STREAM(
+    this->nh_->get_logger(), "hold_joints (system): " << this->dataPtr->hold_joints_ << std::endl);
+
 
   RCLCPP_DEBUG(this->nh_->get_logger(), "n_dof_ %lu", this->dataPtr->n_dof_);
 
@@ -658,7 +686,7 @@ hardware_interface::return_type GazeboSimSystem::write(
         *jointEffortCmd = sim::components::JointForceCmd(
           {this->dataPtr->joints_[i].joint_effort_cmd});
       }
-    } else if (this->dataPtr->joints_[i].is_actuated) {
+    } else if (this->dataPtr->joints_[i].is_actuated && this->dataPtr->hold_joints_) {
       // Fallback case is a velocity command of zero (only for actuated joints)
       double target_vel = 0.0;
       auto vel =
