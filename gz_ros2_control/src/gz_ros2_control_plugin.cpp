@@ -297,6 +297,14 @@ void GazeboSimROS2ControlPlugin::Configure(
 
   // Get controller manager node name
   std::string controllerManagerNodeName{"controller_manager"};
+<<<<<<< HEAD:gz_ros2_control/src/gz_ros2_control_plugin.cpp
+=======
+
+  if (sdfPtr->HasElement("controller_manager_name")) {
+    controllerManagerNodeName = sdfPtr->GetElement("controller_manager_name")->Get<std::string>();
+  }
+
+>>>>>>> b77f972 (Add controller name parameter (#212)):ign_ros2_control/src/ign_ros2_control_plugin.cpp
   std::string ns = "/";
 
   // Hold joints if no control mode is active?
