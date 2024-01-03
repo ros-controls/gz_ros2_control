@@ -429,14 +429,16 @@ void GazeboSimROS2ControlPlugin::Configure(
       this->dataPtr->node_->declare_parameter("hold_joints", rclcpp::ParameterValue(hold_joints));
     } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException & e) {
       RCLCPP_ERROR(
-       this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' has already been declared, %s",
+        this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' has already been declared, %s",
         e.what());
     } catch (const rclcpp::exceptions::InvalidParametersException & e) {
       RCLCPP_ERROR(
-        this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' has invalid name, %s", e.what());
+        this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' has invalid name, %s",
+        e.what());
     } catch (const rclcpp::exceptions::InvalidParameterValueException & e) {
       RCLCPP_ERROR(
-        this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' value is invalid, %s", e.what());
+        this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' value is invalid, %s",
+        e.what());
     } catch (const rclcpp::exceptions::InvalidParameterTypeException & e) {
       RCLCPP_ERROR(
         this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' value has wrong type, %s",
