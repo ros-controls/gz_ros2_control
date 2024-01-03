@@ -77,7 +77,7 @@ def generate_test_description():
         executable='create',
         output='screen',
         arguments=['-string', doc.toxml(),
-                   '-name', 'cartpole',
+                   '-name', 'cart',
                    '-allow_renaming', 'true'],
     )
 
