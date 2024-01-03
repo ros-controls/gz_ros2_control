@@ -215,11 +215,11 @@ The following is a basic configuration of the controller.
     ros__parameters:
       type: joint_state_controller/JointStateController
 
-This controller creates an action called ``/cart_pole_controller/follow_joint_trajectory`` of type ``control_msgs::action::FollowJointTrajectory``.
+This controller creates an action called ``/cart_controller/follow_joint_trajectory`` of type ``control_msgs::action::FollowJointTrajectory``.
 
 .. code-block:: yaml
 
-  cart_pole_controller:
+  cart_controller:
     ros__parameters:
       type: joint_trajectory_controller/JointTrajectoryController
       joints:
