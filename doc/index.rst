@@ -153,6 +153,7 @@ robot hardware interfaces between *ros2_control* and Gazebo.
 The *gz_ros2_control* ``<plugin>`` tag also has the following optional child elements:
 
 * ``<parameters>``: YAML file with the configuration of the controllers
+* ``<hold_joints>``: if set to true (default), it will hold the joints' position if their interface was not claimed, e.g., the controller hasn't been activated yet.
 
 Default gz_ros2_control Behavior
 -----------------------------------------------------------
