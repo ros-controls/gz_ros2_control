@@ -146,13 +146,14 @@ robot hardware interfaces between *ros2_control* and Gazebo.
       <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
         <robot_param>robot_description</robot_param>
         <robot_param_node>robot_state_publisher</robot_param_node>
-        <parameters>$(find gz_ros2_control_demos)/config/cartpole_controller.yaml</parameters>
+        <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
       </plugin>
   </gazebo>
 
 The *gz_ros2_control* ``<plugin>`` tag also has the following optional child elements:
 
 * ``<parameters>``: YAML file with the configuration of the controllers
+* ``<hold_joints>``: if set to true (default), it will hold the joints' position if their interface was not claimed, e.g., the controller hasn't been activated yet.
 
 Default gz_ros2_control Behavior
 -----------------------------------------------------------
@@ -200,32 +201,18 @@ and use the tag ``<controller_manager_prefix_node_name>`` to set the controller 
 
   <gazebo>
     <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
-      <parameters>$(find gz_ros2_control_demos)/config/cartpole_controller.yaml</parameters>
+      <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
       <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
     </plugin>
   <gazebo>
 
-This controller publishes the state of all resources registered to a
-``hardware_interface::StateInterface`` to a topic of type ``sensor_msgs/msg/JointState``.
-The following is a basic configuration of the controller.
+The following is a basic configuration of the controllers:
 
-.. code-block:: yaml
+- ``joint_state_broadcaster``: This controller publishes the state of all resources registered to a ``hardware_interface::StateInterface`` to a topic of type ``sensor_msgs/msg/JointState``.
+- ``joint_trajectory_controller``: This controller creates an action called ``/joint_trajectory_controller/follow_joint_trajectory`` of type ``control_msgs::action::FollowJointTrajectory``.
 
-  joint_state_controller:
-    ros__parameters:
-      type: joint_state_controller/JointStateController
-
-This controller creates an action called ``/cart_pole_controller/follow_joint_trajectory`` of type ``control_msgs::action::FollowJointTrajectory``.
-
-.. code-block:: yaml
-
-  cart_pole_controller:
-    ros__parameters:
-      type: joint_trajectory_controller/JointTrajectoryController
-      joints:
-        - slider_to_cart
-      write_op_modes:
-        - slider_to_cart
+.. literalinclude:: ../gz_ros2_control_demos/config/cart_controller_position.yaml
+   :language: yaml
 
 
 gz_ros2_control_demos

@@ -57,7 +57,7 @@ def generate_launch_description():
         executable='create',
         output='screen',
         parameters=[{'string': doc.toxml(),
-                     'name': 'cartpole',
+                     'name': 'diff_drive',
                      'allow_renaming': True}],
     )
 

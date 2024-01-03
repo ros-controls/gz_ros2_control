@@ -297,7 +297,19 @@ void GazeboSimROS2ControlPlugin::Configure(
 
   // Get controller manager node name
   std::string controllerManagerNodeName{"controller_manager"};
+
+  if (sdfPtr->HasElement("controller_manager_name")) {
+    controllerManagerNodeName = sdfPtr->GetElement("controller_manager_name")->Get<std::string>();
+  }
+
   std::string ns = "/";
+
+  // Hold joints if no control mode is active?
+  bool hold_joints = true;  // default
+  if (sdfPtr->HasElement("hold_joints")) {
+    hold_joints =
+      sdfPtr->GetElement("hold_joints")->Get<bool>();
+  }
 
   if (sdfPtr->HasElement("ros")) {
     sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
@@ -417,6 +429,27 @@ void GazeboSimROS2ControlPlugin::Configure(
         ex.what());
       continue;
     }
+
+    try {
+      this->dataPtr->node_->declare_parameter("hold_joints", rclcpp::ParameterValue(hold_joints));
+    } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException & e) {
+      RCLCPP_ERROR(
+        this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' has already been declared, %s",
+        e.what());
+    } catch (const rclcpp::exceptions::InvalidParametersException & e) {
+      RCLCPP_ERROR(
+        this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' has invalid name, %s",
+        e.what());
+    } catch (const rclcpp::exceptions::InvalidParameterValueException & e) {
+      RCLCPP_ERROR(
+        this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' value is invalid, %s",
+        e.what());
+    } catch (const rclcpp::exceptions::InvalidParameterTypeException & e) {
+      RCLCPP_ERROR(
+        this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' value has wrong type, %s",
+        e.what());
+    }
+
     if (!gzSimSystem->initSim(
         this->dataPtr->node_,
         enabledJoints,
