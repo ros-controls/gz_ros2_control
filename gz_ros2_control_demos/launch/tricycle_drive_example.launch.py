@@ -57,7 +57,7 @@ def generate_launch_description():
         executable='create',
         output='screen',
         arguments=['-string', doc.toxml(),
-                   '-name', 'cartpole',
+                   '-name', 'tricyle',
                    '-allow_renaming', 'true'],
     )
 
