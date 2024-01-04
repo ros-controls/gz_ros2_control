@@ -2,6 +2,9 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.3 (2024-01-04)
+------------------
+
 0.7.2 (2024-01-04)
 ------------------
 * Add controller name parameter (`#212 <https://github.com/ros-controls/gz_ros2_control/issues/212>`_)

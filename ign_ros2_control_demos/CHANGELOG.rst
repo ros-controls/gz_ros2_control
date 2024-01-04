@@ -2,6 +2,13 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.3 (2024-01-04)
+------------------
+* Removed cartpole files
+* Rename cartpole with cart (backport `#214 <https://github.com/ros-controls/gz_ros2_control/issues/214>`_) (`#217 <https://github.com/ros-controls/gz_ros2_control/issues/217>`_)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Contributors: Alejandro Hernández Cordero, mergify[bot]
+
 0.7.2 (2024-01-04)
 ------------------
 * Update diff_drive_example.launch.py (`#207 <https://github.com/ros-controls/gz_ros2_control/issues/207>`_)
