@@ -2,6 +2,14 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.2 (2024-01-04)
+------------------
+* Update diff_drive_example.launch.py (`#207 <https://github.com/ros-controls/gz_ros2_control/issues/207>`_)
+* Cleanup controller config (backport `#180 <https://github.com/ros-controls/gz_ros2_control/issues/180>`_) (`#181 <https://github.com/ros-controls/gz_ros2_control/issues/181>`_)
+  * Cleanup controller config (`#180 <https://github.com/ros-controls/gz_ros2_control/issues/180>`_)
+  (cherry picked from commit 223174515a64008b2ffef5b730c4c61cc78ff8bc)
+* Contributors: Jakub Delicat, mergify[bot]
+
 0.7.1 (2023-08-23)
 ------------------
 * Set C++ version to 17 (`#171 <https://github.com/ros-controls/gz_ros2_control/issues/171>`_) (`#174 <https://github.com/ros-controls/gz_ros2_control/issues/174>`_)
