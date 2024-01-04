@@ -2,6 +2,18 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.3 (2024-01-04)
+------------------
+* Add controller name parameter (backport `#212 <https://github.com/ros-controls/gz_ros2_control/issues/212>`_) (`#215 <https://github.com/ros-controls/gz_ros2_control/issues/215>`_)
+  Co-authored-by: Jakub Delicat <109142865+delihus@users.noreply.github.com>
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Fix stuck passive joints (`#184 <https://github.com/ros-controls/gz_ros2_control/issues/184>`_) (`#205 <https://github.com/ros-controls/gz_ros2_control/issues/205>`_)
+  Co-authored-by: Christoph Fröhlich <christophfroehlich@users.noreply.github.com>
+  (cherry picked from commit 0a8d4464e15e4f13ea0673311c60a891d6a836ec)
+  Co-authored-by: Johannes Huemer <johannes.huemer@ait.ac.at>
+* Support Harmonic (`#185 <https://github.com/ros-controls/gz_ros2_control/issues/185>`_)
+* Contributors: Alejandro Hernández Cordero, mergify[bot]
+
 1.1.2 (2023-08-23)
 ------------------
 * Catch pluginlib exceptions (`#175 <https://github.com/ros-controls/gz_ros2_control/issues/175>`_)
