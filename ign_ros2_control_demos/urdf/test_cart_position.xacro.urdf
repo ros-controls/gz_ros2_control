@@ -78,13 +78,8 @@
 
   <gazebo>
     <!-- Joint state publisher -->
-<<<<<<< HEAD:ign_ros2_control_demos/urdf/test_cart_position.xacro.urdf
     <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
-      <parameters>$(find ign_ros2_control_demos)/config/cartpole_controller_position.yaml</parameters>
-=======
-    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-      <parameters>$(find gz_ros2_control_demos)/config/cart_controller_position.yaml</parameters>
->>>>>>> 7e388fa (Rename cartpole with cart (#214)):gz_ros2_control_demos/urdf/test_cart_position.xacro.urdf
+      <parameters>$(find ign_ros2_control_demos)/config/cart_controller_position.yaml</parameters>
     </plugin>
   </gazebo>
 </robot>
