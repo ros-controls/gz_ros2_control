@@ -204,7 +204,8 @@ bool IgnitionSystem::initSim(
 
     ignition::gazebo::Entity simjoint = enableJoints[joint_name];
     this->dataPtr->joints_[j].sim_joint = simjoint;
-    this->dataPtr->joints_[j].joint_type = _ecm.Component<ignition::gazebo::components::JointType>(simjoint)->Data();
+    this->dataPtr->joints_[j].joint_type = _ecm.Component<ignition::gazebo::components::JointType>(
+      simjoint)->Data();
 
     // Create joint position component if one doesn't exist
     if (!_ecm.EntityHasComponentType(
