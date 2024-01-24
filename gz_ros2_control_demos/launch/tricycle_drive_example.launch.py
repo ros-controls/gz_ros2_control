@@ -56,9 +56,9 @@ def generate_launch_description():
         package='ros_gz_sim',
         executable='create',
         output='screen',
-        arguments=['-string', doc.toxml(),
-                   '-name', 'tricyle',
-                   '-allow_renaming', 'true'],
+        parameters=[{'string': doc.toxml(),
+                     'name': 'tricyle',
+                     'allow_renaming': True}],
     )
 
     load_joint_state_controller = ExecuteProcess(
