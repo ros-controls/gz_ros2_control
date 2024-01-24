@@ -2,6 +2,14 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.5 (2024-01-24)
+------------------
+* Load the URDF to the resource_manager before parsing it to CM (`#222 <https://github.com/ros-controls/gz_ros2_control/issues/222>`_) (`#225 <https://github.com/ros-controls/gz_ros2_control/issues/225>`_)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+  (cherry picked from commit 5a948050563881dba20effec3ccb678e4f375529)
+  Co-authored-by: Sai Kishor Kothakota <saisastra3@gmail.com>
+* Contributors: mergify[bot]
+
 0.7.3 (2024-01-04)
 ------------------
 
