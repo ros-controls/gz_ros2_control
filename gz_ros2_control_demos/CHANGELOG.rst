@@ -2,6 +2,9 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.4 (2024-01-24)
+------------------
+
 1.1.3 (2024-01-04)
 ------------------
 * Rename cartpole with cart (`#214 <https://github.com/ros-controls/gz_ros2_control/issues/214>`_) (`#218 <https://github.com/ros-controls/gz_ros2_control/issues/218>`_)
