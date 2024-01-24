@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>gz_ros2_control_demos</name>
-  <version>1.2.0</version>
+  <version>1.2.1</version>
   <description>gz_ros2_control_demos</description>
 
   <maintainer email="ahcorde@osrfoundation.org">Alejandro Hernandez</maintainer>
