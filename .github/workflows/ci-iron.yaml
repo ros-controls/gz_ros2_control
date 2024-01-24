@@ -10,18 +10,31 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - docker-image: "ubuntu:22.04"
             gz-version: "fortress"
             ros-distro: "iron"
+            ros-repo-packages: ""
           - docker-image: "ubuntu:22.04"
             gz-version: "garden"
             ros-distro: "iron"
+            ros-repo-packages: ""
+          - docker-image: "ubuntu:22.04"
+            gz-version: "fortress"
+            ros-distro: "iron"
+            ros-repo-packages: "-testing"
+          - docker-image: "ubuntu:22.04"
+            gz-version: "garden"
+            ros-distro: "iron"
+            ros-repo-packages: "-testing"
+
     env:
       DOCKER_IMAGE: ${{ matrix.docker-image }}
       GZ_VERSION: ${{ matrix.gz-version }}
       ROS_DISTRO: ${{ matrix.ros-distro }}
+      ROS_REPO_PACKAGES: ${{ matrix.ros-repo-packages }}
     container:
       image: ${{ matrix.docker-image }}
     steps:
@@ -40,7 +53,7 @@ jobs:
         fi
         cp -r gz_ros2_control /home/ros2_ws/src/
         curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2$ROS_REPO_PACKAGES/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
         wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
         echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
         if [ "$GZ_VERSION" == "garden" ]; then
