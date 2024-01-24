@@ -394,6 +394,12 @@ void GazeboSimROS2ControlPlugin::Configure(
     std::make_unique<hardware_interface::ResourceManager>();
 
   try {
+    resource_manager_->load_urdf(urdf_string, false, false);
+  } catch (...) {
+    RCLCPP_ERROR(
+      this->dataPtr->node_->get_logger(), "Error initializing URDF to resource manager!");
+  }
+  try {
     this->dataPtr->robot_hw_sim_loader_.reset(
       new pluginlib::ClassLoader<gz_ros2_control::GazeboSimSystemInterface>(
         "gz_ros2_control",
