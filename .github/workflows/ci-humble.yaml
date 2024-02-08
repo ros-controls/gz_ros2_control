@@ -10,10 +10,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        version: [fortress]
+        include:
+          - version: fortress
+            ros-repo-packages: ""
+          - version: fortress
+            ros-repo-packages: "-testing"
     env:
       IGNITION_VERSION: ${{ matrix.version }}
+      ROS_REPO_PACKAGES: ${{ matrix.ros-repo-packages }}
     container:
       image: ubuntu:22.04
     steps:
@@ -27,7 +33,7 @@ jobs:
         cd ..
         mkdir -p /home/ros2_ws/src
         cp -r gz_ros2_control /home/ros2_ws/src/
-        sh -c 'echo "deb http://packages.ros.org/ros2-testing/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-testing.list'
+        sh -c 'echo "deb http://packages.ros.org/ros2$ROS_REPO_PACKAGES/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-testing.list'
         curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
         apt-get update && apt-get upgrade -q -y
         apt-get update && apt-get install -qq -y \
