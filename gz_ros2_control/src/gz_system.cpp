@@ -306,14 +306,33 @@ bool GazeboSimSystem::initSim(
 
     RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\tState:");
 
-    auto get_initial_value = [this](const hardware_interface::InterfaceInfo & interface_info) {
+    auto get_initial_value =
+      [this, joint_name](const hardware_interface::InterfaceInfo & interface_info) {
+        double initial_value{0.0};
         if (!interface_info.initial_value.empty()) {
+<<<<<<< HEAD
           double value = std::stod(interface_info.initial_value);
           RCLCPP_INFO(this->nh_->get_logger(), "\t\t\t found initial value: %f", value);
           return value;
         } else {
           return 0.0;
+=======
+          try {
+            initial_value = hardware_interface::stod(interface_info.initial_value);
+            RCLCPP_INFO(this->nh_->get_logger(), "\t\t\t found initial value: %f", initial_value);
+          } catch (std::invalid_argument &) {
+            RCLCPP_ERROR_STREAM(
+              this->nh_->get_logger(),
+              "Failed converting initial_value string to real number for the joint "
+                << joint_name
+                << " and state interface " << interface_info.name
+                << ". Actual value of parameter: " << interface_info.initial_value
+                << ". Initial value will be set to 0.0");
+            throw std::invalid_argument("Failed converting initial_value string");
+          }
+>>>>>>> a3beadb (Fix crashing due to an invalid parameter in the initial value (#233))
         }
+        return initial_value;
       };
 
     double initial_position = std::numeric_limits<double>::quiet_NaN();
