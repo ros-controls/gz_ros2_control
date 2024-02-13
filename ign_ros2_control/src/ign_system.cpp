@@ -288,15 +288,8 @@ bool IgnitionSystem::initSim(
       [this, joint_name](const hardware_interface::InterfaceInfo & interface_info) {
         double initial_value{0.0};
         if (!interface_info.initial_value.empty()) {
-<<<<<<< HEAD:ign_ros2_control/src/ign_system.cpp
-          double value = std::stod(interface_info.initial_value);
-          RCLCPP_INFO(this->nh_->get_logger(), "\t\t\t found initial value: %f", value);
-          return value;
-        } else {
-          return 0.0;
-=======
           try {
-            initial_value = hardware_interface::stod(interface_info.initial_value);
+            initial_value = std::stod(interface_info.initial_value);
             RCLCPP_INFO(this->nh_->get_logger(), "\t\t\t found initial value: %f", initial_value);
           } catch (std::invalid_argument &) {
             RCLCPP_ERROR_STREAM(
@@ -308,7 +301,6 @@ bool IgnitionSystem::initSim(
                 << ". Initial value will be set to 0.0");
             throw std::invalid_argument("Failed converting initial_value string");
           }
->>>>>>> a3beadb (Fix crashing due to an invalid parameter in the initial value (#233)):gz_ros2_control/src/gz_system.cpp
         }
         return initial_value;
       };
