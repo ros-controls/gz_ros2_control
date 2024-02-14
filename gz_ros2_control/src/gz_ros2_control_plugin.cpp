@@ -14,9 +14,11 @@
 
 #include <unistd.h>
 
+#include <chrono>
 #include <map>
 #include <memory>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -231,7 +233,7 @@ std::string GazeboSimROS2ControlPluginPrivate::getURDF() const
         " URDF in parameter [%s] on the ROS param server.",
         this->robot_description_.c_str());
     }
-    usleep(100000);
+    std::this_thread::sleep_for(std::chrono::microseconds(100000));
   }
   RCLCPP_INFO(node_->get_logger(), "Received URDF from param server");
 
