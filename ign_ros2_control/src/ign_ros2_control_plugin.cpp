@@ -12,9 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+<<<<<<< HEAD:ign_ros2_control/src/ign_ros2_control_plugin.cpp
+=======
+#include <unistd.h>
+
+#include <chrono>
+>>>>>>> 0bdf13e (Use portable versio for usleep (#237)):gz_ros2_control/src/gz_ros2_control_plugin.cpp
 #include <map>
 #include <memory>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -219,7 +226,7 @@ std::string IgnitionROS2ControlPluginPrivate::getURDF() const
         " URDF in parameter [%s] on the ROS param server.",
         this->robot_description_.c_str());
     }
-    usleep(100000);
+    std::this_thread::sleep_for(std::chrono::microseconds(100000));
   }
   RCLCPP_INFO(node_->get_logger(), "Received URDF from param server");
 
