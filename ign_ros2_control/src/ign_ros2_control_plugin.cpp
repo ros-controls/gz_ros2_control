@@ -12,12 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-<<<<<<< HEAD:ign_ros2_control/src/ign_ros2_control_plugin.cpp
-=======
 #include <unistd.h>
 
 #include <chrono>
->>>>>>> 0bdf13e (Use portable versio for usleep (#237)):gz_ros2_control/src/gz_ros2_control_plugin.cpp
 #include <map>
 #include <memory>
 #include <string>
