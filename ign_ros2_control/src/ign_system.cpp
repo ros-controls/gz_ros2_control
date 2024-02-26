@@ -23,32 +23,6 @@
 #include <utility>
 #include <vector>
 
-<<<<<<< HEAD:ign_ros2_control/src/ign_system.cpp
-=======
-#ifdef GZ_HEADERS
-#include <gz/msgs/imu.pb.h>
-
-#include <gz/sim/components/AngularVelocity.hh>
-#include <gz/sim/components/Imu.hh>
-#include <gz/sim/components/JointForce.hh>
-#include <gz/sim/components/JointForceCmd.hh>
-#include <gz/sim/components/JointPosition.hh>
-#include <gz/sim/components/JointPositionReset.hh>
-#include <gz/sim/components/JointVelocity.hh>
-#include <gz/sim/components/JointVelocityCmd.hh>
-#include <gz/sim/components/JointVelocityReset.hh>
-#include <gz/sim/components/LinearAcceleration.hh>
-#include <gz/sim/components/Name.hh>
-#include <gz/sim/components/ParentEntity.hh>
-#include <gz/sim/components/Pose.hh>
-#include <gz/sim/components/Sensor.hh>
-#include <gz/transport/Node.hh>
-#define GZ_TRANSPORT_NAMESPACE gz::transport::
-#define GZ_MSGS_NAMESPACE gz::msgs::
-#else
-#include <ignition/msgs/imu.pb.h>
-
->>>>>>> c5b0b90 (Reset Gazebo with initial joint positions and velocities (#241)):gz_ros2_control/src/gz_system.cpp
 #include <ignition/gazebo/components/AngularVelocity.hh>
 #include <ignition/gazebo/components/Imu.hh>
 #include <ignition/gazebo/components/JointForce.hh>
