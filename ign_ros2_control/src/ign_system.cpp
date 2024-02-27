@@ -380,13 +380,13 @@ bool IgnitionSystem::initSim(
         this->dataPtr->joints_[j].joint_position = initial_position;
         this->dataPtr->ecm->CreateComponent(
           this->dataPtr->joints_[j].sim_joint,
-          sim::components::JointPositionReset({initial_position}));
+          ignition::gazebo::components::JointPositionReset({initial_position}));
       }
       if (!std::isnan(initial_velocity)) {
         this->dataPtr->joints_[j].joint_velocity = initial_velocity;
         this->dataPtr->ecm->CreateComponent(
           this->dataPtr->joints_[j].sim_joint,
-          sim::components::JointVelocityReset({initial_velocity}));
+          ignition::gazebo::components::JointVelocityReset({initial_velocity}));
       }
     }
 
