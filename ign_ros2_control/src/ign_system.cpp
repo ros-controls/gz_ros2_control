@@ -28,8 +28,10 @@
 #include <ignition/gazebo/components/JointForce.hh>
 #include <ignition/gazebo/components/JointForceCmd.hh>
 #include <ignition/gazebo/components/JointPosition.hh>
+#include <ignition/gazebo/components/JointPositionReset.hh>
 #include <ignition/gazebo/components/JointVelocity.hh>
 #include <ignition/gazebo/components/JointVelocityCmd.hh>
+#include <ignition/gazebo/components/JointVelocityReset.hh>
 #include <ignition/gazebo/components/LinearAcceleration.hh>
 #include <ignition/gazebo/components/Name.hh>
 #include <ignition/gazebo/components/ParentEntity.hh>
@@ -376,9 +378,15 @@ bool IgnitionSystem::initSim(
       // independently of existence of command interface set initial value if defined
       if (!std::isnan(initial_position)) {
         this->dataPtr->joints_[j].joint_position = initial_position;
+        this->dataPtr->ecm->CreateComponent(
+          this->dataPtr->joints_[j].sim_joint,
+          ignition::gazebo::components::JointPositionReset({initial_position}));
       }
       if (!std::isnan(initial_velocity)) {
         this->dataPtr->joints_[j].joint_velocity = initial_velocity;
+        this->dataPtr->ecm->CreateComponent(
+          this->dataPtr->joints_[j].sim_joint,
+          ignition::gazebo::components::JointVelocityReset({initial_velocity}));
       }
     }
 
