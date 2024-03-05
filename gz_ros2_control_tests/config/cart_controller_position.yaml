@@ -2,19 +2,18 @@ controller_manager:
   ros__parameters:
     update_rate: 1000  # Hz
 
-    effort_controllers:
-      type: effort_controllers/JointGroupEffortController
+    joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-effort_controllers:
+joint_trajectory_controller:
   ros__parameters:
     joints:
       - slider_to_cart
     command_interfaces:
-      - effort
+      - position
     state_interfaces:
       - position
       - velocity
-      - effort

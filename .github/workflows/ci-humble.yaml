@@ -1,22 +1,29 @@
-name: Ignition ros2 control CI
+name: ign_ros2_control CI - Humble
 
 on:
   pull_request:
+    branches: [ humble ]
   push:
-    branches: [ master ]
+    branches: [ humble ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        version: [fortress]
+        include:
+          - version: fortress
+            ros-repo-packages: ""
+          - version: fortress
+            ros-repo-packages: "-testing"
     env:
       IGNITION_VERSION: ${{ matrix.version }}
+      ROS_REPO_PACKAGES: ${{ matrix.ros-repo-packages }}
     container:
       image: ubuntu:22.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Setup colcon workspace
       id: configure
       run: |
@@ -26,7 +33,7 @@ jobs:
         cd ..
         mkdir -p /home/ros2_ws/src
         cp -r gz_ros2_control /home/ros2_ws/src/
-        sh -c 'echo "deb http://packages.ros.org/ros2-testing/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-testing.list'
+        sh -c 'echo "deb http://packages.ros.org/ros2$ROS_REPO_PACKAGES/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-testing.list'
         curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
         apt-get update && apt-get upgrade -q -y
         apt-get update && apt-get install -qq -y \
@@ -38,17 +45,17 @@ jobs:
         cd /home/ros2_ws/src/
         rosdep init
         rosdep update
-        rosdep install --from-paths ./ -i -y --rosdistro rolling --ignore-src
+        rosdep install --from-paths ./ -i -y --rosdistro humble --ignore-src
     - name: Build project
       id: build
       run: |
         cd /home/ros2_ws/
-        . /opt/ros/rolling/local_setup.sh
-        colcon build --packages-up-to ign_ros2_control_demos
+        . /opt/ros/humble/local_setup.sh
+        colcon build --packages-up-to ign_ros2_control_demos gz_ros2_control_tests
     - name: Run tests
       id: test
       run: |
         cd /home/ros2_ws/
-        . /opt/ros/rolling/local_setup.sh
-        colcon test --event-handlers console_direct+ --packages-select ign_ros2_control ign_ros2_control_demos
+        . /opt/ros/humble/local_setup.sh
+        colcon test --event-handlers console_direct+ --packages-select ign_ros2_control ign_ros2_control_demos gz_ros2_control_tests
         colcon test-result

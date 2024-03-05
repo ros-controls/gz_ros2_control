@@ -90,6 +90,11 @@ install(TARGETS
   RUNTIME DESTINATION bin
 )
 
+install(DIRECTORY
+  include/
+  DESTINATION include
+)
+
 # Testing and linting
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

@@ -41,7 +41,7 @@ def generate_launch_description():
 
     doc = xacro.parse(open(xacro_file))
     xacro.process_doc(doc)
-    params = {'robot_description': doc.toxml()}
+    params = {'robot_description': doc.toxml(), 'use_sim_time': use_sim_time}
 
     print(params)
 
@@ -53,11 +53,11 @@ def generate_launch_description():
     )
 
     ignition_spawn_entity = Node(
-        package='ros_ign_gazebo',
+        package='ros_gz_sim',
         executable='create',
         output='screen',
         arguments=['-string', doc.toxml(),
-                   '-name', 'cartpole',
+                   '-name', 'tricyle',
                    '-allow_renaming', 'true'],
     )
 
@@ -73,12 +73,21 @@ def generate_launch_description():
         output='screen'
     )
 
+    # Bridge
+    bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=['/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock'],
+        output='screen'
+    )
+
     return LaunchDescription([
+        bridge,
         # Launch gazebo environment
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                [os.path.join(get_package_share_directory('ros_ign_gazebo'),
-                              'launch', 'ign_gazebo.launch.py')]),
+                [os.path.join(get_package_share_directory('ros_gz_sim'),
+                              'launch', 'gz_sim.launch.py')]),
             launch_arguments=[('ign_args', [' -r -v 4 empty.sdf'])]),
         RegisterEventHandler(
             event_handler=OnProcessExit(

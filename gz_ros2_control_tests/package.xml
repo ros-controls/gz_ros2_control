@@ -1,48 +1,37 @@
 <?xml version="1.0"?>
-<package format="2">
-  <name>ign_ros2_control_demos</name>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>gz_ros2_control_tests</name>
   <version>0.7.5</version>
-  <description>ign_ros2_control_demos</description>
-
-  <maintainer email="ahcorde@osrfoundation.org">Alejandro Hernandez</maintainer>
-
+  <description>Gazebo ros2 control tests</description>
+  <maintainer email="alejandro@openrobotics.org">Alejandro Hernández</maintainer>
   <license>Apache License 2.0</license>
-
-
-  <url type="website">https://github.com/ros-controls/gz_ros2_control/blob/master/README.md</url>
-  <url type="bugtracker">https://github.com/ros-controls/gz_ros2_control/issues</url>
-  <url type="repository">https://github.com/ros-controls/gz_ros2_control</url>
-
-  <author>Alejandro Hernández</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <build_depend>control_msgs</build_depend>
-  <build_depend>geometry_msgs</build_depend>
   <build_depend>rclcpp</build_depend>
   <build_depend>rclcpp_action</build_depend>
-  <build_depend>std_msgs</build_depend>
 
   <exec_depend>ament_index_python</exec_depend>
   <exec_depend>control_msgs</exec_depend>
-  <exec_depend>effort_controllers</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>hardware_interface</exec_depend>
   <exec_depend>ign_ros2_control</exec_depend>
-  <exec_depend>imu_sensor_broadcaster</exec_depend>
   <exec_depend>joint_state_broadcaster</exec_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
+  <exec_depend>launch_testing_ament_cmake</exec_depend>
+  <exec_depend>python3-psutil</exec_depend>
+  <exec_depend>python3-pytest</exec_depend>
   <exec_depend>ros2launch</exec_depend>
   <exec_depend>rclcpp</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
-  <exec_depend>ros_ign_gazebo</exec_depend>
+  <exec_depend condition="$GZ_VERSION == ''">ros_ign_gazebo</exec_depend>
+  <exec_depend condition="$GZ_VERSION == 'garden'">ros_gz_sim</exec_depend>
+  <exec_depend condition="$GZ_VERSION == 'fortress'">ros_ign_gazebo</exec_depend>
   <exec_depend>ros2controlcli</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
-  <exec_depend>velocity_controllers</exec_depend>
-  <exec_depend>diff_drive_controller</exec_depend>
-  <exec_depend>tricycle_controller</exec_depend>
   <exec_depend>xacro</exec_depend>
 
   <test_depend>ament_cmake_gtest</test_depend>

@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <unistd.h>
+
+#include <chrono>
 #include <map>
 #include <memory>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -219,7 +223,7 @@ std::string IgnitionROS2ControlPluginPrivate::getURDF() const
         " URDF in parameter [%s] on the ROS param server.",
         this->robot_description_.c_str());
     }
-    usleep(100000);
+    std::this_thread::sleep_for(std::chrono::microseconds(100000));
   }
   RCLCPP_INFO(node_->get_logger(), "Received URDF from param server");
 
@@ -249,11 +253,12 @@ void IgnitionROS2ControlPlugin::Configure(
   ignition::gazebo::EntityComponentManager & _ecm,
   ignition::gazebo::EventManager &)
 {
+  rclcpp::Logger logger = rclcpp::get_logger("GazeboSimROS2ControlPlugin");
   // Make sure the controller is attached to a valid model
   const auto model = ignition::gazebo::Model(_entity);
   if (!model.Valid(_ecm)) {
     RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(),
+      logger,
       "[Ignition ROS 2 Control] Failed to initialize because [%s] (Entity=%lu)] is not a model."
       "Please make sure that Ignition ROS 2 Control is attached to a valid model.",
       model.Name(_ecm).c_str(), _entity);
@@ -265,7 +270,7 @@ void IgnitionROS2ControlPlugin::Configure(
 
   if (paramFileName.empty()) {
     RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(),
+      logger,
       "Ignition ros2 control found an empty parameters file. Failed to initialize.");
     return;
   }
@@ -285,25 +290,24 @@ void IgnitionROS2ControlPlugin::Configure(
   // Get controller manager node name
   std::string controllerManagerNodeName{"controller_manager"};
 
-  std::string controllerManagerPrefixNodeName =
-    _sdf->Get<std::string>("controller_manager_prefix_node_name");
-  if (!controllerManagerPrefixNodeName.empty()) {
-    controllerManagerNodeName = controllerManagerPrefixNodeName + "_" + controllerManagerNodeName;
+  if (sdfPtr->HasElement("controller_manager_name")) {
+    controllerManagerNodeName = sdfPtr->GetElement("controller_manager_name")->Get<std::string>();
   }
 
+  std::string ns = "/";
   if (sdfPtr->HasElement("ros")) {
     sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
 
     // Set namespace if tag is present
     if (sdfRos->HasElement("namespace")) {
-      std::string ns = sdfRos->GetElement("namespace")->Get<std::string>();
+      ns = sdfRos->GetElement("namespace")->Get<std::string>();
       // prevent exception: namespace must be absolute, it must lead with a '/'
       if (ns.empty() || ns[0] != '/') {
         ns = '/' + ns;
       }
-      std::string ns_arg = std::string("__ns:=") + ns;
-      arguments.push_back(RCL_REMAP_FLAG);
-      arguments.push_back(ns_arg);
+      if (ns.length() > 1) {
+        this->dataPtr->robot_description_node_ = ns + "/" + this->dataPtr->robot_description_node_;
+      }
     }
 
     // Get list of remapping rules from SDF
@@ -325,14 +329,14 @@ void IgnitionROS2ControlPlugin::Configure(
     argv.push_back(reinterpret_cast<const char *>(arg.data()));
   }
 
+  // Create a default context, if not already
   if (!rclcpp::ok()) {
     rclcpp::init(static_cast<int>(argv.size()), argv.data());
-    std::string node_name = "ignition_ros_control";
-    if (!controllerManagerPrefixNodeName.empty()) {
-      node_name = controllerManagerPrefixNodeName + "_" + node_name;
-    }
-    this->dataPtr->node_ = rclcpp::Node::make_shared(node_name);
   }
+
+  std::string node_name = "gz_ros2_control";
+
+  this->dataPtr->node_ = rclcpp::Node::make_shared(node_name, ns);
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   this->dataPtr->executor_->add_node(this->dataPtr->node_);
   this->dataPtr->stop_ = false;
@@ -379,6 +383,12 @@ void IgnitionROS2ControlPlugin::Configure(
     std::make_unique<hardware_interface::ResourceManager>();
 
   try {
+    resource_manager_->load_urdf(urdf_string, false, false);
+  } catch (...) {
+    RCLCPP_ERROR(
+      this->dataPtr->node_->get_logger(), "Error initializing URDF to resource manager!");
+  }
+  try {
     this->dataPtr->robot_hw_sim_loader_.reset(
       new pluginlib::ClassLoader<ign_ros2_control::IgnitionSystemInterface>(
         "ign_ros2_control",
@@ -392,9 +402,21 @@ void IgnitionROS2ControlPlugin::Configure(
 
   for (unsigned int i = 0; i < control_hardware_info.size(); ++i) {
     std::string robot_hw_sim_type_str_ = control_hardware_info[i].hardware_class_type;
-    auto ignitionSystem = std::unique_ptr<ign_ros2_control::IgnitionSystemInterface>(
-      this->dataPtr->robot_hw_sim_loader_->createUnmanagedInstance(robot_hw_sim_type_str_));
+    std::unique_ptr<ign_ros2_control::IgnitionSystemInterface> ignitionSystem;
+    RCLCPP_DEBUG(
+      this->dataPtr->node_->get_logger(), "Load hardware interface %s ...",
+      robot_hw_sim_type_str_.c_str());
 
+    try {
+      ignitionSystem = std::unique_ptr<ign_ros2_control::IgnitionSystemInterface>(
+        this->dataPtr->robot_hw_sim_loader_->createUnmanagedInstance(robot_hw_sim_type_str_));
+    } catch (pluginlib::PluginlibException & ex) {
+      RCLCPP_ERROR(
+        this->dataPtr->node_->get_logger(),
+        "The plugin failed to load for some reason. Error: %s\n",
+        ex.what());
+      continue;
+    }
     if (!ignitionSystem->initSim(
         this->dataPtr->node_,
         enabledJoints,
@@ -406,6 +428,9 @@ void IgnitionROS2ControlPlugin::Configure(
         this->dataPtr->node_->get_logger(), "Could not initialize robot simulation interface");
       return;
     }
+    RCLCPP_DEBUG(
+      this->dataPtr->node_->get_logger(), "Initialized robot simulation interface %s!",
+      robot_hw_sim_type_str_.c_str());
 
     resource_manager_->import_component(std::move(ignitionSystem), control_hardware_info[i]);
 
@@ -421,7 +446,8 @@ void IgnitionROS2ControlPlugin::Configure(
     new controller_manager::ControllerManager(
       std::move(resource_manager_),
       this->dataPtr->executor_,
-      controllerManagerNodeName));
+      controllerManagerNodeName,
+      this->dataPtr->node_->get_namespace()));
   this->dataPtr->executor_->add_node(this->dataPtr->controller_manager_);
 
   if (!this->dataPtr->controller_manager_->has_parameter("update_rate")) {
