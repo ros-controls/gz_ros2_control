@@ -680,7 +680,7 @@ hardware_interface::return_type IgnitionSystem::write(
           this->dataPtr->joints_[i].sim_joint,
           ignition::gazebo::components::JointVelocityReset({targetVel}));
       } else if (!vel->Data().empty()) {
-        vel->Data()[0] = target_vel;
+        vel->Data()[0] = targetVel;
       }
     } else if (this->dataPtr->joints_[i].joint_control_method & EFFORT) {
       if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointForceCmd>(
@@ -701,13 +701,13 @@ hardware_interface::return_type IgnitionSystem::write(
       // Fallback case is a velocity command of zero (only for actuated joints)
       double target_vel = 0.0;
       auto vel =
-        this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
+        this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityReset>(
         this->dataPtr->joints_[i].sim_joint);
 
       if (vel == nullptr) {
         this->dataPtr->ecm->CreateComponent(
           this->dataPtr->joints_[i].sim_joint,
-          ignition::gazebo::components::JointVelocityCmd({target_vel}));
+          ignition::gazebo::components::JointVelocityReset({target_vel}));
       } else if (!vel->Data().empty()) {
         vel->Data()[0] = target_vel;
       }
