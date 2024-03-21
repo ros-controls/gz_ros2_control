@@ -2,6 +2,29 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.6 (2024-03-21)
+------------------
+* Fix typo (`#253 <https://github.com/ros-controls/gz_ros2_control/issues/253>`_) (`#254 <https://github.com/ros-controls/gz_ros2_control/issues/254>`_)
+  (cherry picked from commit a98cb2a8b72827b7c1669987d6a12d3f0b30a41e)
+  Co-authored-by: Stephanie Eng <stephanie-eng@users.noreply.github.com>
+* Fix `#247 <https://github.com/ros-controls/gz_ros2_control/issues/247>`_ (`#248 <https://github.com/ros-controls/gz_ros2_control/issues/248>`_) (`#250 <https://github.com/ros-controls/gz_ros2_control/issues/250>`_)
+  (cherry picked from commit 94745e6f5f051214ac9862051f9a918685f2c6b9)
+  Co-authored-by: Graziato Davide <85335579+Fixit-Davide@users.noreply.github.com>
+* Fix `initial_value` not working (backport `#241 <https://github.com/ros-controls/gz_ros2_control/issues/241>`_) (`#243 <https://github.com/ros-controls/gz_ros2_control/issues/243>`_)
+  * Reset Gazebo with initial joint positions and velocities (`#241 <https://github.com/ros-controls/gz_ros2_control/issues/241>`_)
+  (cherry picked from commit c5b0b9049ce75410e75d1828242c1dfd5b19bb80)
+  Co-authored-by: Ruddick Lawrence <679360+mrjogo@users.noreply.github.com>
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Use portable versio for usleep (backport `#237 <https://github.com/ros-controls/gz_ros2_control/issues/237>`_) (`#238 <https://github.com/ros-controls/gz_ros2_control/issues/238>`_)
+  * Use portable versio for usleep (`#237 <https://github.com/ros-controls/gz_ros2_control/issues/237>`_)
+  (cherry picked from commit 0bdf13e6986c613c99a595889a587da1db6d7f69)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Fix crashing due to an invalid parameter in the initial value (backport `#233 <https://github.com/ros-controls/gz_ros2_control/issues/233>`_) (`#234 <https://github.com/ros-controls/gz_ros2_control/issues/234>`_)
+  * Fix crashing due to an invalid parameter in the initial value (`#233 <https://github.com/ros-controls/gz_ros2_control/issues/233>`_)
+  (cherry picked from commit a3beadb014f62e0808033de2c5ad84e2428c36e9)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Contributors: Alejandro Hernández Cordero, Ruddick Lawrence, Stephanie Eng, Graziato Davide, mergify[bot]
+
 0.7.5 (2024-01-24)
 ------------------
 * Load the URDF to the resource_manager before parsing it to CM (`#222 <https://github.com/ros-controls/gz_ros2_control/issues/222>`_) (`#225 <https://github.com/ros-controls/gz_ros2_control/issues/225>`_)

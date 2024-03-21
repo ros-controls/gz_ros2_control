@@ -2,6 +2,19 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.6 (2024-03-21)
+------------------
+* Add `ros_gz_bridge` as dependency to demos (backport `#256 <https://github.com/ros-controls/gz_ros2_control/issues/256>`_) (`#257 <https://github.com/ros-controls/gz_ros2_control/issues/257>`_)
+  * Add dep (`#256 <https://github.com/ros-controls/gz_ros2_control/issues/256>`_)
+  (cherry picked from commit b35100db16e80ffb574c0266321800e2197136c3)
+  # Conflicts:
+  #	ign_ros2_control_demos/package.xml
+  * fixed merge
+  ---------
+  Co-authored-by: Christoph Fröhlich <christophfroehlich@users.noreply.github.com>
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Contributors: mergify[bot]
+
 0.7.4 (2024-01-24)
 ------------------
 
