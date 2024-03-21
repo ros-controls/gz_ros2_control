@@ -2,6 +2,26 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.5 (2024-03-21)
+------------------
+* Fix typo (`#253 <https://github.com/ros-controls/gz_ros2_control/issues/253>`_) (`#255 <https://github.com/ros-controls/gz_ros2_control/issues/255>`_)
+  (cherry picked from commit a98cb2a8b72827b7c1669987d6a12d3f0b30a41e)
+  Co-authored-by: Stephanie Eng <stephanie-eng@users.noreply.github.com>
+* Fix `#247 <https://github.com/ros-controls/gz_ros2_control/issues/247>`_ (`#248 <https://github.com/ros-controls/gz_ros2_control/issues/248>`_) (`#251 <https://github.com/ros-controls/gz_ros2_control/issues/251>`_)
+  (cherry picked from commit 94745e6f5f051214ac9862051f9a918685f2c6b9)
+  Co-authored-by: Graziato Davide <85335579+Fixit-Davide@users.noreply.github.com>
+* Reset Gazebo with initial joint positions and velocities (`#241 <https://github.com/ros-controls/gz_ros2_control/issues/241>`_) (`#244 <https://github.com/ros-controls/gz_ros2_control/issues/244>`_)
+  (cherry picked from commit c5b0b9049ce75410e75d1828242c1dfd5b19bb80)
+  Co-authored-by: Ruddick Lawrence <679360+mrjogo@users.noreply.github.com>
+* Use portable versio for usleep (`#237 <https://github.com/ros-controls/gz_ros2_control/issues/237>`_) (`#239 <https://github.com/ros-controls/gz_ros2_control/issues/239>`_)
+  (cherry picked from commit 0bdf13e6986c613c99a595889a587da1db6d7f69)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Fix crashing due to an invalid parameter in the initial value (backport `#233 <https://github.com/ros-controls/gz_ros2_control/issues/233>`_) (`#235 <https://github.com/ros-controls/gz_ros2_control/issues/235>`_)
+  * Fix crashing due to an invalid parameter in the initial value (`#233 <https://github.com/ros-controls/gz_ros2_control/issues/233>`_)
+  (cherry picked from commit a3beadb014f62e0808033de2c5ad84e2428c36e9)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Contributors: Alejandro Hernández Cordero, Ruddick Lawrence, Graziato Davide, Stephanie Eng, mergify[bot]
+
 1.1.4 (2024-01-24)
 ------------------
 * Load the URDF to the resource_manager before parsing it to CM (`#222 <https://github.com/ros-controls/gz_ros2_control/issues/222>`_) (`#226 <https://github.com/ros-controls/gz_ros2_control/issues/226>`_)

@@ -2,6 +2,13 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.5 (2024-03-21)
+------------------
+* Add dep (`#256 <https://github.com/ros-controls/gz_ros2_control/issues/256>`_) (`#258 <https://github.com/ros-controls/gz_ros2_control/issues/258>`_)
+  (cherry picked from commit b35100db16e80ffb574c0266321800e2197136c3)
+  Co-authored-by: Christoph Fröhlich <christophfroehlich@users.noreply.github.com>
+* Contributors: mergify[bot]
+
 1.1.4 (2024-01-24)
 ------------------
 
