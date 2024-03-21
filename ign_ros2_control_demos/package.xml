@@ -28,7 +28,12 @@
   <exec_depend>effort_controllers</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>hardware_interface</exec_depend>
+<<<<<<< HEAD:ign_ros2_control_demos/package.xml
   <exec_depend>ign_ros2_control</exec_depend>
+=======
+  <exec_depend>gz_ros2_control</exec_depend>
+  <exec_depend>ros_gz_bridge</exec_depend>
+>>>>>>> b35100d (Add dep (#256)):gz_ros2_control_demos/package.xml
   <exec_depend>imu_sensor_broadcaster</exec_depend>
   <exec_depend>joint_state_broadcaster</exec_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
