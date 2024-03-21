@@ -2,6 +2,9 @@
 Changelog for package gz_ros2_control_tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.2 (2024-03-21)
+------------------
+
 1.2.1 (2024-01-24)
 ------------------
 * Include testing packages on CI (`#223 <https://github.com/ros-controls/gz_ros2_control/issues/223>`_)

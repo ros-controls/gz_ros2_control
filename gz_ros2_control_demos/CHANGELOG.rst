@@ -2,6 +2,11 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.2 (2024-03-21)
+------------------
+* Add dep (`#256 <https://github.com/ros-controls/gz_ros2_control/issues/256>`_)
+* Contributors: Christoph Fröhlich
+
 1.2.1 (2024-01-24)
 ------------------
 * Use parameters with ros_gz_sim::Create (`#211 <https://github.com/ros-controls/gz_ros2_control/issues/211>`_)
