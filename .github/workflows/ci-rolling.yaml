@@ -13,19 +13,19 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - docker-image: "ubuntu:22.04"
+          - docker-image: "ubuntu:24.04"
             gz-version: "fortress"
             ros-distro: "rolling"
             ros-repo-packages: ""
-          - docker-image: "ubuntu:22.04"
+          - docker-image: "ubuntu:24.04"
             gz-version: "garden"
             ros-distro: "rolling"
             ros-repo-packages: ""
-          - docker-image: "ubuntu:22.04"
+          - docker-image: "ubuntu:24.04"
             gz-version: "fortress"
             ros-distro: "rolling"
             ros-repo-packages: "-testing"
-          - docker-image: "ubuntu:22.04"
+          - docker-image: "ubuntu:24.04"
             gz-version: "garden"
             ros-distro: "rolling"
             ros-repo-packages: "-testing"
