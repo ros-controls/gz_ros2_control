@@ -238,7 +238,7 @@ bool GazeboSimSystem::initSim(
   try {
     this->dataPtr->position_proportional_gain_ = this->nh_->declare_parameter<double>(
       "position_proportional_gain", default_gain);
-  }  catch (rclcpp::exceptions::ParameterAlreadyDeclaredException & ex) {
+  } catch (rclcpp::exceptions::ParameterAlreadyDeclaredException & ex) {
     this->nh_->get_parameter(
       "position_proportional_gain", this->dataPtr->position_proportional_gain_);
   }
