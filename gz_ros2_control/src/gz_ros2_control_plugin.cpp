@@ -75,7 +75,9 @@ public:
   GZResourceManager(const GZResourceManager &) = delete;
 
   // Called from Controller Manager when robot description is initialized from callback
-  bool load_and_initialize_components(const std::string & urdf, const unsigned int update_rate) override
+  bool load_and_initialize_components(
+    const std::string & urdf,
+    const unsigned int update_rate) override
   {
     components_are_loaded_and_initialized_ = true;
 
@@ -337,10 +339,6 @@ void GazeboSimROS2ControlPlugin::Configure(
       if (ns.empty() || ns[0] != '/') {
         ns = '/' + ns;
       }
-
-      // if (ns.length() > 1) {
-      //   this->dataPtr->robot_description_node_ = ns + "/" + this->dataPtr->robot_description_node_;
-      // }
     }
 
     // Get list of remapping rules from SDF
@@ -442,7 +440,9 @@ void GazeboSimROS2ControlPlugin::Configure(
 
   // Wait for CM to receive robot description from the topic and then initialize Resource Manager
   while (!this->dataPtr->controller_manager_->is_resource_manager_initialized()) {
-    RCLCPP_WARN(this->dataPtr->node_->get_logger(), "Waiting RM to load and initialize hardware...");
+    RCLCPP_WARN(
+      this->dataPtr->node_->get_logger(),
+      "Waiting RM to load and initialize hardware...");
     std::this_thread::sleep_for(std::chrono::microseconds(2000000));
   }
 
