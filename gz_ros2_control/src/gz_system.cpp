@@ -234,15 +234,19 @@ bool GazeboSimSystem::initSim(
   this->dataPtr->joints_.resize(this->dataPtr->n_dof_);
 
   constexpr double default_gain = 0.1;
-  if (!this->nh_->get_parameter_or(
-      "position_proportional_gain",
-      this->dataPtr->position_proportional_gain_, default_gain))
-  {
-    RCLCPP_WARN_STREAM(
-      this->nh_->get_logger(),
-      "The position_proportional_gain parameter was not defined, defaulting to: " <<
-        default_gain);
+
+  try {
+    this->dataPtr->position_proportional_gain_ = this->nh_->declare_parameter<double>(
+      "position_proportional_gain", default_gain);
+  } catch (rclcpp::exceptions::ParameterAlreadyDeclaredException & ex) {
+    this->nh_->get_parameter(
+      "position_proportional_gain", this->dataPtr->position_proportional_gain_);
   }
+
+  RCLCPP_INFO_STREAM(
+    this->nh_->get_logger(),
+    "The position_proportional_gain has been set to: " <<
+      this->dataPtr->position_proportional_gain_);
 
   if (this->dataPtr->n_dof_ == 0) {
     RCLCPP_ERROR_STREAM(this->nh_->get_logger(), "There is no joint available");

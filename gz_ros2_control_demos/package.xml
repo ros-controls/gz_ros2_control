@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>gz_ros2_control_demos</name>
-  <version>1.2.1</version>
+  <version>1.2.2</version>
   <description>gz_ros2_control_demos</description>
 
   <maintainer email="ahcorde@osrfoundation.org">Alejandro Hernandez</maintainer>
@@ -28,6 +28,7 @@
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>hardware_interface</exec_depend>
   <exec_depend>gz_ros2_control</exec_depend>
+  <exec_depend>ros_gz_bridge</exec_depend>
   <exec_depend>imu_sensor_broadcaster</exec_depend>
   <exec_depend>joint_state_broadcaster</exec_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
