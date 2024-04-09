@@ -2,6 +2,13 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.6 (2024-04-09)
+------------------
+* Fix `#259 <https://github.com/ros-controls/gz_ros2_control/issues/259>`_ - `ParameterAlreadyDeclaredException` for parameter `position_proportional_gain` (backport `#261 <https://github.com/ros-controls/gz_ros2_control/issues/261>`_) (`#263 <https://github.com/ros-controls/gz_ros2_control/issues/263>`_)
+  Co-authored-by: Patrick Roncagliolo <ronca.pat@gmail.com>
+  Co-authored-by: Alejandro Hernandez Cordero <ahcorde@gmail.com>
+* Contributors: mergify[bot]
+
 1.1.5 (2024-03-21)
 ------------------
 * Fix typo (`#253 <https://github.com/ros-controls/gz_ros2_control/issues/253>`_) (`#255 <https://github.com/ros-controls/gz_ros2_control/issues/255>`_)

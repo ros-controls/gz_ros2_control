@@ -2,6 +2,9 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.6 (2024-04-09)
+------------------
+
 1.1.5 (2024-03-21)
 ------------------
 * Add dep (`#256 <https://github.com/ros-controls/gz_ros2_control/issues/256>`_) (`#258 <https://github.com/ros-controls/gz_ros2_control/issues/258>`_)
