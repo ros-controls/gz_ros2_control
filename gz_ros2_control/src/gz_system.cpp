@@ -23,6 +23,7 @@
 
 #ifdef GZ_HEADERS
 #include <gz/msgs/imu.pb.h>
+#include <gz/msgs/wrench.pb.h>
 
 #include <gz/sim/components/AngularVelocity.hh>
 #include <gz/sim/components/Imu.hh>
@@ -44,6 +45,7 @@
 #define GZ_MSGS_NAMESPACE gz::msgs::
 #else
 #include <ignition/msgs/imu.pb.h>
+#include <ignition/msgs/wrench.pb.h>
 
 #include <ignition/gazebo/components/AngularVelocity.hh>
 #include <ignition/gazebo/components/Imu.hh>
@@ -126,8 +128,18 @@ public:
   std::array<double, 6> ft_sensor_data_;
 
   /// \brief callback to get the Force Torque topic values
-  //void OnForceTorque(const GZ_MSGS_NAMESPACE IMU & _msg); // TODO
+  void OnForceTorque(const GZ_MSGS_NAMESPACE Wrench & _msg); // TODO
 };
+
+void ForceTorqueData::OnForceTorque(const GZ_MSGS_NAMESPACE Wrench & _msg)
+{
+  this->ft_sensor_data_[0] = _msg.force().x();
+  this->ft_sensor_data_[1] = _msg.force().y();
+  this->ft_sensor_data_[2] = _msg.force().z();
+  this->ft_sensor_data_[3] = _msg.torque().x();
+  this->ft_sensor_data_[4] = _msg.torque().y();
+  this->ft_sensor_data_[5] = _msg.torque().z();
+}
 
 class ImuData
 {
@@ -485,12 +497,8 @@ void GazeboSimSystem::registerSensors(
   size_t n_sensors = hardware_info.sensors.size();
   std::vector<hardware_interface::ComponentInfo> sensor_components_;
 
-  RCLCPP_WARN(this->nh_->get_logger(), "======================> RegisterSensors");
-  RCLCPP_WARN(this->nh_->get_logger(), "======================> n_sensors: %lu", n_sensors);
-
   for (unsigned int j = 0; j < n_sensors; j++) {
     hardware_interface::ComponentInfo component = hardware_info.sensors[j];
-    RCLCPP_WARN(this->nh_->get_logger(), "======================> Sensor name: %s", hardware_info.sensors[j].name.c_str());
     sensor_components_.push_back(component);
   }
   // This is split in two steps: Count the number and type of sensor and associate the interfaces
@@ -598,7 +606,6 @@ void GazeboSimSystem::registerSensors(
       this->dataPtr->ft_sensors_.push_back(ftData);
       return true;
     });
-
 }
 
 CallbackReturn
@@ -686,6 +693,24 @@ hardware_interface::return_type GazeboSimSystem::read(
       }
     }
   }
+
+  for (unsigned int i = 0; i < this->dataPtr->ft_sensors_.size(); ++i) {
+    if (this->dataPtr->ft_sensors_[i]->topicName.empty()) {
+      auto sensorTopicComp = this->dataPtr->ecm->Component<
+        sim::components::SensorTopic>(this->dataPtr->ft_sensors_[i]->sim_ft_sensors_);
+      if (sensorTopicComp) {
+        this->dataPtr->ft_sensors_[i]->topicName = sensorTopicComp->Data();
+        RCLCPP_INFO_STREAM(
+            this->nh_->get_logger(), "ForceTorque " << this->dataPtr->ft_sensors_[i]->name <<
+            " has a topic name: " << sensorTopicComp->Data());
+
+        this->dataPtr->node.Subscribe(
+          this->dataPtr->ft_sensors_[i]->topicName, &ForceTorqueData::OnForceTorque,
+          this->dataPtr->ft_sensors_[i].get());
+      }
+    }
+  }
+
   return hardware_interface::return_type::OK;
 }
 
