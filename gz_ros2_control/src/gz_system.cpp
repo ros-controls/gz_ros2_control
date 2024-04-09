@@ -128,7 +128,7 @@ public:
   std::array<double, 6> ft_sensor_data_;
 
   /// \brief callback to get the Force Torque topic values
-  void OnForceTorque(const GZ_MSGS_NAMESPACE Wrench & _msg); // TODO
+  void OnForceTorque(const GZ_MSGS_NAMESPACE Wrench & _msg);
 };
 
 void ForceTorqueData::OnForceTorque(const GZ_MSGS_NAMESPACE Wrench & _msg)
