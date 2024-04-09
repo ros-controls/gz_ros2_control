@@ -574,7 +574,7 @@ void GazeboSimSystem::registerSensors(
       }
 
       RCLCPP_INFO_STREAM(
-          this->nh_->get_logger(), "\tState:");
+        this->nh_->get_logger(), "\tState:");
       ftData->name = _name->Data();
       ftData->sim_ft_sensors_ = _entity;
 
@@ -701,7 +701,7 @@ hardware_interface::return_type GazeboSimSystem::read(
       if (sensorTopicComp) {
         this->dataPtr->ft_sensors_[i]->topicName = sensorTopicComp->Data();
         RCLCPP_INFO_STREAM(
-            this->nh_->get_logger(), "ForceTorque " << this->dataPtr->ft_sensors_[i]->name <<
+          this->nh_->get_logger(), "ForceTorque " << this->dataPtr->ft_sensors_[i]->name <<
             " has a topic name: " << sensorTopicComp->Data());
 
         this->dataPtr->node.Subscribe(
