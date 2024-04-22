@@ -25,7 +25,7 @@ Author: Dr. Denis
        description="Start RViz2 automatically with this launch file."/>
 
   <!-- Load description and start controllers -->
-  <let name="robot_description_content" value="$(command '$(find-exec xacro) $(find-pkg-share gz_ros2_control_demos)/urdf/test_gripper_mimic_joint.xacro.urdf')" />
+  <let name="robot_description_content" value="$(command '$(find-exec xacro) $(find-pkg-share gz_ros2_control_demos)/urdf/test_gripper_mimic_joint_position.xacro.urdf')" />
 
   <node pkg="robot_state_publisher" exec="robot_state_publisher" output="both">
     <param name="robot_description" value="$(var robot_description_content)" />
