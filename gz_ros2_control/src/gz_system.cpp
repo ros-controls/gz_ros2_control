@@ -287,8 +287,8 @@ bool GazeboSimSystem::initSim(
     if (it != hardware_info.mimic_joints.end()) {
       RCLCPP_INFO_STREAM(
         this->nh_->get_logger(),
-        "Joint '" << joint_name << "'is mimicking joint '" << 
-          this->dataPtr->joints_[it->mimicked_joint_index].name << 
+        "Joint '" << joint_name << "'is mimicking joint '" <<
+          this->dataPtr->joints_[it->mimicked_joint_index].name <<
           "' with multiplier: " << it->multiplier << " and offset: " << it->offset);
     }
 
@@ -708,7 +708,7 @@ hardware_interface::return_type GazeboSimSystem::write(
         sim::components::JointVelocityCmd({velocity_sp}));
     } else if (!vel->Data().empty()) {
       vel->Data()[0] = velocity_sp;
-    }      
+    }
   }
 
   return hardware_interface::return_type::OK;
