@@ -1,0 +1,102 @@
+<?xml version="1.0" ?>
+<robot name="gripper">
+  <link name="world"/>
+  <link name="base">
+    <visual>
+      <geometry>
+        <box size="0.5 1 1"/>
+      </geometry>
+      <origin xyz="0 0 0.5"/>
+      <material name="violet">
+        <color rgba="0.4 0.18 0.57 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.5 1 1"/>
+      </geometry>
+      <origin xyz="0 0 0.5"/>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0.5"/>
+      <mass value="50"/>
+      <inertia ixx="8.3333299999999994" ixy="0.0" ixz="0.0" iyy="5.2083300000000001" iyz="0.0" izz="5.2083300000000001"/>
+    </inertial>
+  </link>
+  <link name="finger_right">
+    <visual>
+      <geometry>
+        <box size="0.4 0.1 1"/>
+      </geometry>
+      <origin xyz="0 0.05 0.5"/>
+      <material name="grey">
+        <color rgba="0.2 0.2 0.2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin xyz="0 0.05 0.5"/>
+      <mass value="4"/>
+      <inertia ixx="0.33666700000000001" ixy="0.0" ixz="0.0" iyy="0.38666700000000001" iyz="0.0" izz="0.056666700000000003"/>
+    </inertial>
+  </link>
+  <link name="finger_left">
+    <visual>
+      <geometry>
+        <box size="0.4 0.1 1"/>
+      </geometry>
+      <origin xyz="0 0.05 0.5"/>
+      <material name="grey">
+        <color rgba="0.2 0.2 0.2 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin xyz="0 0.05 0.5"/>
+      <mass value="4"/>
+      <inertia ixx="0.33666700000000001" ixy="0.0" ixz="0.0" iyy="0.38666700000000001" iyz="0.0" izz="0.056666700000000003"/>
+    </inertial>
+  </link>
+  <joint name="world_to_base" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="world"/>
+    <child link="base"/>
+  </joint>
+  <joint name="right_finger_joint" type="prismatic">
+    <axis xyz="0 1 0"/>
+    <origin xyz="0.0 -0.48 1" rpy="0.0 0.0 0.0"/>
+    <parent link="base"/>
+    <child link="finger_right"/>
+    <limit effort="1000.0" lower="0" upper="0.38" velocity="10"/>
+  </joint>
+  <joint name="left_finger_joint" type="prismatic">
+    <mimic joint="right_finger_joint"/>
+    <axis xyz="0 1 0"/>
+    <origin xyz="0.0 0.48 1" rpy="0.0 0.0 3.1415926535"/>
+    <parent link="base"/>
+    <child link="finger_left"/>
+    <limit effort="1000.0" lower="0" upper="0.38" velocity="10"/>
+  </joint>
+  <ros2_control name="GazeboSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    <joint name="right_finger_joint">
+      <command_interface name="effort"/>
+      <state_interface name="position">
+        <param name="initial_value">0.15</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="left_finger_joint">
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+  </ros2_control>
+
+  <gazebo>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(find gz_ros2_control_demos)/config/gripper_controller_effort.yaml</parameters>
+    </plugin>
+  </gazebo>
+</robot>
