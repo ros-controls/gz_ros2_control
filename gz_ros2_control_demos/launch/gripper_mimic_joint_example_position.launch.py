@@ -1,4 +1,4 @@
-# Copyright 2022 Open Source Robotics Foundation, Inc.
+# Copyright 2024 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ def generate_launch_description():
             " ",
             PathJoinSubstitution(
                 [FindPackageShare("gz_ros2_control_demos"),
-                 "urdf", "test_gripper_mimic_joint.xacro.urdf"]
+                 "urdf", "test_gripper_mimic_joint_position.xacro.urdf"]
             ),
         ]
     )

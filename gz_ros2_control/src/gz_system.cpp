@@ -100,14 +100,6 @@ struct jointData
   gz_ros2_control::GazeboSimSystemInterface::ControlMethod joint_control_method;
 };
 
-struct MimicJoint
-{
-  std::size_t joint_index;
-  std::size_t mimicked_joint_index;
-  double multiplier = 1.0;
-  std::vector<std::string> interfaces_to_mimic;
-};
-
 class ImuData
 {
 public:
@@ -174,9 +166,6 @@ public:
 
   /// \brief Gazebo communication node.
   GZ_TRANSPORT_NAMESPACE Node node;
-
-  /// \brief mapping of mimicked joints to index of joint they mimic
-  std::vector<MimicJoint> mimic_joints_;
 
   /// \brief Gain which converts position error to a velocity command
   double position_proportional_gain_;
@@ -287,58 +276,20 @@ bool GazeboSimSystem::initSim(
     // Accept this joint and continue configuration
     RCLCPP_INFO_STREAM(this->nh_->get_logger(), "Loading joint: " << joint_name);
 
-    std::string suffix = "";
-
     // check if joint is mimicked
-    if (joint_info.parameters.find("mimic") != joint_info.parameters.end()) {
-      const auto mimicked_joint = joint_info.parameters.at("mimic");
-      const auto mimicked_joint_it = std::find_if(
-        hardware_info.joints.begin(), hardware_info.joints.end(),
-        [&mimicked_joint](const hardware_interface::ComponentInfo & info) {
-          return info.name == mimicked_joint;
-        });
-      if (mimicked_joint_it == hardware_info.joints.end()) {
-        throw std::runtime_error(
-                std::string("Mimicked joint '") + mimicked_joint + "' not found");
-      }
+    auto it = std::find_if(
+      hardware_info.mimic_joints.begin(),
+      hardware_info.mimic_joints.end(),
+      [j](const hardware_interface::MimicJoint & mj) {
+        return mj.joint_index == j;
+      });
 
-      MimicJoint mimic_joint;
-      mimic_joint.joint_index = j;
-      mimic_joint.mimicked_joint_index = std::distance(
-        hardware_info.joints.begin(), mimicked_joint_it);
-      auto param_it = joint_info.parameters.find("multiplier");
-      if (param_it != joint_info.parameters.end()) {
-        mimic_joint.multiplier = hardware_interface::stod(joint_info.parameters.at("multiplier"));
-      } else {
-        mimic_joint.multiplier = 1.0;
-      }
-
-      // check joint info of mimicked joint
-      auto & joint_info_mimicked = hardware_info.joints[mimic_joint.mimicked_joint_index];
-      const auto state_mimicked_interface = std::find_if(
-        joint_info_mimicked.state_interfaces.begin(), joint_info_mimicked.state_interfaces.end(),
-        [&mimic_joint](const hardware_interface::InterfaceInfo & interface_info) {
-          bool pos = interface_info.name == "position";
-          if (pos) {mimic_joint.interfaces_to_mimic.push_back(hardware_interface::HW_IF_POSITION);}
-          bool vel = interface_info.name == "velocity";
-          if (vel) {mimic_joint.interfaces_to_mimic.push_back(hardware_interface::HW_IF_VELOCITY);}
-          bool eff = interface_info.name == "effort";
-          if (vel) {mimic_joint.interfaces_to_mimic.push_back(hardware_interface::HW_IF_EFFORT);}
-          return pos || vel || eff;
-        });
-      if (state_mimicked_interface == joint_info_mimicked.state_interfaces.end()) {
-        throw std::runtime_error(
-                std::string(
-                  "For mimic joint '") + joint_info.name +
-                "' no state interface was found in mimicked joint '" + mimicked_joint +
-                " ' to mimic");
-      }
+    if (it != hardware_info.mimic_joints.end()) {
       RCLCPP_INFO_STREAM(
         this->nh_->get_logger(),
-        "Joint '" << joint_name << "'is mimicking joint '" << mimicked_joint << "' with mutiplier: "
-                  << mimic_joint.multiplier);
-      this->dataPtr->mimic_joints_.push_back(mimic_joint);
-      suffix = "_mimic";
+        "Joint '" << joint_name << "'is mimicking joint '" <<
+          this->dataPtr->joints_[it->mimicked_joint_index].name <<
+          "' with multiplier: " << it->multiplier << " and offset: " << it->offset);
     }
 
     RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\tState:");
@@ -373,7 +324,7 @@ bool GazeboSimSystem::initSim(
       if (joint_info.state_interfaces[i].name == "position") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t position");
         this->dataPtr->state_interfaces_.emplace_back(
-          joint_name + suffix,
+          joint_name,
           hardware_interface::HW_IF_POSITION,
           &this->dataPtr->joints_[j].joint_position);
         initial_position = get_initial_value(joint_info.state_interfaces[i]);
@@ -382,7 +333,7 @@ bool GazeboSimSystem::initSim(
       if (joint_info.state_interfaces[i].name == "velocity") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
         this->dataPtr->state_interfaces_.emplace_back(
-          joint_name + suffix,
+          joint_name,
           hardware_interface::HW_IF_VELOCITY,
           &this->dataPtr->joints_[j].joint_velocity);
         initial_velocity = get_initial_value(joint_info.state_interfaces[i]);
@@ -391,7 +342,7 @@ bool GazeboSimSystem::initSim(
       if (joint_info.state_interfaces[i].name == "effort") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
         this->dataPtr->state_interfaces_.emplace_back(
-          joint_name + suffix,
+          joint_name,
           hardware_interface::HW_IF_EFFORT,
           &this->dataPtr->joints_[j].joint_effort);
         initial_effort = get_initial_value(joint_info.state_interfaces[i]);
@@ -406,7 +357,7 @@ bool GazeboSimSystem::initSim(
       if (joint_info.command_interfaces[i].name == "position") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t position");
         this->dataPtr->command_interfaces_.emplace_back(
-          joint_name + suffix,
+          joint_name,
           hardware_interface::HW_IF_POSITION,
           &this->dataPtr->joints_[j].joint_position_cmd);
         if (!std::isnan(initial_position)) {
@@ -415,7 +366,7 @@ bool GazeboSimSystem::initSim(
       } else if (joint_info.command_interfaces[i].name == "velocity") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
         this->dataPtr->command_interfaces_.emplace_back(
-          joint_name + suffix,
+          joint_name,
           hardware_interface::HW_IF_VELOCITY,
           &this->dataPtr->joints_[j].joint_velocity_cmd);
         if (!std::isnan(initial_velocity)) {
@@ -424,7 +375,7 @@ bool GazeboSimSystem::initSim(
       } else if (joint_info.command_interfaces[i].name == "effort") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
         this->dataPtr->command_interfaces_.emplace_back(
-          joint_name + suffix,
+          joint_name,
           hardware_interface::HW_IF_EFFORT,
           &this->dataPtr->joints_[j].joint_effort_cmd);
         if (!std::isnan(initial_effort)) {
@@ -732,76 +683,31 @@ hardware_interface::return_type GazeboSimSystem::write(
   }
 
   // set values of all mimic joints with respect to mimicked joint
-  for (const auto & mimic_joint : this->dataPtr->mimic_joints_) {
-    for (const auto & mimic_interface : mimic_joint.interfaces_to_mimic) {
-      if (mimic_interface == "position") {
-        // Get the joint position
-        double position_mimicked_joint =
-          this->dataPtr->ecm->Component<sim::components::JointPosition>(
-          this->dataPtr->joints_[mimic_joint.mimicked_joint_index].sim_joint)->Data()[0];
+  for (const auto & mimic_joint : this->info_.mimic_joints) {
+    // Get the joint position
+    double position_mimicked_joint =
+      this->dataPtr->ecm->Component<sim::components::JointPosition>(
+      this->dataPtr->joints_[mimic_joint.mimicked_joint_index].sim_joint)->Data()[0];
 
-        double position_mimic_joint =
-          this->dataPtr->ecm->Component<sim::components::JointPosition>(
-          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint)->Data()[0];
+    double position_mimic_joint =
+      this->dataPtr->ecm->Component<sim::components::JointPosition>(
+      this->dataPtr->joints_[mimic_joint.joint_index].sim_joint)->Data()[0];
 
-        double position_error =
-          position_mimic_joint - position_mimicked_joint * mimic_joint.multiplier;
+    double position_error =
+      position_mimic_joint - position_mimicked_joint * mimic_joint.multiplier;
 
-        double velocity_sp = (-1.0) * position_error * (*this->dataPtr->update_rate);
+    double velocity_sp = (-1.0) * position_error * (*this->dataPtr->update_rate);
 
-        auto vel =
-          this->dataPtr->ecm->Component<sim::components::JointVelocityCmd>(
-          this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
+    auto vel =
+      this->dataPtr->ecm->Component<sim::components::JointVelocityCmd>(
+      this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
 
-        if (vel == nullptr) {
-          this->dataPtr->ecm->CreateComponent(
-            this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
-            sim::components::JointVelocityCmd({velocity_sp}));
-        } else if (!vel->Data().empty()) {
-          vel->Data()[0] = velocity_sp;
-        }
-      }
-      if (mimic_interface == "velocity") {
-        // get the velocity of mimicked joint
-        double velocity_mimicked_joint =
-          this->dataPtr->ecm->Component<sim::components::JointVelocity>(
-          this->dataPtr->joints_[mimic_joint.mimicked_joint_index].sim_joint)->Data()[0];
-
-        if (!this->dataPtr->ecm->Component<sim::components::JointVelocityCmd>(
-            this->dataPtr->joints_[mimic_joint.joint_index].sim_joint))
-        {
-          this->dataPtr->ecm->CreateComponent(
-            this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
-            sim::components::JointVelocityCmd({0}));
-        } else {
-          const auto jointVelCmd =
-            this->dataPtr->ecm->Component<sim::components::JointVelocityCmd>(
-            this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
-          *jointVelCmd = sim::components::JointVelocityCmd(
-            {mimic_joint.multiplier * velocity_mimicked_joint});
-        }
-      }
-      if (mimic_interface == "effort") {
-        // TODO(ahcorde): Revisit this part ignitionrobotics/ign-physics#124
-        // Get the joint force
-        // const auto * jointForce =
-        //   _ecm.Component<sim::components::JointForce>(
-        //   this->dataPtr->sim_joints_[j]);
-        if (!this->dataPtr->ecm->Component<sim::components::JointForceCmd>(
-            this->dataPtr->joints_[mimic_joint.joint_index].sim_joint))
-        {
-          this->dataPtr->ecm->CreateComponent(
-            this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
-            sim::components::JointForceCmd({0}));
-        } else {
-          const auto jointEffortCmd =
-            this->dataPtr->ecm->Component<sim::components::JointForceCmd>(
-            this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
-          *jointEffortCmd = sim::components::JointForceCmd(
-            {mimic_joint.multiplier *
-              this->dataPtr->joints_[mimic_joint.mimicked_joint_index].joint_effort});
-        }
-      }
+    if (vel == nullptr) {
+      this->dataPtr->ecm->CreateComponent(
+        this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
+        sim::components::JointVelocityCmd({velocity_sp}));
+    } else if (!vel->Data().empty()) {
+      vel->Data()[0] = velocity_sp;
     }
   }
 
