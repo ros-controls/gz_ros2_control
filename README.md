@@ -20,10 +20,7 @@ Iron | Edifice | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iro
 Iron | Fortress | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iron) | https://packages.ros.org
 Iron | Garden (not released) | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iron) | only from source
 Iron | Harmonic (not released) | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iron) | only from source
-Rolling | Edifice | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
-Rolling | Fortress | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org
-Rolling | Garden (not released) | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
-Rolling | Harmonic (not released) | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
+Rolling | Harmonic | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org
 
 ## Build status
 
@@ -37,15 +34,10 @@ See the [documentation file](doc/index.rst) or [control.ros.org](https://control
 
 # Compile from source
 
-If you want compile this from source, you should choose the Gazebo version. The default one is `garden`:
+Note that `gz_ros2_control` depends on the version of Gazebo that is
+provided by the Gazebo Vendor packages [`gz_plugin_vendor`](https://github.com/gazebo-release/gz_plugin_vendor) and [`gz_sim_vendor`](https://github.com/gazebo-release/gz_sim_vendor). Currently, for ROS 2 Rolling, the Gazebo version is Harmonic.
 
-```bash
-export GZ_VERSION=fortress
-export GZ_VERSION=garden
-export GZ_VERSION=harmonic
-```
-
-Then create a workspace, clone the repo and compile it:
+To compile `gz_ros2_control` from source, create a workspace, clone the repo and compile it:
 
 ```bash
 mkdir -p ~/gz_ros2_control_ws/src

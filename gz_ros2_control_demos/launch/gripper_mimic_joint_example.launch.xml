@@ -38,7 +38,7 @@ Author: Dr. Denis
   </include>
 
   <node pkg="ros_gz_bridge" exec="parameter_bridge" args="
-        /clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock"
+        /clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"
         output="screen">
   </node>
 
