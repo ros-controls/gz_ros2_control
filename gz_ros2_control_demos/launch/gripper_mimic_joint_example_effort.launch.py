@@ -1,4 +1,4 @@
-# Copyright 2021 Open Source Robotics Foundation, Inc.
+# Copyright 2022 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# Author: Denis Stogl (Stogl Robotics Consulting)
+#
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription
@@ -34,7 +37,7 @@ def generate_launch_description():
             " ",
             PathJoinSubstitution(
                 [FindPackageShare("gz_ros2_control_demos"),
-                 "urdf", "test_cart_position.xacro.urdf"]
+                 "urdf", "test_gripper_mimic_joint_effort.xacro.urdf"]
             ),
         ]
     )
@@ -51,8 +54,8 @@ def generate_launch_description():
         package='ros_gz_sim',
         executable='create',
         output='screen',
-        arguments=["-topic", "robot_description",
-                   "-name", "cart", "-allow_renaming", "true"],
+        arguments=["-topic", "robot_description", "-name",
+                   "gripper", "-allow_renaming", "true"],
     )
 
     load_joint_state_broadcaster = ExecuteProcess(
@@ -61,9 +64,9 @@ def generate_launch_description():
         output='screen'
     )
 
-    load_joint_trajectory_controller = ExecuteProcess(
+    load_gripper_controller = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-             'joint_trajectory_controller'],
+             'gripper_controller'],
         output='screen'
     )
 
@@ -84,7 +87,7 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=load_joint_state_broadcaster,
-                on_exit=[load_joint_trajectory_controller],
+                on_exit=[load_gripper_controller],
             )
         ),
         node_robot_state_publisher,
