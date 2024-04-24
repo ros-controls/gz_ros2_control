@@ -37,7 +37,7 @@ To run the demo
 
   .. code-block:: shell
 
-    docker run -it --rm --name gz_ros2_control_demo --net host gz_ros2_control ros2 launch gz_ros2_control_demos cart_example_position.launch.py gui:=false
+    docker run -it --rm --name gz_ros2_control_demo --net host gz_ros2_control ros2 launch ign_ros2_control_demos cart_example_position.launch.py gui:=false
 
   Then on your local machine, you can run the Gazebo client:
 
