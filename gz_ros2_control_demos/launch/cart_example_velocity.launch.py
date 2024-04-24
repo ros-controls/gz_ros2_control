@@ -17,7 +17,7 @@ from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchD
 from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, FindExecutable, PathJoinSubstitution, LaunchConfiguration
+from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -33,7 +33,8 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare("gz_ros2_control_demos"), "urdf", "test_cart_velocity.xacro.urdf"]
+                [FindPackageShare("gz_ros2_control_demos"),
+                 "urdf", "test_cart_velocity.xacro.urdf"]
             ),
         ]
     )
@@ -50,7 +51,8 @@ def generate_launch_description():
         package='ros_gz_sim',
         executable='create',
         output='screen',
-        arguments=["-topic", "robot_description", "-name", "cart", "-allow_renaming", "true"],
+        arguments=["-topic", "robot_description",
+                   "-name", "cart", "-allow_renaming", "true"],
     )
 
     load_joint_state_broadcaster = ExecuteProcess(
@@ -60,7 +62,8 @@ def generate_launch_description():
     )
 
     load_joint_velocity_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'velocity_controller'],
+        cmd=['ros2', 'control', 'load_controller',
+             '--set-state', 'active', 'velocity_controller'],
         output='screen'
     )
 
@@ -68,7 +71,9 @@ def generate_launch_description():
         # Launch gazebo environment
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                [PathJoinSubstitution([FindPackageShare('ros_gz_sim'), 'launch', 'gz_sim.launch.py'])]),
+                [PathJoinSubstitution([FindPackageShare('ros_gz_sim'),
+                                       'launch',
+                                       'gz_sim.launch.py'])]),
             launch_arguments=[('gz_args', [' -r -v 3 empty.sdf'])]),
         RegisterEventHandler(
             event_handler=OnProcessExit(
