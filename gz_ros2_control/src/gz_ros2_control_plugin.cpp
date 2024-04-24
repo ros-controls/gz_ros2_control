@@ -102,11 +102,9 @@ public:
   controller_manager_{nullptr};
 
   /// \brief String with the robot description param_name
-  // TODO(ahcorde): Add param in plugin tag
   std::string robot_description_ = "robot_description";
 
   /// \brief String with the name of the node that contains the robot_description
-  // TODO(ahcorde): Add param in plugin tag
   std::string robot_description_node_ = "robot_state_publisher";
 
   /// \brief Last time the update method was called
@@ -284,6 +282,23 @@ void GazeboSimROS2ControlPlugin::Configure(
       "Gazebo ros2 control found an empty parameters file. Failed to initialize.");
     return;
   }
+
+  // Get params from SDF
+  std::string robot_param_node = _sdf->Get<std::string>("robot_param_node");
+  if (!robot_param_node.empty()) {
+    this->dataPtr->robot_description_node_ = robot_param_node;
+  }
+  RCLCPP_INFO(
+    logger,
+    "robot_param_node is %s", this->dataPtr->robot_description_node_.c_str());
+
+  std::string robot_description = _sdf->Get<std::string>("robot_param");
+  if (!robot_description.empty()) {
+    this->dataPtr->robot_description_ = robot_description;
+  }
+  RCLCPP_INFO(
+    logger,
+    "robot_param_node is %s", this->dataPtr->robot_description_.c_str());
 
   std::vector<std::string> arguments = {"--ros-args"};
 
