@@ -10,12 +10,6 @@ This is a ROS 2 package for integrating the *ros2_control* controller architectu
 
 This package provides a Gazebo-Sim system plugin which instantiates a *ros2_control* controller manager and connects it to a Gazebo model.
 
-.. image:: img/gz_ros2_control.gif
-  :alt: Cart
-
-.. image:: img/diff_drive.gif
-  :alt: DiffBot
-
 Usage
 ======
 
@@ -217,7 +211,15 @@ The following is a basic configuration of the controllers:
 gz_ros2_control_demos
 ==========================================
 
-There are some examples in the *gz_ros2_control_demos* package. These examples allow to launch a cart in a 30 meter rail.
+There are some examples in the *gz_ros2_control_demos* package.
+
+Cart on rail
+-----------------------------------------------------------
+
+These examples allow to launch a cart in a 30 meter rail.
+
+.. image:: img/gz_ros2_control.gif
+  :alt: Cart
 
 You can run some of the example configurations by running the following commands:
 
@@ -226,8 +228,6 @@ You can run some of the example configurations by running the following commands
   ros2 launch gz_ros2_control_demos cart_example_position.launch.py
   ros2 launch gz_ros2_control_demos cart_example_velocity.launch.py
   ros2 launch gz_ros2_control_demos cart_example_effort.launch.py
-  ros2 launch gz_ros2_control_demos diff_drive_example.launch.py
-  ros2 launch gz_ros2_control_demos tricycle_drive_example.launch.py
 
 When the Gazebo world is launched, you can run some of the following commands to move the cart.
 
@@ -236,10 +236,31 @@ When the Gazebo world is launched, you can run some of the following commands to
   ros2 run gz_ros2_control_demos example_position
   ros2 run gz_ros2_control_demos example_velocity
   ros2 run gz_ros2_control_demos example_effort
+
+Mobile robots
+-----------------------------------------------------------
+
+.. image:: img/diff_drive.gif
+  :alt: DiffBot
+
+You can run some of the mobile robots running the following commands:
+
+.. code-block:: shell
+
+  ros2 launch gz_ros2_control_demos diff_drive_example.launch.py
+  ros2 launch gz_ros2_control_demos tricycle_drive_example.launch.py
+
+When the Gazebo world is launched you can run some of the following commands to move the robots.
+
+.. code-block:: shell
+
   ros2 run gz_ros2_control_demos example_diff_drive
   ros2 run gz_ros2_control_demos example_tricycle_drive
 
-The following example shows parallel gripper with mimic joint:
+Gripper
+-----------------------------------------------------------
+
+The following example shows a parallel gripper with a mimic joint:
 
 .. code-block:: shell
 
@@ -248,7 +269,24 @@ The following example shows parallel gripper with mimic joint:
 
 Send example commands:
 
-
 .. code-block:: shell
 
   ros2 run gz_ros2_control_demos example_gripper
+
+
+Pendulum with passive joints (cart-pole)
+-----------------------------------------------------------
+
+The following example shows a cart with a pendulum arm:
+
+.. code-block:: shell
+
+  ros2 launch gz_ros2_control_demos pendulum_example_effort.launch.py
+  ros2 run gz_ros2_control_demos example_effort
+
+This uses the effort command interface for the cart's degree of freedom on the rail. To demonstrate that the physics of the passive joint of the pendulum is solved correctly even with the position command interface, run
+
+.. code-block:: shell
+
+  ros2 launch gz_ros2_control_demos pendulum_example_position.launch.py
+  ros2 run gz_ros2_control_demos example_position
