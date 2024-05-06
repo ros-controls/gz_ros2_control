@@ -73,7 +73,7 @@ install(TARGETS
 )
 
 install(DIRECTORY
-  include
+  include/
   DESTINATION include
 )
 
@@ -84,7 +84,7 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME} gz_hardware_plugins)
+ament_export_libraries(${PROJECT_NAME}-system gz_hardware_plugins)
 
 # Install directories
 install(TARGETS ${PROJECT_NAME}-system
