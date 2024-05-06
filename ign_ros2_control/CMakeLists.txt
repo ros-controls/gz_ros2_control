@@ -102,7 +102,7 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME} ign_hardware_plugins)
+ament_export_libraries(${PROJECT_NAME}-system ign_hardware_plugins)
 
 # Install directories
 install(TARGETS ${PROJECT_NAME}-system
