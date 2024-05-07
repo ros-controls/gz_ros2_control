@@ -30,15 +30,15 @@ def generate_launch_description():
     # Get URDF via xacro
     robot_description_content = Command(
         [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
+            PathJoinSubstitution([FindExecutable(name='xacro')]),
+            ' ',
             PathJoinSubstitution(
-                [FindPackageShare("gz_ros2_control_demos"),
-                 "urdf", "test_pendulum_effort.xacro.urdf"]
+                [FindPackageShare('gz_ros2_control_demos'),
+                 'urdf', 'test_pendulum_effort.xacro.urdf']
             ),
         ]
     )
-    robot_description = {"robot_description": robot_description_content}
+    robot_description = {'robot_description': robot_description_content}
 
     node_robot_state_publisher = Node(
         package='robot_state_publisher',
@@ -51,8 +51,8 @@ def generate_launch_description():
         package='ros_gz_sim',
         executable='create',
         output='screen',
-        arguments=["-topic", "robot_description",
-                   "-name", "cart", "-allow_renaming", "true"],
+        arguments=['-topic', 'robot_description',
+                   '-name', 'cart', '-allow_renaming', 'true'],
     )
 
     load_joint_state_broadcaster = ExecuteProcess(
