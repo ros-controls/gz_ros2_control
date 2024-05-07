@@ -165,8 +165,8 @@
       <parameters>$(find gz_ros2_control_demos)/config/cart_controller_velocity.yaml</parameters>
     </plugin>
     <plugin
-      filename="ignition-sim-imu-system"
-      name="ignition::gazebo::systems::Imu">
+      filename="gz-sim-imu-system"
+      name="gz::sim::systems::Imu">
     </plugin>
   </gazebo>
 </robot>

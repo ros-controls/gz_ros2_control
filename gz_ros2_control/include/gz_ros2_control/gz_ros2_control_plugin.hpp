@@ -17,13 +17,8 @@
 
 #include <memory>
 
-#ifdef GZ_HEADERS
 #include <gz/sim/System.hh>
 namespace sim = gz::sim;
-#else
-#include <ignition/gazebo/System.hh>
-namespace sim = ignition::gazebo;
-#endif
 
 namespace gz_ros2_control
 {

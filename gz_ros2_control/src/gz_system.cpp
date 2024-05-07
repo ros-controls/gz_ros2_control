@@ -14,15 +14,14 @@
 
 #include "gz_ros2_control/gz_system.hpp"
 
+#include <gz/msgs/imu.pb.h>
+
 #include <limits>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-
-#ifdef GZ_HEADERS
-#include <gz/msgs/imu.pb.h>
 
 #include <gz/sim/components/AngularVelocity.hh>
 #include <gz/sim/components/Imu.hh>
@@ -41,27 +40,6 @@
 #include <gz/transport/Node.hh>
 #define GZ_TRANSPORT_NAMESPACE gz::transport::
 #define GZ_MSGS_NAMESPACE gz::msgs::
-#else
-#include <ignition/msgs/imu.pb.h>
-
-#include <ignition/gazebo/components/AngularVelocity.hh>
-#include <ignition/gazebo/components/Imu.hh>
-#include <ignition/gazebo/components/JointForce.hh>
-#include <ignition/gazebo/components/JointForceCmd.hh>
-#include <ignition/gazebo/components/JointPosition.hh>
-#include <ignition/gazebo/components/JointPositionReset.hh>
-#include <ignition/gazebo/components/JointVelocity.hh>
-#include <ignition/gazebo/components/JointVelocityCmd.hh>
-#include <ignition/gazebo/components/JointVelocityReset.hh>
-#include <ignition/gazebo/components/LinearAcceleration.hh>
-#include <ignition/gazebo/components/Name.hh>
-#include <ignition/gazebo/components/ParentEntity.hh>
-#include <ignition/gazebo/components/Pose.hh>
-#include <ignition/gazebo/components/Sensor.hh>
-#include <ignition/transport/Node.hh>
-#define GZ_TRANSPORT_NAMESPACE ignition::transport::
-#define GZ_MSGS_NAMESPACE ignition::msgs::
-#endif
 
 #include <hardware_interface/hardware_info.hpp>
 #include <hardware_interface/lexical_casts.hpp>
