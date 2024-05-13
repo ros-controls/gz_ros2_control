@@ -68,7 +68,7 @@
 
   <joint name="cart_to_pendulum" type="revolute">
     <axis xyz="0 1 0"/>
-    <origin xyz="0.0 0.35 0.0" rpy="0 0.1 0"/>
+    <origin xyz="0.0 0.35 0.0" rpy="0 ${pi} 0"/>
     <parent link="cart"/>
     <child link="pendulum"/>
     <limit effort="10000.0" lower="-100000" upper="100000" velocity="100000"/>
