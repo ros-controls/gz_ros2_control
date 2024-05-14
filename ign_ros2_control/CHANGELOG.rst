@@ -2,6 +2,20 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.8 (2024-05-14)
+------------------
+* Fixed target of ament_export_libraries (`#300 <https://github.com/ros-controls/gz_ros2_control/issues/300>`_)
+* Added parameters robot_param and robot_param_node (`#275 <https://github.com/ros-controls/gz_ros2_control/issues/275>`_)
+* Update precommit config (backport `#271 <https://github.com/ros-controls/gz_ros2_control/issues/271>`_) (`#278 <https://github.com/ros-controls/gz_ros2_control/issues/278>`_)
+  * Update precommit config (`#271 <https://github.com/ros-controls/gz_ros2_control/issues/271>`_)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+  (cherry picked from commit 492ed646010fc55a6acc32d07138ddda8824aff5)
+  * make linters happy
+  ---------
+  Co-authored-by: Christoph Fröhlich <christophfroehlich@users.noreply.github.com>
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Contributors: Alejandro Hernández Cordero, mergify[bot]
+
 0.7.7 (2024-04-09)
 ------------------
 * Fix `#259 <https://github.com/ros-controls/gz_ros2_control/issues/259>`_ - `ParameterAlreadyDeclaredException` for parameter `position_proportional_gain` (backport `#261 <https://github.com/ros-controls/gz_ros2_control/issues/261>`_) (`#262 <https://github.com/ros-controls/gz_ros2_control/issues/262>`_)
