@@ -2,6 +2,18 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.7 (2024-05-14)
+------------------
+* Update pendulum-example  (`#301 <https://github.com/ros-controls/gz_ros2_control/issues/301>`_) (`#304 <https://github.com/ros-controls/gz_ros2_control/issues/304>`_)
+  * Change initial pose of pendulum
+  * Make position and effort version of pendulum equal
+  (cherry picked from commit 1e7721409e5e3d2c583868353a09929ca37bf860)
+  Co-authored-by: Christoph Fröhlich <christophfroehlich@users.noreply.github.com>
+* Add cart-pole demo (`#289 <https://github.com/ros-controls/gz_ros2_control/issues/289>`_) (`#291 <https://github.com/ros-controls/gz_ros2_control/issues/291>`_)
+  (cherry picked from commit 27af2108e77420dc46c83ac31658fccb67e33911)
+  Co-authored-by: Christoph Fröhlich <christophfroehlich@users.noreply.github.com>
+* Contributors: mergify[bot]
+
 1.1.6 (2024-04-09)
 ------------------
 
