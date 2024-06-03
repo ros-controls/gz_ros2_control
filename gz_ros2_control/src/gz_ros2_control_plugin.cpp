@@ -83,9 +83,6 @@ public:
   /// \brief Thread where the executor will spin
   std::thread thread_executor_spin_;
 
-  /// \brief Flag to stop the executor thread when this plugin is exiting
-  bool stop_{false};
-
   /// \brief Executor to spin the controller
   rclcpp::executors::MultiThreadedExecutor::SharedPtr executor_;
 
@@ -248,7 +245,6 @@ GazeboSimROS2ControlPlugin::GazeboSimROS2ControlPlugin()
 GazeboSimROS2ControlPlugin::~GazeboSimROS2ControlPlugin()
 {
   // Stop controller manager thread
-  this->dataPtr->stop_ = true;
   this->dataPtr->executor_->remove_node(this->dataPtr->controller_manager_);
   this->dataPtr->executor_->cancel();
   this->dataPtr->thread_executor_spin_.join();
@@ -367,12 +363,9 @@ void GazeboSimROS2ControlPlugin::Configure(
   this->dataPtr->node_ = rclcpp::Node::make_shared(node_name, ns);
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   this->dataPtr->executor_->add_node(this->dataPtr->node_);
-  this->dataPtr->stop_ = false;
   auto spin = [this]()
     {
-      while (rclcpp::ok() && !this->dataPtr->stop_) {
-        this->dataPtr->executor_->spin_once();
-      }
+      this->dataPtr->executor_->spin();
     };
   this->dataPtr->thread_executor_spin_ = std::thread(spin);
 
