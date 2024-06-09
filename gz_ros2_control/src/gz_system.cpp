@@ -509,7 +509,7 @@ hardware_interface::return_type GazeboSimSystem::read(
   const rclcpp::Duration & /*period*/)
 {
   for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
-    if(this->dataPtr->joints_[i].sim_joint == sim::kNullEntity) {
+    if (this->dataPtr->joints_[i].sim_joint == sim::kNullEntity) {
       continue;
     }
 
@@ -605,7 +605,7 @@ hardware_interface::return_type GazeboSimSystem::write(
   const rclcpp::Duration & /*period*/)
 {
   for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
-    if(this->dataPtr->joints_[i].sim_joint == sim::kNullEntity) {
+    if (this->dataPtr->joints_[i].sim_joint == sim::kNullEntity) {
       continue;
     }
 
