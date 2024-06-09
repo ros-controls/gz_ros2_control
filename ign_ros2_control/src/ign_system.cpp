@@ -529,7 +529,7 @@ hardware_interface::return_type IgnitionSystem::read(
   const rclcpp::Duration & /*period*/)
 {
   for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
-    if(this->dataPtr->joints_[i].sim_joint == ignition::gazebo::v6::kNullEntity) {
+    if (this->dataPtr->joints_[i].sim_joint == ignition::gazebo::v6::kNullEntity) {
       continue;
     }
 
@@ -625,11 +625,10 @@ hardware_interface::return_type IgnitionSystem::write(
   const rclcpp::Duration & /*period*/)
 {
   for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
-
-    if(this->dataPtr->joints_[i].sim_joint == ignition::gazebo::v6::kNullEntity) {
+    if (this->dataPtr->joints_[i].sim_joint == ignition::gazebo::v6::kNullEntity) {
       continue;
     }
-    
+
     if (this->dataPtr->joints_[i].joint_control_method & VELOCITY) {
       if (!this->dataPtr->ecm->Component<ignition::gazebo::components::JointVelocityCmd>(
           this->dataPtr->joints_[i].sim_joint))
