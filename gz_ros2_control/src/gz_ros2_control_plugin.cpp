@@ -235,6 +235,9 @@ GazeboSimROS2ControlPlugin::GazeboSimROS2ControlPlugin()
 GazeboSimROS2ControlPlugin::~GazeboSimROS2ControlPlugin()
 {
   // Stop controller manager thread
+  if (!this->dataPtr->controller_manager_) {
+    return;
+  }
   this->dataPtr->executor_->remove_node(this->dataPtr->controller_manager_);
   this->dataPtr->executor_->cancel();
   this->dataPtr->thread_executor_spin_.join();
@@ -514,6 +517,9 @@ void GazeboSimROS2ControlPlugin::PreUpdate(
   const sim::UpdateInfo & _info,
   sim::EntityComponentManager & /*_ecm*/)
 {
+  if (!this->dataPtr->controller_manager_) {
+    return;
+  }
   static bool warned{false};
   if (!warned) {
     rclcpp::Duration gazebo_period(_info.dt);
@@ -548,6 +554,9 @@ void GazeboSimROS2ControlPlugin::PostUpdate(
   const sim::UpdateInfo & _info,
   const sim::EntityComponentManager & /*_ecm*/)
 {
+  if (!this->dataPtr->controller_manager_) {
+    return;
+  }
   // Get the simulation time and period
   rclcpp::Time sim_time_ros(std::chrono::duration_cast<std::chrono::nanoseconds>(
       _info.simTime).count(), RCL_ROS_TIME);
