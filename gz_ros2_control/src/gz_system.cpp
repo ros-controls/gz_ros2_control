@@ -224,6 +224,14 @@ bool GazeboSimSystem::initSim(
     auto & joint_info = hardware_info.joints[j];
     std::string joint_name = this->dataPtr->joints_[j].name = joint_info.name;
 
+    auto it_joint = enableJoints.find(joint_name);
+    if (it_joint == enableJoints.end()) {
+      RCLCPP_WARN_STREAM(
+        this->nh_->get_logger(), "Skipping joint in the URDF named '" << joint_name <<
+          "' which is not in the gazebo model.");
+      continue;
+    }
+
     sim::Entity simjoint = enableJoints[joint_name];
     this->dataPtr->joints_[j].sim_joint = simjoint;
 
@@ -501,6 +509,10 @@ hardware_interface::return_type GazeboSimSystem::read(
   const rclcpp::Duration & /*period*/)
 {
   for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
+    if (this->dataPtr->joints_[i].sim_joint == sim::kNullEntity) {
+      continue;
+    }
+
     // Get the joint velocity
     const auto * jointVelocity =
       this->dataPtr->ecm->Component<sim::components::JointVelocity>(
@@ -593,6 +605,10 @@ hardware_interface::return_type GazeboSimSystem::write(
   const rclcpp::Duration & /*period*/)
 {
   for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
+    if (this->dataPtr->joints_[i].sim_joint == sim::kNullEntity) {
+      continue;
+    }
+
     if (this->dataPtr->joints_[i].joint_control_method & VELOCITY) {
       if (!this->dataPtr->ecm->Component<sim::components::JointVelocityCmd>(
           this->dataPtr->joints_[i].sim_joint))
