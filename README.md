@@ -9,6 +9,7 @@ More information about `ros2_control` can be found here: https://control.ros.org
 
 This package provides a Gazebo-Sim system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.
 
+<<<<<<< HEAD
 ROS version | Gazebo version | Branch | Binaries hosted at
 -- | -- | -- | --
 Foxy | Citadel | [foxy](https://github.com/ros-controls/gz_ros2_control/tree/foxy) | https://packages.ros.org
@@ -24,6 +25,17 @@ Rolling | Edifice | [master](https://github.com/ros-controls/gz_ros2_control/tre
 Rolling | Fortress | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org
 Rolling | Garden (not released) | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
 Rolling | Harmonic (not released) | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
+=======
+ROS version | Gazebo version | Branch | Binaries hosted at | APT key
+-- | -- | -- | -- | --
+Humble | Fortress | [humble](https://github.com/ros-controls/gz_ros2_control/tree/humble) | https://packages.ros.org | `ros-humble-ign-ros2-control`
+Iron | Edifice | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iron) | only from source |
+Iron | Fortress | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iron) | https://packages.ros.org | `ros-iron-gz-ros2-control`
+Iron | Garden | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iron) | only from source |
+Iron | Harmonic | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iron) | only from source |
+Jazzy | Harmonic | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org | `ros-jazzy-gz-ros2-control`
+Rolling | Harmonic | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org | `ros-rolling-gz-ros2-control`
+>>>>>>> 6150f35 (Giving APT keys in the README (#328))
 
 ## Build status
 
