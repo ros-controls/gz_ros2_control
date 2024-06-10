@@ -235,6 +235,9 @@ IgnitionROS2ControlPlugin::IgnitionROS2ControlPlugin()
 IgnitionROS2ControlPlugin::~IgnitionROS2ControlPlugin()
 {
   // Stop controller manager thread
+  if (!this->dataPtr->controller_manager_) {
+    return;
+  }
   this->dataPtr->executor_->remove_node(this->dataPtr->controller_manager_);
   this->dataPtr->executor_->cancel();
   this->dataPtr->thread_executor_spin_.join();
@@ -483,6 +486,9 @@ void IgnitionROS2ControlPlugin::PreUpdate(
   const ignition::gazebo::UpdateInfo & _info,
   ignition::gazebo::EntityComponentManager & /*_ecm*/)
 {
+  if (!this->dataPtr->controller_manager_) {
+    return;
+  }
   static bool warned{false};
   if (!warned) {
     rclcpp::Duration gazebo_period(_info.dt);
@@ -517,6 +523,9 @@ void IgnitionROS2ControlPlugin::PostUpdate(
   const ignition::gazebo::UpdateInfo & _info,
   const ignition::gazebo::EntityComponentManager & /*_ecm*/)
 {
+  if (!this->dataPtr->controller_manager_) {
+    return;
+  }
   // Get the simulation time and period
   rclcpp::Time sim_time_ros(std::chrono::duration_cast<std::chrono::nanoseconds>(
       _info.simTime).count(), RCL_ROS_TIME);
