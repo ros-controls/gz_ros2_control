@@ -77,7 +77,7 @@ public:
   // Called from Controller Manager when robot description is initialized from callback
   bool load_and_initialize_components(
     const std::string & urdf,
-    const unsigned int update_rate) override
+    unsigned int update_rate) override
   {
     components_are_loaded_and_initialized_ = true;
 
