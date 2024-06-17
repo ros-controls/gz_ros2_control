@@ -2,28 +2,22 @@
 
 ROS2 Distro | Build Status | Package build |
 :---------: | :----: | :----------: |
-[![Licence](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) |  [![Build Status](https://build.ros2.org/buildStatus/icon?job=Rdev__gz_ros2_control__ubuntu_jammy_amd64)](https://build.ros2.org/job/Rdev__gz_ros2_control__ubuntu_jammy_amd64/) |  [![Build Status](https://build.ros2.org/buildStatus/icon?job=Rbin_uJ64__gz_ros2_control__ubuntu_jammy_amd64__binary)](https://build.ros2.org/job/Rbin_uJ64__gz_ros2_control__ubuntu_jammy_amd64__binary/) |
+[![Licence](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) |  [![Build Status](https://build.ros2.org/buildStatus/icon?job=Rdev__gz_ros2_control__ubuntu_noble_amd64)](https://build.ros2.org/job/Rdev__gz_ros2_control__ubuntu_noble_amd64/) |  [![Build Status](https://build.ros2.org/buildStatus/icon?job=Rbin_uN64__gz_ros2_control__ubuntu_noble_amd64__binary)](https://build.ros2.org/job/Rbin_uN64__gz_ros2_control__ubuntu_noble_amd64__binary/) |
 
 This is a ROS 2 package for integrating the `ros2_control` controller architecture with the [Gazebo](http://gazebosim.org/) simulator.
 More information about `ros2_control` can be found here: https://control.ros.org/
 
 This package provides a Gazebo-Sim system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.
 
-ROS version | Gazebo version | Branch | Binaries hosted at
--- | -- | -- | --
-Foxy | Citadel | [foxy](https://github.com/ros-controls/gz_ros2_control/tree/foxy) | https://packages.ros.org
-Foxy | Edifice | [foxy](https://github.com/ros-controls/gz_ros2_control/tree/foxy) | only from source
-Galactic | Edifice | [galactic](https://github.com/ros-controls/gz_ros2_control/tree/galactic) | https://packages.ros.org
-Galactic | Fortress | [galactic](https://github.com/ros-controls/gz_ros2_control/tree/galactic) | only from source
-Humble | Fortress | [humble](https://github.com/ros-controls/gz_ros2_control/tree/humble) | https://packages.ros.org
-Iron | Edifice | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iron) | only from source
-Iron | Fortress | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iron) | https://packages.ros.org
-Iron | Garden (not released) | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iron) | only from source
-Iron | Harmonic (not released) | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iron) | only from source
-Rolling | Edifice | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
-Rolling | Fortress | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org
-Rolling | Garden (not released) | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
-Rolling | Harmonic (not released) | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | only from source
+ROS version | Gazebo version | Branch | Binaries hosted at | APT key
+-- | -- | -- | -- | --
+Humble | Fortress | [humble](https://github.com/ros-controls/gz_ros2_control/tree/humble) | https://packages.ros.org | `ros-humble-ign-ros2-control`
+Iron | Edifice | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iron) | only from source |
+Iron | Fortress | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iron) | https://packages.ros.org | `ros-iron-gz-ros2-control`
+Iron | Garden | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iron) | only from source |
+Iron | Harmonic | [iron](https://github.com/ros-controls/gz_ros2_control/tree/iron) | only from source |
+Jazzy | Harmonic | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org | `ros-jazzy-gz-ros2-control`
+Rolling | Harmonic | [master](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org | `ros-rolling-gz-ros2-control`
 
 ## Build status
 
@@ -37,15 +31,11 @@ See the [documentation file](doc/index.rst) or [control.ros.org](https://control
 
 # Compile from source
 
-If you want compile this from source, you should choose the Gazebo version. The default one is `garden`:
+Note that `gz_ros2_control` depends on the version of Gazebo that is
+provided by the Gazebo Vendor packages [`gz_plugin_vendor`](https://github.com/gazebo-release/gz_plugin_vendor) and [`gz_sim_vendor`](https://github.com/gazebo-release/gz_sim_vendor).
+Currently, for ROS 2 Jazzy and Rolling, the Gazebo version is Harmonic.
 
-```bash
-export GZ_VERSION=fortress
-export GZ_VERSION=garden
-export GZ_VERSION=harmonic
-```
-
-Then create a workspace, clone the repo and compile it:
+To compile `gz_ros2_control` from source, create a workspace, clone the repo and compile it:
 
 ```bash
 mkdir -p ~/gz_ros2_control_ws/src

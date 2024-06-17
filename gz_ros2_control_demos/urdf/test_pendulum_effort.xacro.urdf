@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="pendulum on cart">
+
+  <xacro:macro name="quadr_block" params="mass width height name">
+    <link name="${name}">
+      <collision>
+        <geometry>
+          <box size="${width} ${width} ${height}"/>
+        </geometry>
+        <origin xyz="0 0 0"/>
+      </collision>
+      <visual>
+        <geometry>
+          <box size="${width} ${width} ${height}"/>
+        </geometry>
+        <origin xyz="0 0 ${height/2}"/>
+        <material name="blue">
+          <color rgba="0 0 .8 1"/>
+        </material>
+      </visual>
+      <inertial>
+        <origin xyz="0 0 ${height/2}" rpy="0 0 0"/>
+        <mass value="${mass}"/>
+        <inertia
+          ixx="${mass / 12.0 * (width*width + height*height)}" ixy="0.0" ixz="0.0"
+          iyy="${mass / 12.0 * (height*height + width*width)}" iyz="0.0"
+          izz="${mass / 12.0 * (width*width + width*width)}"/>
+      </inertial>
+    </link>
+  </xacro:macro>
+
+  <link name="world"/>
+
+  <link name="slideBar">
+    <visual>
+      <geometry>
+        <box size="30 0.05 0.05"/>
+      </geometry>
+      <origin xyz="0 0 0"/>
+      <material name="green">
+        <color rgba="0 0.8 .8 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="100"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <xacro:quadr_block name="cart" mass="10" width="0.5" height="0.2"/>
+
+  <xacro:quadr_block name="pendulum" mass="1" width="0.2" height="1.0"/>
+
+  <joint name="world_to_base" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 1"/>
+    <parent link="world"/>
+    <child link="slideBar"/>
+  </joint>
+
+  <joint name="slider_to_cart" type="prismatic">
+    <axis xyz="1 0 0"/>
+    <origin xyz="0.0 0.0 0.0"/>
+    <parent link="slideBar"/>
+    <child link="cart"/>
+    <limit effort="1000.0" lower="-15" upper="15" velocity="30"/>
+    <dynamics damping="0.3" friction="0.0"/>
+  </joint>
+
+  <joint name="cart_to_pendulum" type="revolute">
+    <axis xyz="0 1 0"/>
+    <origin xyz="0.0 0.35 0.0" rpy="0 ${pi} 0"/>
+    <parent link="cart"/>
+    <child link="pendulum"/>
+    <limit effort="10000.0" lower="-100000" upper="100000" velocity="100000"/>
+    <dynamics damping="0.1" friction="0.0"/>
+  </joint>
+
+  <ros2_control name="GazeboSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    <joint name="slider_to_cart">
+      <command_interface name="effort">
+        <param name="min">-1000</param>
+        <param name="max">1000</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">1.0</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <joint name="cart_to_pendulum">
+      <state_interface name="position">
+        <!-- this does not work if no command interface is set -->
+        <!-- <param name="initial_value">1.57</param> -->
+      </state_interface>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+  </ros2_control>
+
+  <gazebo>
+    <!-- Joint state publisher -->
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(find gz_ros2_control_demos)/config/cart_controller_effort.yaml</parameters>
+    </plugin>
+  </gazebo>
+</robot>

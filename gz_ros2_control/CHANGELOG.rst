@@ -2,6 +2,20 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.3.0 (2024-05-14)
+------------------
+* Use Gazebo ROS vendor packages (`#277 <https://github.com/ros-controls/gz_ros2_control/issues/277>`_)
+* fixed target of ament_export_libraries (`#295 <https://github.com/ros-controls/gz_ros2_control/issues/295>`_)
+* fixed install include (`#294 <https://github.com/ros-controls/gz_ros2_control/issues/294>`_)
+* Added parameters robot_param and robot_param_node (`#275 <https://github.com/ros-controls/gz_ros2_control/issues/275>`_) (`#280 <https://github.com/ros-controls/gz_ros2_control/issues/280>`_)
+  (cherry picked from commit 53b6c74b02bf85860854a37f429b6e2ecf22a4be)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Rewrite mimic joints (`#276 <https://github.com/ros-controls/gz_ros2_control/issues/276>`_)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Fixed linter (`#264 <https://github.com/ros-controls/gz_ros2_control/issues/264>`_)
+* Fix `#259 <https://github.com/ros-controls/gz_ros2_control/issues/259>`_ - `ParameterAlreadyDeclaredException` for parameter `position_proportional_gain` (`#261 <https://github.com/ros-controls/gz_ros2_control/issues/261>`_)
+* Contributors: Addisu Z. Taddese, Alejandro Hernández Cordero, Christoph Fröhlich, Patrick Roncagliolo, Takashi Sato, mergify[bot]
+
 1.2.2 (2024-03-21)
 ------------------
 * Fix typo (`#253 <https://github.com/ros-controls/gz_ros2_control/issues/253>`_)

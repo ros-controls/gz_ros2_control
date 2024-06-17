@@ -1,4 +1,4 @@
-# Copyright 2021 Open Source Robotics Foundation, Inc.
+# Copyright 2024 ros2_control Development Team
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ def generate_launch_description():
             ' ',
             PathJoinSubstitution(
                 [FindPackageShare('gz_ros2_control_demos'),
-                 'urdf', 'test_cart_position.xacro.urdf']
+                 'urdf', 'test_pendulum_position.xacro.urdf']
             ),
         ]
     )

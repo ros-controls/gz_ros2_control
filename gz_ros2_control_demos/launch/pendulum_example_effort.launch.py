@@ -1,4 +1,4 @@
-# Copyright 2021 Open Source Robotics Foundation, Inc.
+# Copyright 2024 ros2_control Development Team
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ def generate_launch_description():
             ' ',
             PathJoinSubstitution(
                 [FindPackageShare('gz_ros2_control_demos'),
-                 'urdf', 'test_cart_position.xacro.urdf']
+                 'urdf', 'test_pendulum_effort.xacro.urdf']
             ),
         ]
     )
@@ -61,9 +61,9 @@ def generate_launch_description():
         output='screen'
     )
 
-    load_joint_trajectory_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-             'joint_trajectory_controller'],
+    load_joint_effort_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller',
+             '--set-state', 'active', 'effort_controller'],
         output='screen'
     )
 
@@ -74,7 +74,7 @@ def generate_launch_description():
                 [PathJoinSubstitution([FindPackageShare('ros_gz_sim'),
                                        'launch',
                                        'gz_sim.launch.py'])]),
-            launch_arguments=[('gz_args', [' -r -v 4 empty.sdf'])]),
+            launch_arguments=[('gz_args', [' -r -v 3 empty.sdf'])]),
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=gz_spawn_entity,
@@ -84,7 +84,7 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=load_joint_state_broadcaster,
-                on_exit=[load_joint_trajectory_controller],
+                on_exit=[load_joint_effort_controller],
             )
         ),
         node_robot_state_publisher,

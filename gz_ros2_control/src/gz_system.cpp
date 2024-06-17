@@ -14,15 +14,14 @@
 
 #include "gz_ros2_control/gz_system.hpp"
 
+#include <gz/msgs/imu.pb.h>
+
 #include <limits>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-
-#ifdef GZ_HEADERS
-#include <gz/msgs/imu.pb.h>
 
 #include <gz/sim/components/AngularVelocity.hh>
 #include <gz/sim/components/Imu.hh>
@@ -41,27 +40,6 @@
 #include <gz/transport/Node.hh>
 #define GZ_TRANSPORT_NAMESPACE gz::transport::
 #define GZ_MSGS_NAMESPACE gz::msgs::
-#else
-#include <ignition/msgs/imu.pb.h>
-
-#include <ignition/gazebo/components/AngularVelocity.hh>
-#include <ignition/gazebo/components/Imu.hh>
-#include <ignition/gazebo/components/JointForce.hh>
-#include <ignition/gazebo/components/JointForceCmd.hh>
-#include <ignition/gazebo/components/JointPosition.hh>
-#include <ignition/gazebo/components/JointPositionReset.hh>
-#include <ignition/gazebo/components/JointVelocity.hh>
-#include <ignition/gazebo/components/JointVelocityCmd.hh>
-#include <ignition/gazebo/components/JointVelocityReset.hh>
-#include <ignition/gazebo/components/LinearAcceleration.hh>
-#include <ignition/gazebo/components/Name.hh>
-#include <ignition/gazebo/components/ParentEntity.hh>
-#include <ignition/gazebo/components/Pose.hh>
-#include <ignition/gazebo/components/Sensor.hh>
-#include <ignition/transport/Node.hh>
-#define GZ_TRANSPORT_NAMESPACE ignition::transport::
-#define GZ_MSGS_NAMESPACE ignition::msgs::
-#endif
 
 #include <hardware_interface/hardware_info.hpp>
 #include <hardware_interface/lexical_casts.hpp>
@@ -245,6 +223,14 @@ bool GazeboSimSystem::initSim(
   for (unsigned int j = 0; j < this->dataPtr->n_dof_; j++) {
     auto & joint_info = hardware_info.joints[j];
     std::string joint_name = this->dataPtr->joints_[j].name = joint_info.name;
+
+    auto it_joint = enableJoints.find(joint_name);
+    if (it_joint == enableJoints.end()) {
+      RCLCPP_WARN_STREAM(
+        this->nh_->get_logger(), "Skipping joint in the URDF named '" << joint_name <<
+          "' which is not in the gazebo model.");
+      continue;
+    }
 
     sim::Entity simjoint = enableJoints[joint_name];
     this->dataPtr->joints_[j].sim_joint = simjoint;
@@ -522,6 +508,10 @@ hardware_interface::return_type GazeboSimSystem::read(
   const rclcpp::Duration & /*period*/)
 {
   for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
+    if (this->dataPtr->joints_[i].sim_joint == sim::kNullEntity) {
+      continue;
+    }
+
     // Get the joint velocity
     const auto * jointVelocity =
       this->dataPtr->ecm->Component<sim::components::JointVelocity>(
@@ -614,6 +604,10 @@ hardware_interface::return_type GazeboSimSystem::write(
   const rclcpp::Duration & /*period*/)
 {
   for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i) {
+    if (this->dataPtr->joints_[i].sim_joint == sim::kNullEntity) {
+      continue;
+    }
+
     if (this->dataPtr->joints_[i].joint_control_method & VELOCITY) {
       if (!this->dataPtr->ecm->Component<sim::components::JointVelocityCmd>(
           this->dataPtr->joints_[i].sim_joint))

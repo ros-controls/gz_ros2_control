@@ -30,15 +30,15 @@ def generate_launch_description():
     # Get URDF via xacro
     robot_description_content = Command(
         [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
+            PathJoinSubstitution([FindExecutable(name='xacro')]),
+            ' ',
             PathJoinSubstitution(
-                [FindPackageShare("gz_ros2_control_demos"),
-                 "urdf", "test_tricycle_drive.xacro.urdf"]
+                [FindPackageShare('gz_ros2_control_demos'),
+                 'urdf', 'test_tricycle_drive.xacro.urdf']
             ),
         ]
     )
-    robot_description = {"robot_description": robot_description_content}
+    robot_description = {'robot_description': robot_description_content}
 
     node_robot_state_publisher = Node(
         package='robot_state_publisher',
@@ -51,8 +51,8 @@ def generate_launch_description():
         package='ros_gz_sim',
         executable='create',
         output='screen',
-        arguments=["-topic", "robot_description", "-name",
-                   "tricyle", "-allow_renaming", "true"],
+        arguments=['-topic', 'robot_description', '-name',
+                   'tricyle', '-allow_renaming', 'true'],
     )
 
     load_joint_state_broadcaster = ExecuteProcess(
@@ -61,7 +61,7 @@ def generate_launch_description():
         output='screen'
     )
 
-    load_joint_trajectory_controller = ExecuteProcess(
+    load_tricycle_controller = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
              'tricycle_controller'],
         output='screen'
@@ -71,7 +71,7 @@ def generate_launch_description():
     bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        arguments=['/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock'],
+        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
         output='screen'
     )
 
@@ -93,7 +93,7 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=load_joint_state_broadcaster,
-                on_exit=[load_joint_trajectory_controller],
+                on_exit=[load_tricycle_controller],
             )
         ),
         node_robot_state_publisher,

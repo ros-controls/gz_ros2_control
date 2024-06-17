@@ -1,7 +1,6 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV GZ_VERSION fortress
 ENV ROS_DISTRO rolling
 
 # Make sure everything is up to date before building from source
@@ -29,7 +28,11 @@ RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o 
 
 RUN mkdir -p /home/ros2_ws/src \
     && cd /home/ros2_ws/src \
-    && git clone https://github.com/ros-controls/gz_ros2_control/ \
+    && if [ "${ROS_DISTRO}" = "rolling" ] ; then \
+      git clone https://github.com/ros-controls/gz_ros2_control/; \
+    else \
+      git clone https://github.com/ros-controls/gz_ros2_control/ -b ${ROS_DISTRO}; \
+    fi \
     && rosdep init && rosdep update \
     && rosdep install --from-paths ./ -i -y --rosdistro ${ROS_DISTRO}
 

@@ -2,6 +2,19 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.3.0 (2024-05-14)
+------------------
+* Update pendulum-example  (`#301 <https://github.com/ros-controls/gz_ros2_control/issues/301>`_)
+  * Change initial pose of pendulum
+  * Make position and effort version of pendulum equal
+* Use Gazebo ROS vendor packages (`#277 <https://github.com/ros-controls/gz_ros2_control/issues/277>`_)
+* Add cart-pole demo (`#289 <https://github.com/ros-controls/gz_ros2_control/issues/289>`_)
+* Rewrite mimic joints (`#276 <https://github.com/ros-controls/gz_ros2_control/issues/276>`_)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Fix flake8 (`#269 <https://github.com/ros-controls/gz_ros2_control/issues/269>`_)
+* Cleanup launch files and add example for .xml launch file. (`#266 <https://github.com/ros-controls/gz_ros2_control/issues/266>`_)
+* Contributors: Addisu Z. Taddese, Christoph Fröhlich, Dr. Denis
+
 1.2.2 (2024-03-21)
 ------------------
 * Add dep (`#256 <https://github.com/ros-controls/gz_ros2_control/issues/256>`_)

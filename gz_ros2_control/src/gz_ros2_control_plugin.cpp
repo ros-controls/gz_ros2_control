@@ -23,7 +23,6 @@
 #include <utility>
 #include <vector>
 
-#ifdef GZ_HEADERS
 #include <gz/sim/components/Joint.hh>
 #include <gz/sim/components/JointType.hh>
 #include <gz/sim/components/Name.hh>
@@ -31,15 +30,6 @@
 #include <gz/sim/components/World.hh>
 #include <gz/sim/Model.hh>
 #include <gz/plugin/Register.hh>
-#else
-#include <ignition/gazebo/components/Joint.hh>
-#include <ignition/gazebo/components/JointType.hh>
-#include <ignition/gazebo/components/Name.hh>
-#include <ignition/gazebo/components/ParentEntity.hh>
-#include <ignition/gazebo/components/World.hh>
-#include <ignition/gazebo/Model.hh>
-#include <ignition/plugin/Register.hh>
-#endif
 
 
 #include <controller_manager/controller_manager.hpp>
@@ -163,9 +153,6 @@ public:
   /// \brief Thread where the executor will spin
   std::thread thread_executor_spin_;
 
-  /// \brief Flag to stop the executor thread when this plugin is exiting
-  bool stop_{false};
-
   /// \brief Executor to spin the controller
   rclcpp::executors::MultiThreadedExecutor::SharedPtr executor_;
 
@@ -267,7 +254,9 @@ GazeboSimROS2ControlPlugin::GazeboSimROS2ControlPlugin()
 GazeboSimROS2ControlPlugin::~GazeboSimROS2ControlPlugin()
 {
   // Stop controller manager thread
-  this->dataPtr->stop_ = true;
+  if (!this->dataPtr->controller_manager_) {
+    return;
+  }
   this->dataPtr->executor_->remove_node(this->dataPtr->controller_manager_);
   this->dataPtr->executor_->cancel();
   this->dataPtr->thread_executor_spin_.join();
@@ -301,6 +290,23 @@ void GazeboSimROS2ControlPlugin::Configure(
       "Gazebo ros2 control found an empty parameters file. Failed to initialize.");
     return;
   }
+
+  // Get params from SDF
+  std::string robot_param_node = _sdf->Get<std::string>("robot_param_node");
+  if (!robot_param_node.empty()) {
+    this->dataPtr->robot_description_node_ = robot_param_node;
+  }
+  RCLCPP_INFO(
+    logger,
+    "robot_param_node is %s", this->dataPtr->robot_description_node_.c_str());
+
+  std::string robot_description = _sdf->Get<std::string>("robot_param");
+  if (!robot_description.empty()) {
+    this->dataPtr->robot_description_ = robot_description;
+  }
+  RCLCPP_INFO(
+    logger,
+    "robot_param_node is %s", this->dataPtr->robot_description_.c_str());
 
   std::vector<std::string> arguments = {"--ros-args"};
 
@@ -372,12 +378,9 @@ void GazeboSimROS2ControlPlugin::Configure(
   this->dataPtr->node_ = rclcpp::Node::make_shared(node_name, ns);
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   this->dataPtr->executor_->add_node(this->dataPtr->node_);
-  this->dataPtr->stop_ = false;
   auto spin = [this]()
     {
-      while (rclcpp::ok() && !this->dataPtr->stop_) {
-        this->dataPtr->executor_->spin_once();
-      }
+      this->dataPtr->executor_->spin();
     };
   this->dataPtr->thread_executor_spin_ = std::thread(spin);
 
@@ -455,6 +458,9 @@ void GazeboSimROS2ControlPlugin::PreUpdate(
   const sim::UpdateInfo & _info,
   sim::EntityComponentManager & /*_ecm*/)
 {
+  if (!this->dataPtr->controller_manager_) {
+    return;
+  }
   static bool warned{false};
   if (!warned) {
     rclcpp::Duration gazebo_period(_info.dt);
@@ -489,6 +495,9 @@ void GazeboSimROS2ControlPlugin::PostUpdate(
   const sim::UpdateInfo & _info,
   const sim::EntityComponentManager & /*_ecm*/)
 {
+  if (!this->dataPtr->controller_manager_) {
+    return;
+  }
   // Get the simulation time and period
   rclcpp::Time sim_time_ros(std::chrono::duration_cast<std::chrono::nanoseconds>(
       _info.simTime).count(), RCL_ROS_TIME);
@@ -505,7 +514,6 @@ void GazeboSimROS2ControlPlugin::PostUpdate(
 }
 }  // namespace gz_ros2_control
 
-#ifdef GZ_HEADERS
 GZ_ADD_PLUGIN(
   gz_ros2_control::GazeboSimROS2ControlPlugin,
   gz::sim::System,
@@ -515,14 +523,3 @@ GZ_ADD_PLUGIN(
 GZ_ADD_PLUGIN_ALIAS(
   gz_ros2_control::GazeboSimROS2ControlPlugin,
   "ign_ros2_control::IgnitionROS2ControlPlugin")
-#else
-IGNITION_ADD_PLUGIN(
-  gz_ros2_control::GazeboSimROS2ControlPlugin,
-  ignition::gazebo::System,
-  gz_ros2_control::GazeboSimROS2ControlPlugin::ISystemConfigure,
-  gz_ros2_control::GazeboSimROS2ControlPlugin::ISystemPreUpdate,
-  gz_ros2_control::GazeboSimROS2ControlPlugin::ISystemPostUpdate)
-IGNITION_ADD_PLUGIN_ALIAS(
-  gz_ros2_control::GazeboSimROS2ControlPlugin,
-  "ign_ros2_control::IgnitionROS2ControlPlugin")
-#endif

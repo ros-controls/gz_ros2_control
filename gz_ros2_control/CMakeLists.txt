@@ -24,36 +24,11 @@ find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
 
-set(GZ_PLUGIN)
-set(GZ_SIM)
+find_package(gz_sim_vendor REQUIRED)
+find_package(gz-sim REQUIRED)
 
-if("$ENV{GZ_VERSION}" STREQUAL "garden")
-  find_package(gz-sim7 REQUIRED)
-  set(GZ_SIM_VER ${gz-sim7_VERSION_MAJOR})
-  message(STATUS "Compiling against Gazebo Garden")
-  find_package(gz-plugin2 REQUIRED)
-  set(GZ_PLUGIN_VER ${gz-plugin2_VERSION_MAJOR})
-  set(GZ_PLUGIN gz-plugin${GZ_PLUGIN_VER}::register)
-  set(GZ_SIM gz-sim${GZ_SIM_VER}::core)
-  add_definitions(-DGZ_HEADERS)
-elseif("$ENV{GZ_VERSION}" STREQUAL "harmonic")
-  find_package(gz-sim8 REQUIRED)
-  set(GZ_SIM_VER ${gz-sim8_VERSION_MAJOR})
-  message(STATUS "Compiling against Gazebo Harmonic")
-  find_package(gz-plugin2 REQUIRED)
-  set(GZ_PLUGIN_VER ${gz-plugin2_VERSION_MAJOR})
-  set(GZ_PLUGIN gz-plugin${GZ_PLUGIN_VER}::register)
-  set(GZ_SIM gz-sim${GZ_SIM_VER}::core)
-  add_definitions(-DGZ_HEADERS)
-else()
-  find_package(ignition-gazebo6 REQUIRED)
-  set(GZ_SIM_VER ${ignition-gazebo6_VERSION_MAJOR})
-  message(STATUS "Compiling against Gazebo Fortress")
-  find_package(ignition-plugin1 REQUIRED)
-  set(GZ_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
-  set(GZ_PLUGIN ignition-plugin${GZ_PLUGIN_VER}::register)
-  set(GZ_SIM ignition-gazebo${GZ_SIM_VER}::core)
-endif()
+find_package(gz_plugin_vendor REQUIRED)
+find_package(gz-plugin REQUIRED)
 
 include_directories(include)
 
@@ -62,8 +37,8 @@ add_library(${PROJECT_NAME}-system SHARED
 )
 
 target_link_libraries(${PROJECT_NAME}-system
-  ${GZ_SIM}
-  ${GZ_PLUGIN}
+  gz-sim::gz-sim
+  gz-plugin::register
 )
 ament_target_dependencies(${PROJECT_NAME}-system
   ament_index_cpp
@@ -86,7 +61,7 @@ ament_target_dependencies(gz_hardware_plugins
   rclcpp
 )
 target_link_libraries(gz_hardware_plugins
-  ${GZ_SIM}
+  gz-sim::gz-sim
 )
 
 ## Install
@@ -98,7 +73,7 @@ install(TARGETS
 )
 
 install(DIRECTORY
-  include
+  include/
   DESTINATION include
 )
 
@@ -109,7 +84,7 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME} gz_hardware_plugins)
+ament_export_libraries(${PROJECT_NAME}-system gz_hardware_plugins)
 
 # Install directories
 install(TARGETS ${PROJECT_NAME}-system
