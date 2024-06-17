@@ -93,7 +93,7 @@ public:
     std::map<std::string, sim::Entity> & joints,
     const hardware_interface::HardwareInfo & hardware_info,
     sim::EntityComponentManager & _ecm,
-    const unsigned int update_rate) = 0;
+    unsigned int update_rate) = 0;
 
   // Methods used to control a joint.
   enum ControlMethod_
