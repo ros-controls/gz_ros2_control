@@ -37,7 +37,7 @@ To run the demo
 
   .. code-block:: shell
 
-    ign gazebo -g
+    gz sim -g
 
 
 2. Using Rocker
