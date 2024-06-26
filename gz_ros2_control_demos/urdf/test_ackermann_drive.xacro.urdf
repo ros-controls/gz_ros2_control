@@ -152,7 +152,6 @@
   </link>
 
   <joint name="front_left_wheel_joint" type="continuous">
-    <mimic joint="rear_left_wheel_joint"/>
     <origin xyz="0 0 0" rpy="0 0 0" />
     <parent link="left_wheel_steering" />
     <child link="front_left_wheel" />
@@ -180,7 +179,6 @@
   </link>
 
   <joint name="front_right_wheel_joint" type="continuous">
-    <mimic joint="rear_right_wheel_joint"/>
     <origin xyz="0 0 0" rpy="0 0 0" />
     <parent link="right_wheel_steering" />
     <child link="front_right_wheel" />
@@ -209,14 +207,6 @@
     </joint>
     <joint name="right_wheel_steering_joint">
       <command_interface name="position" />
-      <state_interface name="position" />
-    </joint>
-    <joint name="front_right_wheel_joint">
-      <state_interface name="velocity" />
-      <state_interface name="position" />
-    </joint>
-    <joint name="front_left_wheel_joint">
-      <state_interface name="velocity" />
       <state_interface name="position" />
     </joint>
   </ros2_control>
