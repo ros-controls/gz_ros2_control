@@ -102,6 +102,10 @@
 
   <!-- left steer Link -->
   <link name="left_wheel_steering">
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
+    </inertial>
   </link>
 
   <joint name="left_wheel_steering_joint" type="continuous">
@@ -114,6 +118,10 @@
 
   <!-- right steer Link -->
   <link name="right_wheel_steering">
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
+    </inertial>
   </link>
 
   <joint name="right_wheel_steering_joint" type="continuous">
