@@ -9,8 +9,6 @@ controller_manager:
     ackermann_steering_controller:
       type: 'ackermann_steering_controller/AckermannSteeringController'
 
-
-
 ackermann_steering_controller:
   ros__parameters:
     wheelbase: 1.7
