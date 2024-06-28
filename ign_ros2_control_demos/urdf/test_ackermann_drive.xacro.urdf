@@ -186,9 +186,9 @@
     <dynamics damping="0.2" />
   </joint>
 
-  <ros2_control name="GazeboSystem" type="system">
+  <ros2_control name="IgnitionSystem" type="system">
     <hardware>
-      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      <plugin>ign_ros2_control/IgnitionSystem</plugin>
     </hardware>
     <joint name="rear_left_wheel_joint">
       <command_interface name="velocity" />
@@ -211,8 +211,8 @@
   </ros2_control>
 
   <gazebo>
-    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-      <parameters>$(find gz_ros2_control_demos)/config/ackermann_drive_controller.yaml</parameters>
+    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+      <parameters>$(find ign_ros2_control_demos)/config/ackermann_drive_controller.yaml</parameters>
     </plugin>
   </gazebo>
 
