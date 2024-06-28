@@ -76,9 +76,9 @@ include:
 
 .. code-block:: xml
 
-  <ros2_control name="GazeboSimSystem" type="system">
+  <ros2_control name="IgnitionSystem" type="system">
     <hardware>
-      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      <plugin>ign_ros2_control/IgnitionSystem</plugin>
     </hardware>
     <joint name="slider_to_cart">
       <command_interface name="effort">
@@ -172,9 +172,9 @@ robot model is loaded. For example, the following XML will load the default plug
 
 .. code-block:: xml
 
-  <ros2_control name="GazeboSimSystem" type="system">
+  <ros2_control name="IgnitionSystem" type="system">
     <hardware>
-      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      <plugin>ign_ros2_control/IgnitionSystem</plugin>
     </hardware>
     ...
   <ros2_control>
