@@ -2,6 +2,21 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.8 (2024-07-02)
+------------------
+* Harden behavior if a joint is not found in the model (`#325 <https://github.com/ros-controls/gz_ros2_control/issues/325>`_) (`#332 <https://github.com/ros-controls/gz_ros2_control/issues/332>`_)
+  * Don't crash if a joint does not exist
+  (cherry picked from commit 5d2d5eb6c867875c3c8d00a03cd472eac176e67c)
+  Co-authored-by: Christoph Fröhlich <christophfroehlich@users.noreply.github.com>
+* Don't crash if a wrong config was detected (`#324 <https://github.com/ros-controls/gz_ros2_control/issues/324>`_) (`#329 <https://github.com/ros-controls/gz_ros2_control/issues/329>`_)
+  (cherry picked from commit ec1b95893fa933cb3e2cc5341bb65dd621645785)
+  Co-authored-by: Christoph Fröhlich <christophfroehlich@users.noreply.github.com>
+* Changed to use spin instead of spin_once to enable multithreading with MultiThreadedExecutor (`#315 <https://github.com/ros-controls/gz_ros2_control/issues/315>`_) (`#321 <https://github.com/ros-controls/gz_ros2_control/issues/321>`_)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+  (cherry picked from commit 45035076408e6014cc911e8d4bc169572a25008c)
+  Co-authored-by: Takashi Sato <t.sato17123@gmail.com>
+* Contributors: mergify[bot]
+
 1.1.7 (2024-05-14)
 ------------------
 * fixed target of ament_export_libraries (`#295 <https://github.com/ros-controls/gz_ros2_control/issues/295>`_) (`#299 <https://github.com/ros-controls/gz_ros2_control/issues/299>`_)
