@@ -2,6 +2,20 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.9 (2024-07-02)
+------------------
+* Don't crash if a wrong config was detected (`#324 <https://github.com/ros-controls/gz_ros2_control/issues/324>`_) (`#330 <https://github.com/ros-controls/gz_ros2_control/issues/330>`_)
+  (cherry picked from commit ec1b95893fa933cb3e2cc5341bb65dd621645785)
+  Co-authored-by: Christoph Fröhlich <christophfroehlich@users.noreply.github.com>
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Harden behavior if a joint is not found in the model (backport `#325 <https://github.com/ros-controls/gz_ros2_control/issues/325>`_) (`#326 <https://github.com/ros-controls/gz_ros2_control/issues/326>`_)
+  * Don't crash if a joint does not exist
+* Changed to use spin instead of spin_once to enable multithreading with MultiThreadedExecutor (`#315 <https://github.com/ros-controls/gz_ros2_control/issues/315>`_) (`#320 <https://github.com/ros-controls/gz_ros2_control/issues/320>`_)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+  (cherry picked from commit 45035076408e6014cc911e8d4bc169572a25008c)
+  Co-authored-by: Takashi Sato <t.sato17123@gmail.com>
+* Contributors: Christoph Fröhlich, mergify[bot]
+
 0.7.8 (2024-05-14)
 ------------------
 * Fixed target of ament_export_libraries (`#300 <https://github.com/ros-controls/gz_ros2_control/issues/300>`_)
