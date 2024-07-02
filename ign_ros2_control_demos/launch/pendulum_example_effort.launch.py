@@ -33,7 +33,7 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare("gz_ros2_control_demos"),
+                [FindPackageShare("ign_ros2_control_demos"),
                  "urdf", "test_pendulum_effort.xacro.urdf"]
             ),
         ]
