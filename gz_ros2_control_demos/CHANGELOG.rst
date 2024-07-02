@@ -2,6 +2,15 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.3.1 (2024-07-02)
+------------------
+* Ackermann steering example (`#349 <https://github.com/ros-controls/gz_ros2_control/issues/349>`_)
+* Rename variable in launch file (`#327 <https://github.com/ros-controls/gz_ros2_control/issues/327>`_)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* added color definitions (`#310 <https://github.com/ros-controls/gz_ros2_control/issues/310>`_)
+* Remove stamped twist parameter (`#308 <https://github.com/ros-controls/gz_ros2_control/issues/308>`_)
+* Contributors: Christoph Fröhlich, Reza Kermani, huzaifa
+
 1.3.0 (2024-05-14)
 ------------------
 * Update pendulum-example  (`#301 <https://github.com/ros-controls/gz_ros2_control/issues/301>`_)
