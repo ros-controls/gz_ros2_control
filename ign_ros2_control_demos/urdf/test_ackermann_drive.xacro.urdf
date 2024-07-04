@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot name="tricycle_drive" xmlns:xacro="http://ros.org/wiki/xacro">
+<robot name="ackermann_drive" xmlns:xacro="http://ros.org/wiki/xacro">
   <material name="Black">
     <color rgba="0 0 0 1" />
   </material>
