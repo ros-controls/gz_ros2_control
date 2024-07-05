@@ -150,7 +150,7 @@ Additionally, one can add a section for namespaces and remapping rules, which wi
 .. code-block:: xml
 
   <gazebo>
-    <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
       ...
       <ros>
         <namespace>my_namespace</namespace>
