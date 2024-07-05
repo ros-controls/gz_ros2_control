@@ -131,24 +131,33 @@ robot hardware interfaces between *ros2_control* and Gazebo.
 .. code-block:: xml
 
   <gazebo>
-      <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-        <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
-      </plugin>
+    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
+    </plugin>
   </gazebo>
 
 The *gz_ros2_control* ``<plugin>`` tag also has the following optional child elements:
 
-* ``<parameters>``: YAML file with the configuration of the controllers
+* ``<parameters>``: A YAML file with the configuration of the controllers. This element can be given multiple times to load multiple files.
 * ``<hold_joints>``: if set to true (default), it will hold the joints' position if their interface was not claimed, e.g., the controller hasn't been activated yet.
+* ``<controller_manager_name>``: Set controller manager name (default: ``controller_manager``)
 
 Additionally, one can add a section for namespaces and remapping rules, which will be forwarded to the controller_manager and loaded controllers.
 
+
+Additionally, one can add a section for namespaces and remapping rules, which will be forwarded to the controller_manager and loaded controllers. Add the following <ros> section inside the <gazebo> tag:
+
 .. code-block:: xml
 
-  <ros>
-    <namespace>my_namespace</namespace>
-    <remapping>/robot_description:=/robot_description_ful</remapping>
-  </ros>
+  <gazebo>
+    <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+      ...
+      <ros>
+        <namespace>my_namespace</namespace>
+        <remapping>/robot_description:=/robot_description_ful</remapping>
+      </ros>
+    </plugin>
+  </gazebo>
 
 Default gz_ros2_control Behavior
 -----------------------------------------------------------
