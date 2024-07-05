@@ -132,8 +132,6 @@ robot hardware interfaces between *ros2_control* and Gazebo.
 
   <gazebo>
       <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-        <robot_param>robot_description</robot_param>
-        <robot_param_node>robot_state_publisher</robot_param_node>
         <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
       </plugin>
   </gazebo>
@@ -142,6 +140,15 @@ The *gz_ros2_control* ``<plugin>`` tag also has the following optional child ele
 
 * ``<parameters>``: YAML file with the configuration of the controllers
 * ``<hold_joints>``: if set to true (default), it will hold the joints' position if their interface was not claimed, e.g., the controller hasn't been activated yet.
+
+Additionally, one can add a section for namespaces and remapping rules, which will be forwarded to the controller_manager and loaded controllers.
+
+.. code-block:: xml
+
+  <ros>
+    <namespace>my_namespace</namespace>
+    <remapping>/robot_description:=/robot_description_ful</remapping>
+  </ros>
 
 Default gz_ros2_control Behavior
 -----------------------------------------------------------
