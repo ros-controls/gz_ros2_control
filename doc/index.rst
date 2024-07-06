@@ -146,7 +146,24 @@ robot hardware interfaces between *ros2_control* and Gazebo.
 
 The *gz_ros2_control* ``<plugin>`` tag also has the following optional child elements:
 
-* ``<parameters>``: YAML file with the configuration of the controllers
+* ``<robot_param>``: The location of the ``robot_description`` (URDF) on the parameter server, defaults to ``robot_description``
+* ``<robot_param_node>``: Name of the node where the ``robot_param`` is located, defaults to ``robot_state_publisher``
+* ``<parameters>``: A YAML file with the configuration of the controllers. This element can be given multiple times to load multiple files.
+* ``<controller_manager_name>``: Set controller manager name (default: ``controller_manager``)
+
+Additionally, one can specify a namespace and remapping rules, which will be forwarded to the controller_manager and loaded controllers. Add the following ``<ros>`` section:
+
+.. code-block:: xml
+
+  <gazebo>
+    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      ...
+      <ros>
+        <namespace>my_namespace</namespace>
+        <remapping>/robot_description:=/robot_description_full</remapping>
+      </ros>
+    </plugin>
+  </gazebo>
 
 Default gz_ros2_control Behavior
 -----------------------------------------------------------
