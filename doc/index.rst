@@ -151,6 +151,20 @@ The *ign_ros2_control* ``<plugin>`` tag also has the following optional child el
 * ``<parameters>``: A YAML file with the configuration of the controllers. This element can be given multiple times to load multiple files.
 * ``<controller_manager_name>``: Set controller manager name (default: ``controller_manager``)
 
+Additionally, one can specify a namespace and remapping rules, which will be forwarded to the controller_manager and loaded controllers. Add the following ``<ros>`` section:
+
+.. code-block:: xml
+
+  <gazebo>
+    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+      ...
+      <ros>
+        <namespace>my_namespace</namespace>
+        <remapping>/robot_description:=/robot_description_full</remapping>
+      </ros>
+    </plugin>
+  </gazebo>
+
 Default ign_ros2_control Behavior
 -----------------------------------------------------------
 
