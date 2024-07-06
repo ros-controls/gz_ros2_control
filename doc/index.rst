@@ -1,9 +1,9 @@
 :github_url: https://github.com/ros-controls/gz_ros2_control/blob/{REPOS_FILE_BRANCH}/doc/index.rst
 
-.. _gz_ros2_control:
+.. _ign_ros2_control:
 
 =====================
-gz_ros2_control
+ign_ros2_control
 =====================
 
 This is a ROS 2 package for integrating the *ros2_control* controller architecture with the `Gazebo <https://gazebosim.org/home>`__ simulator.
@@ -20,7 +20,7 @@ Modifying or building your own
 .. code-block:: shell
 
   cd Dockerfile
-  docker build -t gz_ros2_control .
+  docker build -t ign_ros2_control .
 
 To run the demo
 ---------------------------------
@@ -31,7 +31,7 @@ To run the demo
 
   .. code-block:: shell
 
-    docker run -it --rm --name gz_ros2_control_demo --net host gz_ros2_control ros2 launch ign_ros2_control_demos cart_example_position.launch.py gui:=false
+    docker run -it --rm --name ign_ros2_control_demo --net host ign_ros2_control ros2 launch ign_ros2_control_demos cart_example_position.launch.py gui:=false
 
   Then on your local machine, you can run the Gazebo client:
 
@@ -50,15 +50,15 @@ To run the demo
 
   .. code-block:: xml
 
-    rocker --x11 --nvidia --name gz_ros2_control_demo gz_ros2_control:latest
+    rocker --x11 --nvidia --name ign_ros2_control_demo ign_ros2_control:latest
 
   The following commands allow the cart to be moved along the rail:
 
   .. code-block:: xml
 
-    docker exec -it gz_ros2_control_demo bash
+    docker exec -it ign_ros2_control_demo bash
     source /home/ros2_ws/install/setup.bash
-    ros2 run gz_ros2_control_demos example_position
+    ros2 run ign_ros2_control_demos example_position
 
 
 Add ros2_control tag to a URDF
@@ -96,7 +96,7 @@ include:
 Using mimic joints in simulation
 -----------------------------------------------------------
 
-To use ``mimic`` joints in *gz_ros2_control* you should define its parameters to your URDF.
+To use ``mimic`` joints in *ign_ros2_control* you should define its parameters to your URDF.
 We should include:
 
 * ``<mimic>`` tag to the mimicked joint `detailed manual <https://wiki.ros.org/urdf/XML/joint>`__
@@ -125,33 +125,34 @@ We should include:
   </joint>
 
 
-Add the gz_ros2_control plugin
+Add the ign_ros2_control plugin
 ==========================================
 
 In addition to the *ros2_control* tags, a Gazebo plugin needs to be added to your URDF that
 actually parses the *ros2_control* tags and loads the appropriate hardware interfaces and
-controller manager. By default the *gz_ros2_control* plugin is very simple, though it is also
+controller manager. By default the *ign_ros2_control* plugin is very simple, though it is also
 extensible via an additional plugin architecture to allow power users to create their own custom
 robot hardware interfaces between *ros2_control* and Gazebo.
 
 .. code-block:: xml
 
   <gazebo>
-      <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-        <robot_param>robot_description</robot_param>
-        <robot_param_node>robot_state_publisher</robot_param_node>
-        <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
-      </plugin>
+    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+      <robot_param>robot_description</robot_param>
+      <robot_param_node>robot_state_publisher</robot_param_node>
+      <parameters>$(find ign_ros2_control_demos)/config/cart_controller.yaml</parameters>
+    </plugin>
   </gazebo>
 
-The *gz_ros2_control* ``<plugin>`` tag also has the following optional child elements:
+The *ign_ros2_control* ``<plugin>`` tag also has the following optional child elements:
 
-* ``<parameters>``: YAML file with the configuration of the controllers
+* ``<parameters>``: A YAML file with the configuration of the controllers. This element can be given multiple times to load multiple files.
+* ``<controller_manager_name>``: Set controller manager name (default: ``controller_manager``)
 
-Default gz_ros2_control Behavior
+Default ign_ros2_control Behavior
 -----------------------------------------------------------
 
-By default, without a ``<plugin>`` tag, *gz_ros2_control* will attempt to get all of the information it needs to interface with a ros2_control-based controller out of the URDF. This is sufficient for most cases, and good for at least getting started.
+By default, without a ``<plugin>`` tag, *ign_ros2_control* will attempt to get all of the information it needs to interface with a ros2_control-based controller out of the URDF. This is sufficient for most cases, and good for at least getting started.
 
 The default behavior provides the following ros2_control interfaces:
 
@@ -159,12 +160,12 @@ The default behavior provides the following ros2_control interfaces:
 * hardware_interface::EffortJointInterface
 * hardware_interface::VelocityJointInterface
 
-Advanced: custom gz_ros2_control Simulation Plugins
+Advanced: custom ign_ros2_control Simulation Plugins
 -----------------------------------------------------------
 
-The *gz_ros2_control* Gazebo plugin also provides a pluginlib-based interface to implement custom interfaces between Gazebo and *ros2_control* for simulating more complex mechanisms (nonlinear springs, linkages, etc).
+The *ign_ros2_control* Gazebo plugin also provides a pluginlib-based interface to implement custom interfaces between Gazebo and *ros2_control* for simulating more complex mechanisms (nonlinear springs, linkages, etc).
 
-These plugins must inherit the ``gz_ros2_control::GazeboSimSystemInterface``, which implements a simulated *ros2_control*
+These plugins must inherit the ``ign_ros2_control::GazeboSimSystemInterface``, which implements a simulated *ros2_control*
 ``hardware_interface::SystemInterface``. SystemInterface provides API-level access to read and command joint properties.
 
 The respective GazeboSimSystemInterface sub-class is specified in a URDF model and is loaded when the
@@ -179,7 +180,7 @@ robot model is loaded. For example, the following XML will load the default plug
     ...
   <ros2_control>
   <gazebo>
-    <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
       ...
     </plugin>
   </gazebo>
@@ -188,14 +189,14 @@ Set up controllers
 -----------------------------------------------------------
 
 Use the tag ``<parameters>`` inside ``<plugin>`` to set the YAML file with the controller configuration
-and use the tag ``<controller_manager_prefix_node_name>`` to set the controller manager node name.
+and use the tag ``<controller_manager_name>`` to set the controller manager node name.
 
 .. code-block:: xml
 
   <gazebo>
-    <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
-      <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
-      <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
+    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+      <parameters>$(find ign_ros2_control_demos)/config/cart_controller.yaml</parameters>
+      <controller_manager_name>controller_manager</controller_manager_name>
     </plugin>
   <gazebo>
 
@@ -208,34 +209,34 @@ The following is a basic configuration of the controllers:
    :language: yaml
 
 
-gz_ros2_control_demos
+ign_ros2_control_demos
 ==========================================
 
-There are some examples in the *gz_ros2_control_demos* package.
+There are some examples in the *ign_ros2_control_demos* package.
 
 Cart on rail
 -----------------------------------------------------------
 
 These examples allow to launch a cart in a 30 meter rail.
 
-.. image:: img/gz_ros2_control.gif
+.. image:: img/ign_ros2_control.gif
   :alt: Cart
 
 You can run some of the example configurations by running the following commands:
 
 .. code-block:: shell
 
-  ros2 launch gz_ros2_control_demos cart_example_position.launch.py
-  ros2 launch gz_ros2_control_demos cart_example_velocity.launch.py
-  ros2 launch gz_ros2_control_demos cart_example_effort.launch.py
+  ros2 launch ign_ros2_control_demos cart_example_position.launch.py
+  ros2 launch ign_ros2_control_demos cart_example_velocity.launch.py
+  ros2 launch ign_ros2_control_demos cart_example_effort.launch.py
 
 When the Gazebo world is launched, you can run some of the following commands to move the cart.
 
 .. code-block:: shell
 
-  ros2 run gz_ros2_control_demos example_position
-  ros2 run gz_ros2_control_demos example_velocity
-  ros2 run gz_ros2_control_demos example_effort
+  ros2 run ign_ros2_control_demos example_position
+  ros2 run ign_ros2_control_demos example_velocity
+  ros2 run ign_ros2_control_demos example_effort
 
 Mobile robots
 -----------------------------------------------------------
@@ -247,17 +248,17 @@ You can run some of the mobile robots running the following commands:
 
 .. code-block:: shell
 
-  ros2 launch gz_ros2_control_demos diff_drive_example.launch.py
-  ros2 launch gz_ros2_control_demos tricycle_drive_example.launch.py
-  ros2 launch gz_ros2_control_demos ackermann_drive_example.launch.py
+  ros2 launch ign_ros2_control_demos diff_drive_example.launch.py
+  ros2 launch ign_ros2_control_demos tricycle_drive_example.launch.py
+  ros2 launch ign_ros2_control_demos ackermann_drive_example.launch.py
 
 When the Gazebo world is launched you can run some of the following commands to move the robots.
 
 .. code-block:: shell
 
-  ros2 run gz_ros2_control_demos example_diff_drive
-  ros2 run gz_ros2_control_demos example_tricycle_drive
-  ros2 run gz_ros2_control_demos example_ackermann_drive
+  ros2 run ign_ros2_control_demos example_diff_drive
+  ros2 run ign_ros2_control_demos example_tricycle_drive
+  ros2 run ign_ros2_control_demos example_ackermann_drive
 
 Gripper
 -----------------------------------------------------------
@@ -266,14 +267,14 @@ The following example shows a parallel gripper with a mimic joint:
 
 .. code-block:: shell
 
-  ros2 launch gz_ros2_control_demos gripper_mimic_joint_example.launch.py
+  ros2 launch ign_ros2_control_demos gripper_mimic_joint_example.launch.py
 
 
 Send example commands:
 
 .. code-block:: shell
 
-  ros2 run gz_ros2_control_demos example_gripper
+  ros2 run ign_ros2_control_demos example_gripper
 
 
 Pendulum with passive joints (cart-pole)
@@ -283,12 +284,12 @@ The following example shows a cart with a pendulum arm:
 
 .. code-block:: shell
 
-  ros2 launch gz_ros2_control_demos pendulum_example_effort.launch.py
-  ros2 run gz_ros2_control_demos example_effort
+  ros2 launch ign_ros2_control_demos pendulum_example_effort.launch.py
+  ros2 run ign_ros2_control_demos example_effort
 
 This uses the effort command interface for the cart's degree of freedom on the rail. To demonstrate that the physics of the passive joint of the pendulum is solved correctly even with the position command interface, run
 
 .. code-block:: shell
 
-  ros2 launch gz_ros2_control_demos pendulum_example_position.launch.py
-  ros2 run gz_ros2_control_demos example_position
+  ros2 launch ign_ros2_control_demos pendulum_example_position.launch.py
+  ros2 run ign_ros2_control_demos example_position
