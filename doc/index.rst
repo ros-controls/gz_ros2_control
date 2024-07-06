@@ -154,8 +154,9 @@ The *gz_ros2_control* ``<plugin>`` tag also has the following optional child ele
 Additionally, one can specify a namespace and remapping rules, which will be forwarded to the controller_manager and loaded controllers. Add the following ``<ros>`` section:
 
 .. code-block:: xml
+
   <gazebo>
-    <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
       ...
       <ros>
         <namespace>my_namespace</namespace>
