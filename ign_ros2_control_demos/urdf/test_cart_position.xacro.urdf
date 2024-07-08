@@ -77,7 +77,6 @@
   </gazebo>
 
   <gazebo>
-    <!-- Joint state publisher -->
     <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
       <parameters>$(find ign_ros2_control_demos)/config/cart_controller_position.yaml</parameters>
     </plugin>
