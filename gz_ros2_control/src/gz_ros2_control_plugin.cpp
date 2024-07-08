@@ -79,11 +79,6 @@ public:
   /// \brief Timing
   rclcpp::Duration control_period_ = rclcpp::Duration(1, 0);
 
-  /// \brief Interface loader
-  std::shared_ptr<pluginlib::ClassLoader<
-      gz_ros2_control::GazeboSimSystemInterface>>
-  robot_hw_sim_loader_{nullptr};
-
   /// \brief Controller manager
   std::shared_ptr<controller_manager::ControllerManager>
   controller_manager_{nullptr};
