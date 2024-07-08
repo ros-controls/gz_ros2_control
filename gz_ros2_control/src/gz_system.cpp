@@ -140,7 +140,7 @@ public:
   sim::EntityComponentManager * ecm;
 
   /// \brief controller update rate
-  int * update_rate;
+  unsigned int update_rate;
 
   /// \brief Gazebo communication node.
   GZ_TRANSPORT_NAMESPACE Node node;
@@ -160,7 +160,7 @@ bool GazeboSimSystem::initSim(
   std::map<std::string, sim::Entity> & enableJoints,
   const hardware_interface::HardwareInfo & hardware_info,
   sim::EntityComponentManager & _ecm,
-  int & update_rate)
+  unsigned int update_rate)
 {
   this->dataPtr = std::make_unique<GazeboSimSystemPrivate>();
   this->dataPtr->last_update_sim_time_ros_ = rclcpp::Time();
@@ -169,7 +169,7 @@ bool GazeboSimSystem::initSim(
   this->dataPtr->ecm = &_ecm;
   this->dataPtr->n_dof_ = hardware_info.joints.size();
 
-  this->dataPtr->update_rate = &update_rate;
+  this->dataPtr->update_rate = update_rate;
 
   try {
     this->dataPtr->hold_joints_ = this->nh_->get_parameter("hold_joints").as_bool();
@@ -462,10 +462,9 @@ void GazeboSimSystem::registerSensors(
 }
 
 CallbackReturn
-GazeboSimSystem::on_init(const hardware_interface::HardwareInfo & actuator_info)
+GazeboSimSystem::on_init(const hardware_interface::HardwareInfo & info)
 {
-  RCLCPP_WARN(this->nh_->get_logger(), "On init...");
-  if (hardware_interface::SystemInterface::on_init(actuator_info) != CallbackReturn::SUCCESS) {
+  if (hardware_interface::SystemInterface::on_init(info) != CallbackReturn::SUCCESS) {
     return CallbackReturn::ERROR;
   }
   return CallbackReturn::SUCCESS;
@@ -627,7 +626,7 @@ hardware_interface::return_type GazeboSimSystem::write(
       // Get error in position
       double error;
       error = (this->dataPtr->joints_[i].joint_position -
-        this->dataPtr->joints_[i].joint_position_cmd) * *this->dataPtr->update_rate;
+        this->dataPtr->joints_[i].joint_position_cmd) * this->dataPtr->update_rate;
 
       // Calculate target velcity
       double target_vel = -this->dataPtr->position_proportional_gain_ * error;
@@ -690,7 +689,7 @@ hardware_interface::return_type GazeboSimSystem::write(
     double position_error =
       position_mimic_joint - position_mimicked_joint * mimic_joint.multiplier;
 
-    double velocity_sp = (-1.0) * position_error * (*this->dataPtr->update_rate);
+    double velocity_sp = (-1.0) * position_error * this->dataPtr->update_rate;
 
     auto vel =
       this->dataPtr->ecm->Component<sim::components::JointVelocityCmd>(
