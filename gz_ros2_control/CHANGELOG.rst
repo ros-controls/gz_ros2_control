@@ -2,6 +2,13 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.6 (2024-07-09)
+------------------
+* Propagate the node clock and logging interface (`#368 <https://github.com/ros-controls/gz_ros2_control/issues/368>`_) (`#373 <https://github.com/ros-controls/gz_ros2_control/issues/373>`_)
+  (cherry picked from commit a1d9bd46fc491c0de35f86f9c14c1620cbcdb037)
+  Co-authored-by: Sai Kishor Kothakota <sai.kishor@pal-robotics.com>
+* Contributors: mergify[bot]
+
 1.2.5 (2024-07-09)
 ------------------
 * Simplify access for robot description from CM by overriding RM. (`#265 <https://github.com/ros-controls/gz_ros2_control/issues/265>`_) (`#364 <https://github.com/ros-controls/gz_ros2_control/issues/364>`_)

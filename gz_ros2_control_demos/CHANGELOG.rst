@@ -2,6 +2,9 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.6 (2024-07-09)
+------------------
+
 1.2.5 (2024-07-09)
 ------------------
 * fixed robot name (`#358 <https://github.com/ros-controls/gz_ros2_control/issues/358>`_) (`#359 <https://github.com/ros-controls/gz_ros2_control/issues/359>`_)
