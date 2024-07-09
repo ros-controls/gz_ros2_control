@@ -2,6 +2,18 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.5 (2024-07-09)
+------------------
+* Simplify access for robot description from CM by overriding RM. (`#265 <https://github.com/ros-controls/gz_ros2_control/issues/265>`_) (`#364 <https://github.com/ros-controls/gz_ros2_control/issues/364>`_)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+  Co-authored-by: Sai Kishor Kothakota <saisastra3@gmail.com>
+  (cherry picked from commit ced470bf20d4e9313f76582eda4a28f7fc6a6a11)
+  Co-authored-by: Dr. Denis <denis@stoglrobotics.de>
+* Update docs and cleanup member of `GazeboSimROS2ControlPluginPrivate` (`#363 <https://github.com/ros-controls/gz_ros2_control/issues/363>`_) (`#367 <https://github.com/ros-controls/gz_ros2_control/issues/367>`_)
+  (cherry picked from commit 9257ad3973e2aebf9756c7a8154efb9673ed1a43)
+  Co-authored-by: Christoph Fröhlich <christophfroehlich@users.noreply.github.com>
+* Contributors: mergify[bot]
+
 1.2.4 (2024-06-02)
 ------------------
 * Don't crash if a wrong config was detected (`#324 <https://github.com/ros-controls/gz_ros2_control/issues/324>`_) (`#331 <https://github.com/ros-controls/gz_ros2_control/issues/331>`_)

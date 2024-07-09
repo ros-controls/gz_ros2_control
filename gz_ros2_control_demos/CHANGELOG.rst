@@ -2,6 +2,13 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.5 (2024-07-09)
+------------------
+* fixed robot name (`#358 <https://github.com/ros-controls/gz_ros2_control/issues/358>`_) (`#359 <https://github.com/ros-controls/gz_ros2_control/issues/359>`_)
+  (cherry picked from commit c4b3a550f0a6f6462a0d8acff71d911feff719d9)
+  Co-authored-by: huzaifa <84243533+huzzu7@users.noreply.github.com>
+* Contributors: mergify[bot]
+
 1.2.4 (2024-06-02)
 ------------------
 * Ackermann steering example (`#349 <https://github.com/ros-controls/gz_ros2_control/issues/349>`_) (`#350 <https://github.com/ros-controls/gz_ros2_control/issues/350>`_)
