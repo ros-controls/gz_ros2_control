@@ -345,13 +345,13 @@ void IgnitionROS2ControlPlugin::Configure(
   }
 
   std::vector<const char *> argv;
-  for (const auto & arg : arguments) {
-    RCLCPP_INFO(
-      logger,
-      arg.data()
-    );
-    argv.push_back(reinterpret_cast<const char *>(arg.data()));
-  }
+  // for (const auto & arg : arguments) {
+  //   RCLCPP_INFO(
+  //     logger,
+  //     arg.data()
+  //   );
+  //   argv.push_back(reinterpret_cast<const char *>(arg.data()));
+  // }
 
   // Create a default context, if not already
   if (!rclcpp::ok()) {
@@ -365,8 +365,10 @@ void IgnitionROS2ControlPlugin::Configure(
     msg.data()
   );
 
-  this->dataPtr->context_ = std::make_shared<rclcpp::Context>();
-  this->dataPtr->context_->init(static_cast<int>(argv.size()), argv.data());
+  // this->dataPtr->context_ = std::make_shared<rclcpp::Context>();
+  // this->dataPtr->context_->init(static_cast<int>(argv.size()), argv.data());
+
+  this->dataPtr->context_ = rclcpp::contexts::get_global_default_context();
 
   std::string node_name = "gz_ros2_control";
 
@@ -375,6 +377,7 @@ void IgnitionROS2ControlPlugin::Configure(
 
   rclcpp::NodeOptions node_options;
   node_options.context(this->dataPtr->context_);
+  node_options.arguments(arguments);
 
   this->dataPtr->node_ = rclcpp::Node::make_shared(node_name, ns, node_options);
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>(executor_options);
@@ -479,6 +482,7 @@ void IgnitionROS2ControlPlugin::Configure(
 
   rclcpp::NodeOptions cm_node_options = controller_manager::get_cm_node_options();
   cm_node_options.context(this->dataPtr->context_);
+  cm_node_options.arguments(arguments);
 
   // Create the controller manager
   RCLCPP_INFO(this->dataPtr->node_->get_logger(), "Loading controller_manager");
