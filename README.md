@@ -28,7 +28,7 @@ ROS 2 Distro | Branch | Build status | Documentation
 **Humble** | [`humble`](https://github.com/ros-controls/gz_ros2_control/tree/humble) | [![ign_ros2_control CI - Humble](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-humble.yaml/badge.svg?branch=humble)](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-humble.yaml) | [Documentation](https://control.ros.org/humble/index.html) <br /> [API Reference](https://control.ros.org/humble/doc/api/index.html)
 
 ## Documentation
-See the [documentation file](doc/index.rst) or [control.ros.org](https://control.ros.org/master/doc/simulators/gz_ros2_control/doc/index.html)
+See the [documentation file](doc/index.rst) or [control.ros.org](https://control.ros.org/master/doc/gz_ros2_control/doc/index.html)
 
 # Compile from source
 
