@@ -1,10 +1,14 @@
 name: gz_ros2_control CI - Rolling
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: [ master ]
   push:
     branches: [ master ]
+  schedule:
+    # Run every morning to detect flakiness and broken dependencies
+    - cron: '03 5 * * *'
 
 jobs:
   build:
