@@ -406,27 +406,28 @@ void GazeboSimROS2ControlPlugin::Configure(
   }
 
   try {
-    this->dataPtr->node_->declare_parameter("position_proportional_gain",
-        rclcpp::ParameterValue(position_proportional_gain));
+    this->dataPtr->node_->declare_parameter(
+      "position_proportional_gain",
+      rclcpp::ParameterValue(position_proportional_gain));
   } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException & e) {
     RCLCPP_ERROR(
       this->dataPtr->node_->get_logger(),
-        "Parameter 'position_proportional_gain' has already been declared, %s",
+      "Parameter 'position_proportional_gain' has already been declared, %s",
       e.what());
   } catch (const rclcpp::exceptions::InvalidParametersException & e) {
     RCLCPP_ERROR(
       this->dataPtr->node_->get_logger(),
-        "Parameter 'position_proportional_gain' has invalid name, %s",
+      "Parameter 'position_proportional_gain' has invalid name, %s",
       e.what());
   } catch (const rclcpp::exceptions::InvalidParameterValueException & e) {
     RCLCPP_ERROR(
       this->dataPtr->node_->get_logger(),
-        "Parameter 'position_proportional_gain' value is invalid, %s",
+      "Parameter 'position_proportional_gain' value is invalid, %s",
       e.what());
   } catch (const rclcpp::exceptions::InvalidParameterTypeException & e) {
     RCLCPP_ERROR(
       this->dataPtr->node_->get_logger(),
-        "Parameter 'position_proportional_gain' value has wrong type, %s",
+      "Parameter 'position_proportional_gain' value has wrong type, %s",
       e.what());
   }
 
