@@ -28,7 +28,14 @@ jobs:
     container:
       image: ${{ matrix.docker-image }}
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      if: github.event_name != 'schedule'
+      uses: actions/checkout@v4
+    - name: Checkout code for scheduled workflow
+      if: github.event_name == 'schedule'
+      uses: actions/checkout@v4
+      with:
+        ref: jazzy
     - name: Setup colcon workspace
       id: configure
       shell: bash
