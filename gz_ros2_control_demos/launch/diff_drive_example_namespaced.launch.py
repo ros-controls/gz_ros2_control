@@ -12,10 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-
-from ament_index_python.packages import get_package_share_directory
-
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.actions import RegisterEventHandler
@@ -45,23 +41,29 @@ def generate_launch_description():
         ]
     )
     robot_description = {'robot_description': robot_description_content}
+    robot_controllers = PathJoinSubstitution(
+        [
+            FindPackageShare('gz_ros2_control_demos'),
+            'config',
+            'diff_drive_controller.yaml',
+        ]
+    )
 
     node_robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
         namespace='r1',
         output='screen',
-        parameters=[robot_description, {'use_sim_time': use_sim_time}],
+        parameters=[robot_description]
     )
 
-    ignition_spawn_entity = Node(
+    gz_spawn_entity = Node(
         package='ros_gz_sim',
         executable='create',
         namespace='r1',
         output='screen',
-        arguments=['-topic', 'robot_description',
-                   '-name', 'diff_drive',
-                   '-allow_renaming', 'true'],
+        arguments=['-topic', 'robot_description', '-name',
+                   'diff_drive', '-allow_renaming', 'true'],
     )
 
     joint_state_broadcaster_spawner = Node(
@@ -77,6 +79,8 @@ def generate_launch_description():
         executable='spawner',
         arguments=[
             'diff_drive_base_controller',
+            '--param-file',
+            robot_controllers,
             '-c', '/r1/controller_manager'
             ],
     )
@@ -85,29 +89,33 @@ def generate_launch_description():
     bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        arguments=['/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock'],
+        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
         output='screen'
     )
 
     return LaunchDescription([
-        bridge,
         # Launch gazebo environment
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                [os.path.join(get_package_share_directory('ros_ign_gazebo'),
-                              'launch', 'ign_gazebo.launch.py')]),
-            launch_arguments=[('gz_args', [' -r -v 4 empty.sdf'])]),
+                [PathJoinSubstitution([FindPackageShare('ros_gz_sim'),
+                                       'launch',
+                                       'gz_sim.launch.py'])]),
+            launch_arguments=[('gz_args', [' -r -v 1 empty.sdf'])]),
         RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action=ignition_spawn_entity,
-                on_exit=[
-                          joint_state_broadcaster_spawner,
-                          diff_drive_base_controller_spawner
-                        ],
+                target_action=gz_spawn_entity,
+                on_exit=[joint_state_broadcaster_spawner],
             )
         ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=joint_state_broadcaster_spawner,
+                on_exit=[diff_drive_base_controller_spawner],
+            )
+        ),
+        bridge,
         node_robot_state_publisher,
-        ignition_spawn_entity,
+        gz_spawn_entity,
         # Launch Arguments
         DeclareLaunchArgument(
             'use_sim_time',
