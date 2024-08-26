@@ -32,6 +32,7 @@ See the [documentation file](doc/index.rst) or [control.ros.org](https://control
 
 # Compile from source
 
+<<<<<<< HEAD
 If you want compile this from source, you should choose the Ignition version. The default one is `citadel`:
 
 ```bash
@@ -46,6 +47,18 @@ Then create a workspace, clone the repo and compile it:
 mkdir -p ~/ros_ign/src
 cd ~/ros_ign/src
 git clone https://github.com/ros-controls/gz_ros2_control
+=======
+Note that `gz_ros2_control` depends on the version of Gazebo that is
+provided by the Gazebo Vendor packages [`gz_plugin_vendor`](https://github.com/gazebo-release/gz_plugin_vendor) and [`gz_sim_vendor`](https://github.com/gazebo-release/gz_sim_vendor).
+Currently, for ROS 2 Jazzy and Rolling, the Gazebo version is Harmonic.
+
+To compile `gz_ros2_control` from source, create a workspace, clone the correct branch of this repo and compile it:
+
+```bash
+mkdir -p ~/gz_ros2_control_ws/src
+cd ~/gz_ros2_control_ws/src
+git clone https://github.com/ros-controls/gz_ros2_control -b {ROS_DISTRO}
+>>>>>>> 827a1da (Update compilation instructions (#405))
 rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
 cd ~/ros2_ign
 colcon build
