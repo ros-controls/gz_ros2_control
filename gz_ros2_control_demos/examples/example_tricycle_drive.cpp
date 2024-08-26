@@ -34,8 +34,6 @@ int main(int argc, char * argv[])
 
   geometry_msgs::msg::TwistStamped command;
 
-  command.header.stamp = node->now();
-
   command.twist.linear.x = 0.2;
   command.twist.linear.y = 0.0;
   command.twist.linear.z = 0.0;
@@ -45,6 +43,7 @@ int main(int argc, char * argv[])
   command.twist.angular.z = 0.1;
 
   while (1) {
+    command.header.stamp = node->now();
     publisher->publish(command);
     std::this_thread::sleep_for(50ms);
     rclcpp::spin_some(node);

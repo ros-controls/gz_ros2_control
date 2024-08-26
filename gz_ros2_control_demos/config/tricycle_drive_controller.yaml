@@ -2,18 +2,15 @@ controller_manager:
   ros__parameters:
     update_rate: 50 # Hz
 
-    tricycle_controller:
-      type: tricycle_controller/TricycleController
-
-    joint_state_broadcaster:
-      type: joint_state_broadcaster/JointStateBroadcaster
-
 joint_state_broadcaster:
   ros__parameters:
+    type: joint_state_broadcaster/JointStateBroadcaster
     extra_joints: ["right_wheel_joint", "left_wheel_joint"]
 
 tricycle_controller:
   ros__parameters:
+    type: tricycle_controller/TricycleController
+
     # Model
     traction_joint_name: traction_joint # Name of traction joint in URDF
     steering_joint_name: steering_joint # Name of steering joint in URDF
