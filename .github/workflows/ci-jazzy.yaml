@@ -1,0 +1,76 @@
+name: gz_ros2_control CI - Jazzy
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ jazzy ]
+  push:
+    branches: [ jazzy ]
+  schedule:
+    # Run every morning to detect flakiness and broken dependencies
+    - cron: '03 4 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - docker-image: "ubuntu:24.04"
+            ros-distro: "jazzy"
+            ros-repo-packages: "-testing"
+
+    env:
+      DOCKER_IMAGE: ${{ matrix.docker-image }}
+      ROS_DISTRO: ${{ matrix.ros-distro }}
+      ROS_REPO_PACKAGES: ${{ matrix.ros-repo-packages }}
+    container:
+      image: ${{ matrix.docker-image }}
+    steps:
+    - name: Checkout code
+      if: github.event_name != 'schedule'
+      uses: actions/checkout@v4
+    - name: Checkout code for scheduled workflow
+      if: github.event_name == 'schedule'
+      uses: actions/checkout@v4
+      with:
+        ref: jazzy
+    - name: Setup colcon workspace
+      id: configure
+      shell: bash
+      run: |
+        export DEBIAN_FRONTEND=noninteractive
+        apt update -qq
+        apt install -qq -y lsb-release wget curl gnupg2 git
+        cd ..
+        mkdir -p /home/ros2_ws/src
+        cp -r gz_ros2_control /home/ros2_ws/src/
+        curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2$ROS_REPO_PACKAGES/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+        apt-get update && apt-get upgrade -q -y
+        apt-get update && apt-get install -qq -y \
+          dirmngr \
+          python3-colcon-ros \
+          python3-colcon-common-extensions \
+          python3-rosdep \
+          build-essential
+
+        cd /home/ros2_ws/src/
+        rosdep init
+        rosdep update
+        rosdep install --from-paths ./ -i -y --rosdistro ${ROS_DISTRO} --ignore-src
+    - name: Build project
+      id: build
+      run: |
+        cd /home/ros2_ws/
+        . /opt/ros/${ROS_DISTRO}/local_setup.sh
+        colcon build --packages-up-to gz_ros2_control_demos gz_ros2_control_tests
+    - name: Run tests
+      id: test
+      run: |
+        cd /home/ros2_ws/
+        . /opt/ros/${ROS_DISTRO}/local_setup.sh
+        colcon test --event-handlers console_direct+ --packages-select gz_ros2_control gz_ros2_control_demos gz_ros2_control_tests
+        colcon test-result
