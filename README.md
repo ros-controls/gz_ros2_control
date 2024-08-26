@@ -40,13 +40,13 @@ export IGNITION_VERSION=edifice
 export IGNITION_VERSION=fortress
 ```
 
-Then create a workspace, clone the repo and compile it:
+Then create a workspace, clone the correct branch of this repo and compile it:
 
 ```bash
-mkdir -p ~/ros_ign/src
-cd ~/ros_ign/src
-git clone https://github.com/ros-controls/gz_ros2_control
+mkdir -p ~/ign_ros2_control_ws/src
+cd ~/ign_ros2_control_ws/src
+git clone https://github.com/ros-controls/gz_ros2_control -b humble
 rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
-cd ~/ros2_ign
+cd ~/ign_ros2_control_ws
 colcon build
 ```
