@@ -2,6 +2,13 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.1 (2024-08-26)
+------------------
+* Parse `position_proportional_gain` parameter from URDF and update docs (`#393 <https://github.com/ros-controls/gz_ros2_control/issues/393>`_)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* propagate gazebo remapping and other arguments to the controller node (`#396 <https://github.com/ros-controls/gz_ros2_control/issues/396>`_)
+* Contributors: Christoph Fröhlich, Sai Kishor Kothakota
+
 2.0.0 (2024-07-09)
 ------------------
 * Propagate the node clock and logging interface (`#368 <https://github.com/ros-controls/gz_ros2_control/issues/368>`_)
