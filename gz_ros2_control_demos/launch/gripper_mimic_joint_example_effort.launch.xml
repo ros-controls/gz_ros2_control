@@ -26,6 +26,7 @@ Author: Dr. Denis
 
   <!-- Load description and start controllers -->
   <let name="robot_description_content" value="$(command '$(find-exec xacro) $(find-pkg-share gz_ros2_control_demos)/urdf/test_gripper_mimic_joint_effort.xacro.urdf')" />
+  <let name="robot_controllers" value="$(find-pkg-share gz_ros2_control_demos)/config/gripper_controller_effort.yaml"/>
 
   <node pkg="robot_state_publisher" exec="robot_state_publisher" output="both">
     <param name="robot_description" value="$(var robot_description_content)" />
@@ -50,8 +51,8 @@ Author: Dr. Denis
   <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster">
     <param name="use_sim_time" value="true" />
   </node>
-  <!--Mobile Base Controller-->
-  <node pkg="controller_manager" exec="spawner" args="gripper_controller">
+  <!--Gripper Controller-->
+  <node pkg="controller_manager" exec="spawner" args="gripper_controller --param-file $(var robot_controllers)">
     <param name="use_sim_time" value="true" />
   </node>
 
