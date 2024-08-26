@@ -42,7 +42,7 @@ To compile `gz_ros2_control` from source, create a workspace, clone the correct 
 ```bash
 mkdir -p ~/gz_ros2_control_ws/src
 cd ~/gz_ros2_control_ws/src
-git clone https://github.com/ros-controls/gz_ros2_control -b jazzy
+git clone https://github.com/ros-controls/gz_ros2_control -b {ROS_DISTRO}
 rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
 cd ~/gz_ros2_control_ws
 colcon build
