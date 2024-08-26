@@ -200,14 +200,30 @@ bool GazeboSimSystem::initSim(
 
   this->dataPtr->joints_.resize(this->dataPtr->n_dof_);
 
-  constexpr double default_gain = 0.1;
-
   try {
-    this->dataPtr->position_proportional_gain_ = this->nh_->declare_parameter<double>(
-      "position_proportional_gain", default_gain);
-  } catch (rclcpp::exceptions::ParameterAlreadyDeclaredException & ex) {
-    this->nh_->get_parameter(
-      "position_proportional_gain", this->dataPtr->position_proportional_gain_);
+    this->dataPtr->position_proportional_gain_ =
+      this->nh_->get_parameter("position_proportional_gain").as_double();
+  } catch (rclcpp::exceptions::ParameterUninitializedException & ex) {
+    RCLCPP_ERROR(
+      this->nh_->get_logger(),
+      "Parameter 'position_proportional_gain' not initialized, with error %s", ex.what());
+    RCLCPP_WARN_STREAM(
+      this->nh_->get_logger(),
+      "Using default value: " << this->dataPtr->position_proportional_gain_);
+  } catch (rclcpp::exceptions::ParameterNotDeclaredException & ex) {
+    RCLCPP_ERROR(
+      this->nh_->get_logger(),
+      "Parameter 'position_proportional_gain' not declared, with error %s", ex.what());
+    RCLCPP_WARN_STREAM(
+      this->nh_->get_logger(),
+      "Using default value: " << this->dataPtr->position_proportional_gain_);
+  } catch (rclcpp::ParameterTypeException & ex) {
+    RCLCPP_ERROR(
+      this->nh_->get_logger(),
+      "Parameter 'position_proportional_gain' has wrong type: %s", ex.what());
+    RCLCPP_WARN_STREAM(
+      this->nh_->get_logger(),
+      "Using default value: " << this->dataPtr->position_proportional_gain_);
   }
 
   RCLCPP_INFO_STREAM(
