@@ -33,6 +33,7 @@ See the [documentation file](doc/index.rst) or [control.ros.org](https://control
 
 If you want compile this from source, you should choose the Gazebo version. The default one is `garden`:
 
+<<<<<<< HEAD
 ```bash
 export GZ_VERSION=fortress
 export GZ_VERSION=garden
@@ -40,11 +41,14 @@ export GZ_VERSION=harmonic
 ```
 
 Then create a workspace, clone the repo and compile it:
+=======
+To compile `gz_ros2_control` from source, create a workspace, clone the correct branch of this repo and compile it:
+>>>>>>> 827a1da (Update compilation instructions (#405))
 
 ```bash
 mkdir -p ~/gz_ros2_control_ws/src
 cd ~/gz_ros2_control_ws/src
-git clone https://github.com/ros-controls/gz_ros2_control
+git clone https://github.com/ros-controls/gz_ros2_control -b {ROS_DISTRO}
 rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
 cd ~/gz_ros2_control_ws
 colcon build
