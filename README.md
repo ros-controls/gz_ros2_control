@@ -37,12 +37,12 @@ Note that `gz_ros2_control` depends on the version of Gazebo that is
 provided by the Gazebo Vendor packages [`gz_plugin_vendor`](https://github.com/gazebo-release/gz_plugin_vendor) and [`gz_sim_vendor`](https://github.com/gazebo-release/gz_sim_vendor).
 Currently, for ROS 2 Jazzy and Rolling, the Gazebo version is Harmonic.
 
-To compile `gz_ros2_control` from source, create a workspace, clone the repo and compile it:
+To compile `gz_ros2_control` from source, create a workspace, clone the correct branch of this repo and compile it:
 
 ```bash
 mkdir -p ~/gz_ros2_control_ws/src
 cd ~/gz_ros2_control_ws/src
-git clone https://github.com/ros-controls/gz_ros2_control
+git clone https://github.com/ros-controls/gz_ros2_control -b {ROS_DISTRO}
 rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
 cd ~/gz_ros2_control_ws
 colcon build
