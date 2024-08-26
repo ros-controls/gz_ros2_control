@@ -5,12 +5,9 @@ controller_manager:
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-
-    ackermann_steering_controller:
-      type: 'ackermann_steering_controller/AckermannSteeringController'
-
 ackermann_steering_controller:
   ros__parameters:
+    type: 'ackermann_steering_controller/AckermannSteeringController'
     wheelbase: 1.7
     front_wheel_track: 1.0
     rear_wheel_track: 1.0

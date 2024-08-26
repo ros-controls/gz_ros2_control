@@ -139,8 +139,21 @@ robot hardware interfaces between *ros2_control* and Gazebo.
 The *gz_ros2_control* ``<plugin>`` tag also has the following optional child elements:
 
 * ``<parameters>``: A YAML file with the configuration of the controllers. This element can be given multiple times to load multiple files.
-* ``<hold_joints>``: if set to true (default), it will hold the joints' position if their interface was not claimed, e.g., the controller hasn't been activated yet.
 * ``<controller_manager_name>``: Set controller manager name (default: ``controller_manager``)
+
+The following additional parameters can be set via child elements in the URDF or via ROS parameters in the YAML file above:
+
+* ``<hold_joints>``: if set to true (default), it will hold the joints' position if their interface was not claimed, e.g., the controller hasn't been activated yet.
+* ``<position_proportional_gain>``: Set the proportional gain. (default: 0.1) This determines the setpoint for a position-controlled joint ``joint_velocity = joint_position_error * position_proportional_gain``.
+
+or via ROS parameters:
+
+.. code-block:: yaml
+
+  gz_ros_control:
+    ros__parameters:
+      hold_joints: false
+      position_proportional_gain: 0.5
 
 Additionally, one can specify a namespace and remapping rules, which will be forwarded to the controller_manager and loaded controllers. Add the following ``<ros>`` section:
 
