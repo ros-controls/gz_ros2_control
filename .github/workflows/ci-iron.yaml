@@ -1,10 +1,14 @@
 name: gz_ros2_control CI - Iron
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: [ iron ]
   push:
     branches: [ iron ]
+  schedule:
+    # Run every morning to detect flakiness and broken dependencies
+    - cron: '33 4 * * *'
 
 jobs:
   build:
@@ -38,7 +42,14 @@ jobs:
     container:
       image: ${{ matrix.docker-image }}
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      if: github.event_name != 'schedule'
+      uses: actions/checkout@v4
+    - name: Checkout code for scheduled workflow
+      if: github.event_name == 'schedule'
+      uses: actions/checkout@v4
+      with:
+        ref: iron
     - name: Setup colcon workspace
       id: configure
       shell: bash
