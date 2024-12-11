@@ -288,6 +288,13 @@ which will launch a diff drive robot within the namespace ``r1``.
 
   The ros2_control settings for the controller_manager and the controller defined in ``diff_drive_controller.yaml`` use wildcards to match all namespaces.
 
+To run the Mecanum mobile robot run the following commands to drive it from the keyboard:
+
+.. code-block:: shell
+
+  ros2 launch gz_ros2_control_demos mecanum_drive_example.launch.py
+  ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=true
+
 Gripper
 -----------------------------------------------------------
 
