@@ -44,7 +44,7 @@ def generate_test_description():
         gz_gui_args = ''
     else:
         gz_gui_args = '--headless-rendering -s'
-    gz_args = f'{gz_gui_args} -r -v 4 empty.sdf'
+    gz_args = f'{gz_gui_args} -r -v 1 empty.sdf'
 
     included_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -143,8 +143,8 @@ class TestFixture(unittest.TestCase):
                                   timeout=100)
 
         proc_action = Node(
-            package='gz_ros2_control_tests',
-            executable='test_position',
+            package='gz_ros2_control_demos',
+            executable='example_position',
             output='screen',
         )
 
