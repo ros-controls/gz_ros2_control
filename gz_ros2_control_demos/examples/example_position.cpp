@@ -81,7 +81,7 @@ void common_feedback(
   std::cout << std::endl;
 
   if (ct_goals_reached < desired_goals.size()) {
-    if (fabs(feedback->desired.positions[0] - desired_goals.at(ct_goals_reached)) < 0.1) {
+    if (fabs(feedback->actual.positions[0] - desired_goals.at(ct_goals_reached)) < 0.1) {
       std::cout << "Goal # " << ct_goals_reached << ": " << desired_goals.at(ct_goals_reached) <<
         " reached" << std::endl;
       ct_goals_reached++;
