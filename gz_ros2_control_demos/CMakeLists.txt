@@ -37,16 +37,20 @@ ament_target_dependencies(example_position
   control_msgs
 )
 
-add_executable(example_velocity examples/example_velocity.cpp)
+# use the same example_position.cpp for example_velocity
+add_executable(example_velocity examples/example_position.cpp)
 ament_target_dependencies(example_velocity
   rclcpp
-  std_msgs
+  rclcpp_action
+  control_msgs
 )
 
-add_executable(example_effort examples/example_effort.cpp)
+# use the same example_position.cpp for example_effort
+add_executable(example_effort examples/example_position.cpp)
 ament_target_dependencies(example_effort
   rclcpp
-  std_msgs
+  rclcpp_action
+  control_msgs
 )
 
 add_executable(example_diff_drive examples/example_diff_drive.cpp)
