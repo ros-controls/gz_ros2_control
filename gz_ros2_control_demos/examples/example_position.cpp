@@ -129,22 +129,22 @@ int main(int argc, char * argv[])
 
   std::vector<trajectory_msgs::msg::JointTrajectoryPoint> points;
   trajectory_msgs::msg::JointTrajectoryPoint point;
-  point.time_from_start = rclcpp::Duration::from_seconds(0.0);  // start asap
+  point.time_from_start = rclcpp::Duration::from_seconds(1.0);
   point.positions.resize(joint_names.size());
   point.positions[0] = desired_goals[0];
 
   trajectory_msgs::msg::JointTrajectoryPoint point2;
-  point2.time_from_start = rclcpp::Duration::from_seconds(1.0);
+  point2.time_from_start = rclcpp::Duration::from_seconds(2.0);
   point2.positions.resize(joint_names.size());
   point2.positions[0] = desired_goals[1];
 
   trajectory_msgs::msg::JointTrajectoryPoint point3;
-  point3.time_from_start = rclcpp::Duration::from_seconds(2.0);
+  point3.time_from_start = rclcpp::Duration::from_seconds(3.0);
   point3.positions.resize(joint_names.size());
   point3.positions[0] = desired_goals[2];
 
   trajectory_msgs::msg::JointTrajectoryPoint point4;
-  point4.time_from_start = rclcpp::Duration::from_seconds(3.0);
+  point4.time_from_start = rclcpp::Duration::from_seconds(4.0);
   point4.positions.resize(joint_names.size());
   point4.positions[0] = desired_goals[3];
 
