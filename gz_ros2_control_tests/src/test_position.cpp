@@ -27,8 +27,8 @@ bool common_goal_accepted = false;
 rclcpp_action::ResultCode common_resultcode = rclcpp_action::ResultCode::UNKNOWN;
 int common_action_result_code = control_msgs::action::FollowJointTrajectory_Result::SUCCESSFUL;
 
-std::vector<double> derired_goals = {0, -1, 1, 0.0};
-unsigned int goal_reached = 0;
+std::vector<double> desired_goals = {0, -1, 1, 0.0};
+unsigned int ct_goals_reached = 0;
 
 void common_goal_response(
   rclcpp_action::ClientGoalHandle
@@ -74,16 +74,23 @@ void common_feedback(
   rclcpp_action::ClientGoalHandle<control_msgs::action::FollowJointTrajectory>::SharedPtr,
   const std::shared_ptr<const control_msgs::action::FollowJointTrajectory::Feedback> feedback)
 {
-  std::cout << "feedback->desired.positions :";
+  std::cout << "feedback->actual.positions :";
   for (auto & x : feedback->actual.positions) {
     std::cout << x << "\t";
   }
 
   std::cout << std::endl;
-  if (fabs(feedback->desired.positions[0] - derired_goals[goal_reached]) < 0.1) {
-    std::cout << "Goal " << derired_goals[goal_reached] << " reached" << '\n';
-    goal_reached++;
-    std::cout << "next goal " << goal_reached << '\n';
+  if (ct_goals_reached < desired_goals.size()) {
+    if (fabs(feedback->desired.positions[0] - desired_goals.at(ct_goals_reached)) < 0.1) {
+      std::cout << "Goal # " << ct_goals_reached << ": " << desired_goals.at(ct_goals_reached) <<
+        " reached" << std::endl;
+      ct_goals_reached++;
+      if (ct_goals_reached < desired_goals.size()) {
+        std::cout << "next goal # " << ct_goals_reached << ": " <<
+          desired_goals.at(ct_goals_reached) <<
+          std::endl;
+      }
+    }
   }
 }
 
@@ -124,25 +131,24 @@ int main(int argc, char * argv[])
   trajectory_msgs::msg::JointTrajectoryPoint point;
   point.time_from_start = rclcpp::Duration::from_seconds(0.0);  // start asap
   point.positions.resize(joint_names.size());
-
-  point.positions[0] = 0.0;
+  point.positions[0] = desired_goals[0];
 
   trajectory_msgs::msg::JointTrajectoryPoint point2;
   point2.time_from_start = rclcpp::Duration::from_seconds(1.0);
   point2.positions.resize(joint_names.size());
-  point2.positions[0] = -1.0;
+  point2.positions[0] = desired_goals[1];
 
   trajectory_msgs::msg::JointTrajectoryPoint point3;
   point3.time_from_start = rclcpp::Duration::from_seconds(2.0);
   point3.positions.resize(joint_names.size());
-  point3.positions[0] = 1.0;
+  point3.positions[0] = desired_goals[2];
 
   trajectory_msgs::msg::JointTrajectoryPoint point4;
   point4.time_from_start = rclcpp::Duration::from_seconds(3.0);
   point4.positions.resize(joint_names.size());
-  point4.positions[0] = 0.0;
+  point4.positions[0] = desired_goals[3];
 
-  // points.push_back(point);
+  points.push_back(point);
   points.push_back(point2);
   points.push_back(point3);
   points.push_back(point4);
@@ -157,6 +163,7 @@ int main(int argc, char * argv[])
   goal_msg.trajectory.joint_names = joint_names;
   goal_msg.trajectory.points = points;
 
+  std::cout << "async_send_goal" << std::endl;
   auto goal_handle_future = action_client->async_send_goal(goal_msg, opt);
 
   if (rclcpp::spin_until_future_complete(node, goal_handle_future) !=
@@ -194,10 +201,11 @@ int main(int argc, char * argv[])
   action_client.reset();
   node.reset();
 
-  std::cout << "async_send_goal" << std::endl;
+  std::cout << "call shutdown" << std::endl;
   rclcpp::shutdown();
 
-  if ((derired_goals.size() + 1) != goal_reached) {
+  if (desired_goals.size() != ct_goals_reached) {
+    std::cout << "Not all the goals were reached" << std::endl;
     return -1;
   }
 
