@@ -56,6 +56,7 @@ def generate_test_description():
 
 
 class TestFixture(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
         rclpy.init()
