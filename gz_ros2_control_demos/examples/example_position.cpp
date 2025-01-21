@@ -51,7 +51,7 @@ void common_result_response(
   const rclcpp_action::ClientGoalHandle
   <control_msgs::action::FollowJointTrajectory>::WrappedResult & result)
 {
-  printf("common_result_response time: %f\n", rclcpp::Clock().now().seconds());
+  printf("common_result_response time: %f\n", rclcpp::Clock(RCL_ROS_TIME).now().seconds());
   common_resultcode = result.code;
   common_action_result_code = result.result->error_code;
   switch (result.code) {
@@ -97,10 +97,9 @@ void common_feedback(
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-
   node = std::make_shared<rclcpp::Node>("trajectory_test_node");
 
-  std::cout << "node created" << std::endl;
+  RCLCPP_DEBUG(node->get_logger(), "node created");
 
   rclcpp_action::Client<control_msgs::action::FollowJointTrajectory>::SharedPtr action_client;
   action_client = rclcpp_action::create_client<control_msgs::action::FollowJointTrajectory>(
@@ -116,14 +115,14 @@ int main(int argc, char * argv[])
     if (!response) {
       using namespace std::chrono_literals;
       std::this_thread::sleep_for(2000ms);
-      std::cout << "Trying to connect to the server again" << std::endl;
+      RCLCPP_WARN(node->get_logger(), "Trying to connect to the server again");
       continue;
     } else {
       break;
     }
   }
 
-  std::cout << "Created action server" << std::endl;
+  RCLCPP_DEBUG(node->get_logger(), "Created action server");
 
   std::vector<std::string> joint_names = {"slider_to_cart"};
 
@@ -201,12 +200,13 @@ int main(int argc, char * argv[])
   action_client.reset();
   node.reset();
 
-  rclcpp::shutdown();
-
   if (desired_goals.size() != ct_goals_reached) {
-    std::cout << "Not all the goals were reached" << std::endl;
+    RCLCPP_ERROR(node->get_logger(), "Not all the goals were reached");
+    rclcpp::shutdown();
     return -1;
   }
+
+  rclcpp::shutdown();
 
   return 0;
 }
