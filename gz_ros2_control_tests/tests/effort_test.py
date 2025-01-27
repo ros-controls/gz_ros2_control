@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2023 Open Source Robotics Foundation, Inc.
+# Copyright 2025 ros2_control Maintainers
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,13 +17,6 @@ import os
 import unittest
 
 from ament_index_python.packages import get_package_share_directory
-<<<<<<< HEAD
-
-import launch
-from launch.actions import ExecuteProcess, IncludeLaunchDescription
-from launch.actions import RegisterEventHandler
-from launch.event_handlers import OnProcessExit
-=======
 from controller_manager.test_utils import (
     check_controllers_running,
     check_if_js_published,
@@ -31,7 +24,6 @@ from controller_manager.test_utils import (
 )
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
->>>>>>> a12ef5a (Use files from demos for testing (#485))
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 import launch_testing
@@ -52,90 +44,13 @@ def generate_test_description():
     proc_env['PYTHONUNBUFFERED'] = '1'
     launch_include = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-<<<<<<< HEAD
-            [os.path.join(get_package_share_directory('ros_gz_sim'),
-                          'launch', 'gz_sim.launch.py')]),
-        launch_arguments=[('gz_args', [gz_args])]
-    )
-
-    gz_ros2_control_tests_path = os.path.join(
-        get_package_share_directory('gz_ros2_control_tests'))
-
-    xacro_file = os.path.join(gz_ros2_control_tests_path,
-                              'urdf',
-                              'test_cart_position.xacro.urdf')
-
-    print('xacro_file ', xacro_file)
-    doc = xacro.parse(open(xacro_file))
-    xacro.process_doc(doc)
-    params = {'robot_description': doc.toxml()}
-
-    node_robot_state_publisher = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        output='screen',
-        parameters=[params]
-    )
-
-    gz_spawn_entity = Node(
-        package='ros_gz_sim',
-        executable='create',
-        output='screen',
-        arguments=['-string', doc.toxml(),
-                   '-name', 'cart',
-                   '-allow_renaming', 'true'],
-    )
-
-    load_joint_state_broadcaster = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-             'joint_state_broadcaster'],
-        output='screen'
-    )
-
-    load_joint_trajectory_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-             'joint_trajectory_controller'],
-        output='screen'
-    )
-
-    # Bridge
-    bridge = Node(
-        package='ros_gz_bridge',
-        executable='parameter_bridge',
-        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
-        output='screen'
-    )
-
-    ld = launch.LaunchDescription([
-        included_launch,
-        bridge,
-        gz_spawn_entity,
-        node_robot_state_publisher,
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=gz_spawn_entity,
-                on_exit=[load_joint_state_broadcaster],
-            )
-        ),
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=load_joint_state_broadcaster,
-                on_exit=[load_joint_trajectory_controller],
-            )
-        ),
-        KeepAliveProc(),
-        # Tell launch to start the test
-        ReadyToTest(),
-    ])
-=======
             os.path.join(
                 get_package_share_directory('gz_ros2_control_demos'),
-                'launch/cart_example_position.launch.py',
+                'launch/cart_example_effort.launch.py',
             )
         ),
         launch_arguments={'gz_args': '--headless-rendering -s'}.items(),
     )
->>>>>>> a12ef5a (Use files from demos for testing (#485))
 
     return LaunchDescription([launch_include, KeepAliveProc(), ReadyToTest()])
 
@@ -172,7 +87,7 @@ class TestFixture(unittest.TestCase):
 
     def test_controller_running(self, proc_output):
 
-        cnames = ['joint_trajectory_controller', 'joint_state_broadcaster']
+        cnames = ['effort_controller', 'joint_state_broadcaster']
 
         check_controllers_running(self.node, cnames)
 
@@ -185,16 +100,10 @@ class TestFixture(unittest.TestCase):
         )
 
     def test_arm(self, launch_service, proc_info, proc_output):
-<<<<<<< HEAD
-        proc_output.assertWaitFor('Successfully loaded controller joint_trajectory_controller '
-                                  'into state active',
-                                  timeout=100, stream='stdout')
-=======
->>>>>>> a12ef5a (Use files from demos for testing (#485))
 
         proc_action = Node(
             package='gz_ros2_control_demos',
-            executable='example_position',
+            executable='example_effort',
             output='screen',
         )
 
@@ -204,11 +113,3 @@ class TestFixture(unittest.TestCase):
             proc_info.assertWaitForShutdown(process=proc_action, timeout=300)
             launch_testing.asserts.assertExitCodes(proc_info, process=proc_action,
                                                    allowable_exit_codes=[0])
-<<<<<<< HEAD
-
-        for proc in psutil.process_iter():
-            # check whether the process name matches
-            if proc.name() == 'ruby':
-                proc.kill()
-=======
->>>>>>> a12ef5a (Use files from demos for testing (#485))

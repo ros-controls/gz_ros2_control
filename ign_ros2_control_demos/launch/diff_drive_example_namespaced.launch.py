@@ -30,6 +30,7 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     # Launch Arguments
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
+    gz_args = LaunchConfiguration('gz_args', default='')
 
     # Get URDF via xacro
     robot_description_content = Command(
@@ -94,9 +95,16 @@ def generate_launch_description():
         # Launch gazebo environment
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
+<<<<<<< HEAD:ign_ros2_control_demos/launch/diff_drive_example_namespaced.launch.py
                 [os.path.join(get_package_share_directory('ros_ign_gazebo'),
                               'launch', 'ign_gazebo.launch.py')]),
             launch_arguments=[('gz_args', [' -r -v 4 empty.sdf'])]),
+=======
+                [PathJoinSubstitution([FindPackageShare('ros_gz_sim'),
+                                       'launch',
+                                       'gz_sim.launch.py'])]),
+            launch_arguments=[('gz_args', [gz_args, ' -r -v 3 empty.sdf'])]),
+>>>>>>> a12ef5a (Use files from demos for testing (#485)):gz_ros2_control_demos/launch/cart_example_velocity.launch.py
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=ignition_spawn_entity,

@@ -9,6 +9,7 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+<<<<<<< HEAD
   <build_depend>control_msgs</build_depend>
   <build_depend>rclcpp</build_depend>
   <build_depend>rclcpp_action</build_depend>
@@ -35,8 +36,22 @@
   <exec_depend>xacro</exec_depend>
 
   <test_depend>ament_cmake_gtest</test_depend>
+=======
+  <test_depend>ament_index_python</test_depend>
+>>>>>>> a12ef5a (Use files from demos for testing (#485))
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
+  <test_depend>gz_ros2_control_demos</test_depend>
+  <test_depend>launch_ros</test_depend>
+  <test_depend>launch_testing_ament_cmake</test_depend>
+  <test_depend>launch_testing_ros</test_depend>
+  <test_depend>launch</test_depend>
+  <test_depend>python3-psutil</test_depend>
+  <test_depend>python3-pytest</test_depend>
+  <test_depend>rclpy</test_depend>
+  <test_depend>controller_manager</test_depend>
+  <test_depend>ros2launch</test_depend>
+  <test_depend>rosgraph_msgs</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
