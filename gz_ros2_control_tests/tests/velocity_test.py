@@ -87,7 +87,11 @@ class TestFixture(unittest.TestCase):
 
     def test_controller_running(self, proc_output):
 
-        cnames = ['velocity_controller', 'joint_state_broadcaster', 'imu_sensor_broadcaster']
+        cnames = [
+                  'joint_trajectory_controller',
+                  'joint_state_broadcaster',
+                  'imu_sensor_broadcaster'
+                ]
 
         check_controllers_running(self.node, cnames)
 
