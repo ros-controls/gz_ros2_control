@@ -67,11 +67,11 @@ def generate_launch_description():
         executable='spawner',
         arguments=['joint_state_broadcaster'],
     )
-    effort_controller_spawner = Node(
+    joint_trajectory_controller_spawner = Node(
         package='controller_manager',
         executable='spawner',
         arguments=[
-            'effort_controller',
+            'joint_trajectory_controller',
             '--param-file',
             robot_controllers,
             ],
@@ -92,7 +92,7 @@ def generate_launch_description():
                 [PathJoinSubstitution([FindPackageShare('ros_gz_sim'),
                                        'launch',
                                        'gz_sim.launch.py'])]),
-            launch_arguments=[('gz_args', [' -r -v 3 empty.sdf'])]),
+            launch_arguments=[('gz_args', [' -r -v 1 empty.sdf'])]),
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=gz_spawn_entity,
@@ -102,7 +102,7 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=joint_state_broadcaster_spawner,
-                on_exit=[effort_controller_spawner],
+                on_exit=[joint_trajectory_controller_spawner],
             )
         ),
         bridge,

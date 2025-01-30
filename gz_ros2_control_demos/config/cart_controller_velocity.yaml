@@ -5,11 +5,23 @@ controller_manager:
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-velocity_controller:
+joint_trajectory_controller:
   ros__parameters:
-    type: velocity_controllers/JointGroupVelocityController
+    type: joint_trajectory_controller/JointTrajectoryController
     joints:
       - slider_to_cart
+    command_interfaces:
+      - velocity
+    state_interfaces:
+      - position
+      - velocity
+    gains:
+      slider_to_cart:
+        p: 100.0
+        i: 0.0
+        d: 0.0
+        i_clamp: 0.0
+        antiwindup: false
 
 imu_sensor_broadcaster:
   ros__parameters:

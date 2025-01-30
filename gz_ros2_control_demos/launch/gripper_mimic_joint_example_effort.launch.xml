@@ -35,7 +35,7 @@ Author: Dr. Denis
 
   <!-- Start Gazebo -->
   <include file="$(find-pkg-share ros_gz_sim)/launch/gz_sim.launch.py" >
-    <arg name="gz_args" value=" -r -v 4 empty.sdf"/>
+    <arg name="gz_args" value=" -r -v 1 empty.sdf"/>
   </include>
 
   <node pkg="ros_gz_bridge" exec="parameter_bridge" args="
