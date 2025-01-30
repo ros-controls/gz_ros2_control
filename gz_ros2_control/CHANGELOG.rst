@@ -2,6 +2,14 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.5 (2025-01-30)
+------------------
+* Add remap option to controller manager (`#442 <https://github.com/ros-controls/gz_ros2_control/issues/442>`_) (`#482 <https://github.com/ros-controls/gz_ros2_control/issues/482>`_)
+  Co-authored-by: Christoph Fröhlich <christophfroehlich@users.noreply.github.com>
+  (cherry picked from commit 0a44a087734cb7ef69b8cf82db2a38c551164a7b)
+  Co-authored-by: Tatsuro Sakaguchi <tacchan.mello.ioiq@gmail.com>
+* Contributors: mergify[bot]
+
 2.0.4 (2025-01-15)
 ------------------
 * Fixed velocity controller (`#450 <https://github.com/ros-controls/gz_ros2_control/issues/450>`_)

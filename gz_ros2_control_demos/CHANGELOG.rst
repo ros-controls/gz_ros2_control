@@ -2,6 +2,11 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.5 (2025-01-30)
+------------------
+* Use files from demos for testing (`#485 <https://github.com/ros-controls/gz_ros2_control/issues/485>`_)
+* Contributors: Christoph Fröhlich
+
 2.0.4 (2025-01-15)
 ------------------
 * Fix ackermann demo (`#470 <https://github.com/ros-controls/gz_ros2_control/issues/470>`_)
