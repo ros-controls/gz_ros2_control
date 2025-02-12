@@ -13,7 +13,7 @@ ROS version | Gazebo version | Branch | Binaries hosted at | APT key
 -- | -- | -- | -- | --
 Humble | Fortress | [humble](https://github.com/ros-controls/gz_ros2_control/tree/humble) | https://packages.ros.org | `ros-humble-ign-ros2-control`
 Jazzy | Harmonic | [jazzy](https://github.com/ros-controls/gz_ros2_control/tree/jazzy) | https://packages.ros.org | `ros-jazzy-gz-ros2-control`
-Rolling | Harmonic | [rolling](https://github.com/ros-controls/gz_ros2_control/tree/rolling) | https://packages.ros.org | `ros-rolling-gz-ros2-control`
+Rolling | Ionic | [rolling](https://github.com/ros-controls/gz_ros2_control/tree/rolling) | https://packages.ros.org | `ros-rolling-gz-ros2-control`
 
 ## Build status
 
