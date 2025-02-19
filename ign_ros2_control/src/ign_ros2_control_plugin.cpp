@@ -367,6 +367,7 @@ void IgnitionROS2ControlPlugin::Configure(
 
   // set the robot description as argument
   // to propagate it among controller manager and controllers
+  std::replace(urdf_string.begin(), urdf_string.end(), ':', ' ');
   std::string rb_arg = std::string("robot_description:=") + urdf_string;
   arguments.push_back(RCL_PARAM_FLAG);
   arguments.push_back(rb_arg);
@@ -386,7 +387,7 @@ void IgnitionROS2ControlPlugin::Configure(
   rcl_context->global_arguments = rcl_args;
   if (rcl_ret != RCL_RET_OK) {
     RCLCPP_ERROR_STREAM(
-      this->dataPtr->node_->get_logger(), "Argument parser error:" << rcl_get_error_string().str);
+      this->dataPtr->node_->get_logger(), "Argument parser error: " << rcl_get_error_string().str);
     rcl_reset_error();
     return;
   }
