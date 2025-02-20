@@ -17,6 +17,7 @@
 #include <chrono>
 #include <map>
 #include <memory>
+#include <regex>
 #include <string>
 #include <thread>
 #include <utility>
@@ -358,17 +359,18 @@ void IgnitionROS2ControlPlugin::Configure(
   RCLCPP_DEBUG_STREAM(logger, "Create node " << node_name);
 
   // Read urdf from ros parameter server
-  std::string urdf_string;
-  urdf_string = this->dataPtr->getURDF();
+  const auto urdf_string = this->dataPtr->getURDF();
   if (urdf_string.empty()) {
     RCLCPP_ERROR_STREAM(this->dataPtr->node_->get_logger(), "An empty URDF was passed. Exiting.");
     return;
   }
 
-  // set the robot description as argument
-  // to propagate it among controller manager and controllers
-  std::replace(urdf_string.begin(), urdf_string.end(), ':', ' ');
-  std::string rb_arg = std::string("robot_description:=") + urdf_string;
+  // set the robot description as argument to propagate it among controller manager and controllers
+  // Remove all comments via regex pattern to match XML comments, including newlines
+  const std::regex comment_pattern(R"(<!--[\s\S]*?-->)");
+  const auto rb_arg = std::string("robot_description:=") + std::regex_replace(
+    urdf_string,
+    comment_pattern, "");
   arguments.push_back(RCL_PARAM_FLAG);
   arguments.push_back(rb_arg);
 
