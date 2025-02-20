@@ -74,6 +74,8 @@ def generate_launch_description():
             'mecanum_drive_controller',
             '--param-file',
             robot_controllers,
+            '--controller-ros-args',
+            '-r /mecanum_drive_controller/tf_odometry:=/tf',
             ],
     )
 
