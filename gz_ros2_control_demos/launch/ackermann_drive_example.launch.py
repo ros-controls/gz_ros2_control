@@ -77,6 +77,8 @@ def generate_launch_description():
         arguments=['ackermann_steering_controller',
                    '--param-file',
                    robot_controllers,
+                   '--controller-ros-args',
+                   '-r /ackermann_steering_controller/tf_odometry:=/tf',
                    ],
     )
 
