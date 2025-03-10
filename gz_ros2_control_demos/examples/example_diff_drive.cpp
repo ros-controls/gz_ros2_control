@@ -28,7 +28,7 @@ int main(int argc, char * argv[])
     std::make_shared<rclcpp::Node>("diff_drive_test_node");
 
   auto publisher = node->create_publisher<geometry_msgs::msg::TwistStamped>(
-    "/diff_drive_base_controller/cmd_vel", 10);
+    "/diff_drive_controller/cmd_vel", 10);
 
   RCLCPP_INFO(node->get_logger(), "node created");
 
