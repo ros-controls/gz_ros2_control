@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, OpaqueFunction
@@ -38,7 +39,7 @@ def generate_launch_description():
                 description_format,
                 f'test_diff_drive.xacro.{description_format}'
             ),
-            mappings={"namespace": "r1"}
+            mappings={'namespace': 'r1'}
         )
         node_robot_state_publisher = Node(
             package='robot_state_publisher',
