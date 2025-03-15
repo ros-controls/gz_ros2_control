@@ -12,7 +12,6 @@
     right_wheel_names: ["right_wheel_joint"]
 
     wheel_separation: 1.25
-    wheels_per_side: 1
     wheel_radius: 0.3
 
     wheel_separation_multiplier: 1.0
