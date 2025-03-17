@@ -33,6 +33,8 @@ set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
 
 include_directories(include)
 
+#########
+
 add_library(${PROJECT_NAME}-system SHARED
   src/gz_ros2_control_plugin.cpp
 )
@@ -78,6 +80,26 @@ install(DIRECTORY
   DESTINATION include
 )
 
+#########
+
+add_library(ign_ros2_control-system SHARED
+  src/gz_ros2_control_plugin.cpp
+)
+
+target_link_libraries(ign_ros2_control-system
+  ignition-gazebo${IGN_GAZEBO_VER}::core
+  ignition-plugin${IGN_PLUGIN_VER}::register
+)
+ament_target_dependencies(ign_ros2_control-system
+  ament_index_cpp
+  controller_manager
+  hardware_interface
+  pluginlib
+  rclcpp
+  yaml_cpp_vendor
+  rclcpp_lifecycle
+)
+
 # Testing and linting
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -86,9 +108,13 @@ endif()
 
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME}-system gz_hardware_plugins)
+ament_export_libraries(ign_ros2_control-system gz_hardware_plugins)
 
 # Install directories
 install(TARGETS ${PROJECT_NAME}-system
+  DESTINATION lib
+)
+install(TARGETS ign_ros2_control-system
   DESTINATION lib
 )
 

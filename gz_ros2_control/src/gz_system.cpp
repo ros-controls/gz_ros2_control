@@ -484,10 +484,26 @@ void GazeboSimSystem::registerSensors(
 CallbackReturn
 GazeboSimSystem::on_init(const hardware_interface::HardwareInfo & system_info)
 {
-  RCLCPP_WARN(this->nh_->get_logger(), "On init...");
   if (hardware_interface::SystemInterface::on_init(system_info) != CallbackReturn::SUCCESS) {
     return CallbackReturn::ERROR;
   }
+  if (system_info.hardware_class_type.compare("ign_ros2_control/IgnitionSystem") == 0) {
+    RCLCPP_WARN(
+      this->nh_->get_logger(),
+      "The ign_ros2_control plugin got renamed to gz_ros2_control.\n"
+      "Update the <ros2_control> tag and gazebo plugin to\n"
+      "<hardware>\n"
+      "  <plugin>gz_ros2_control/GazeboSimSystem</plugin>\n"
+      "</hardware>\n"
+      "<gazebo>\n"
+      "  <plugin filename=\"gz_ros2_control-system\""
+      "name=\"gz_ros2_control::GazeboSimROS2ControlPlugin\">\n"
+      "    ...\n"
+      "  </plugin>\n"
+      "</gazebo>"
+    );
+  }
+
   return CallbackReturn::SUCCESS;
 }
 
@@ -775,3 +791,6 @@ hardware_interface::return_type GazeboSimSystem::write(
 #include "pluginlib/class_list_macros.hpp"  // NOLINT
 PLUGINLIB_EXPORT_CLASS(
   gz_ros2_control::GazeboSimSystem, gz_ros2_control::GazeboSimSystemInterface)
+// for backward compatibility with Ignition Gazebo
+PLUGINLIB_EXPORT_CLASS(
+  ign_ros2_control::IgnitionSystem, gz_ros2_control::GazeboSimSystemInterface)
