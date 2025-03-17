@@ -487,7 +487,7 @@ GazeboSimSystem::on_init(const hardware_interface::HardwareInfo & system_info)
   if (hardware_interface::SystemInterface::on_init(system_info) != CallbackReturn::SUCCESS) {
     return CallbackReturn::ERROR;
   }
-  if (system_info.hardware_class_type.compare("ign_ros2_control/IgnitionSystem") == 0) {
+  if (system_info.hardware_class_type.compare("gz_ros2_control/GazeboSimSystem") != 0) {
     RCLCPP_WARN(
       this->nh_->get_logger(),
       "The ign_ros2_control plugin got renamed to gz_ros2_control.\n"
