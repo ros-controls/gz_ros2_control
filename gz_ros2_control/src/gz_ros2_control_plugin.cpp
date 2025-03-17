@@ -537,6 +537,3 @@ GZ_ADD_PLUGIN(
   gz_ros2_control::GazeboSimROS2ControlPlugin::ISystemConfigure,
   gz_ros2_control::GazeboSimROS2ControlPlugin::ISystemPreUpdate,
   gz_ros2_control::GazeboSimROS2ControlPlugin::ISystemPostUpdate)
-GZ_ADD_PLUGIN_ALIAS(
-  gz_ros2_control::GazeboSimROS2ControlPlugin,
-  "ign_ros2_control::IgnitionROS2ControlPlugin")
