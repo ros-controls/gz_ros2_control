@@ -27,14 +27,27 @@ ROS 2 Distro | Branch | Build status | Documentation
 See the [documentation file](doc/index.rst) or [control.ros.org](https://control.ros.org/master/doc/gz_ros2_control/doc/index.html)
 
 # Compile from source
-
-
-Then create a workspace, clone the correct branch of this repo and compile it:
+If you want compile this from source, you have to choose the Gazebo version first. The default one is `fortress`, and you simply can compile it with
 
 ```bash
 mkdir -p ~/gz_ros2_control_ws/src
 cd ~/gz_ros2_control_ws/src
 git clone https://github.com/ros-controls/gz_ros2_control -b humble
+rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
+cd ~/gz_ros2_control_ws
+colcon build
+```
+
+If you want to use `harmonic`, then follow the instructions in the [official Gazebo Harmonic documentation](https://gazebosim.org/docs/harmonic/ros_installation/#gazebo-harmonic-with-ros-2-humble-or-rolling-use-with-caution) how to install Gazebo Harmonic on ROS 2 humble.
+
+Then create a workspace, clone the correct branch of this repo and compile it by setting the environment variable `GZ_VERSION`:
+
+```bash
+mkdir -p ~/gz_ros2_control_ws/src
+cd ~/gz_ros2_control_ws/src
+git clone https://github.com/gazebosim/ros_gz/ -b humble # only needed for harmonic
+git clone https://github.com/ros-controls/gz_ros2_control -b humble
+export GZ_VERSION=harmonic
 rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
 cd ~/gz_ros2_control_ws
 colcon build
