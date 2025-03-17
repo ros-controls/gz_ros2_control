@@ -28,13 +28,6 @@ See the [documentation file](doc/index.rst) or [control.ros.org](https://control
 
 # Compile from source
 
-If you want compile this from source, you should choose the Ignition version. The default one is `citadel`:
-
-```bash
-export IGNITION_VERSION=citadel
-export IGNITION_VERSION=edifice
-export IGNITION_VERSION=fortress
-```
 
 Then create a workspace, clone the correct branch of this repo and compile it:
 

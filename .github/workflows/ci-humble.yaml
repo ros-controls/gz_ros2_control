@@ -18,12 +18,18 @@ jobs:
           - version: fortress
             ros-repo-packages: "-testing"
     env:
-      IGNITION_VERSION: ${{ matrix.version }}
       ROS_REPO_PACKAGES: ${{ matrix.ros-repo-packages }}
     container:
       image: ubuntu:22.04
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      if: github.event_name != 'schedule'
+      uses: actions/checkout@v4
+    - name: Checkout code for scheduled workflow
+      if: github.event_name == 'schedule'
+      uses: actions/checkout@v4
+      with:
+        ref: humble
     - name: Setup colcon workspace
       id: configure
       run: |

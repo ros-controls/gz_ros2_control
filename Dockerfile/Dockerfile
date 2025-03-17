@@ -1,7 +1,6 @@
 FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV IGNITION_VERSION fortress
 ENV ROS_DISTRO humble
 
 # Make sure everything is up to date before building from source
