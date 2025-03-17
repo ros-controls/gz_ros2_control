@@ -1,6 +1,7 @@
 :github_url: https://github.com/ros-controls/gz_ros2_control/blob/{REPOS_FILE_BRANCH}/doc/index.rst
 
 .. _gz_ros2_control:
+.. _ign_ros2_control:
 
 =====================
 gz_ros2_control
