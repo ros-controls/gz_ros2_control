@@ -197,14 +197,14 @@ int main(int argc, char * argv[])
     return 1;
   }
 
-  action_client.reset();
-  node.reset();
-
   if (desired_goals.size() != ct_goals_reached) {
     RCLCPP_ERROR(node->get_logger(), "Not all the goals were reached");
     rclcpp::shutdown();
     return -1;
   }
+
+  action_client.reset();
+  node.reset();
 
   rclcpp::shutdown();
 
