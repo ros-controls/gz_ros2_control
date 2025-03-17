@@ -1,19 +1,22 @@
 <library path="gz_hardware_plugins">
+  <!-- https://docs.ros.org/en/foxy/Tutorials/Beginner-Client-Libraries/Pluginlib.html#plugin-declaration-xml -->
+  <!-- name: There used to be a name attribute, but it is no longer required. -->
+  <!-- TODO(christophfroehlich): remove the name attribute before ROS-K release -->
   <class
     name="gz_ros2_control/GazeboSimSystem"
     type="gz_ros2_control::GazeboSimSystem"
     base_class_type="gz_ros2_control::GazeboSimSystemInterface">
     <description>
-      GazeboPositionJoint
+      ros2_control hardware component to be loaded by the gazebo plugin.
     </description>
   </class>
   <class
-     name="ign_ros2_control/IgnitionSystem"
-     type="gz_ros2_control::GazeboSimSystem"
-     base_class_type="gz_ros2_control::GazeboSimSystemInterface">
-     <description>
-       GazeboPositionJoint
-     </description>
-   </class>
-
+    name="ign_ros2_control/IgnitionSystem"
+    type="ign_ros2_control::IgnitionSystem"
+    base_class_type="gz_ros2_control::GazeboSimSystemInterface">
+    <description>
+      ros2_control hardware component to be loaded by the gazebo plugin.
+      For backward compatibility with old ign* plugin names.
+    </description>
+  </class>
 </library>
