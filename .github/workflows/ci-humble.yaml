@@ -44,10 +44,6 @@ jobs:
         apt install -qq -y lsb-release wget curl gnupg2 git
         cd ..
         mkdir -p /home/ros2_ws/src
-        if [ "$GZ_VERSION" == "harmonic" ]; then
-          # https://github.com/gazebosim/ros_gz/tree/ros2#from-source
-          git clone https://github.com/gazebosim/ros_gz/ -b humble
-        fi
         cp -r gz_ros2_control /home/ros2_ws/src/
         curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
         echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2$ROS_REPO_PACKAGES/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
@@ -68,6 +64,9 @@ jobs:
         cd /home/ros2_ws/src/
         rosdep init
         if [ "$GZ_VERSION" == "harmonic" ]; then
+          # https://github.com/gazebosim/ros_gz/tree/ros2#from-source
+          git clone https://github.com/gazebosim/ros_gz/ -b humble
+          # https://github.com/osrf/osrf-rosdep#installing-rosdep-rules-to-resolve-gazebo-harmonic-libraries
           wget https://raw.githubusercontent.com/osrf/osrf-rosdep/master/gz/00-gazebo.list -O /etc/ros/rosdep/sources.list.d/00-gazebo.list
         fi
         rosdep update --rosdistro humble
