@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2023 Open Source Robotics Foundation, Inc.
+# Copyright 2025 ros2_control Maintainers
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ def generate_test_description():
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory('gz_ros2_control_demos'),
-                'launch/cart_example_position.launch.py',
+                'launch/cart_example_velocity.launch.py',
             )
         ),
         launch_arguments={'gz_args': '--headless-rendering -s'}.items(),
@@ -87,7 +87,7 @@ class TestFixture(unittest.TestCase):
 
     def test_controller_running(self, proc_output):
 
-        cnames = ['joint_trajectory_controller', 'joint_state_broadcaster']
+        cnames = ['velocity_controller', 'joint_state_broadcaster', 'imu_sensor_broadcaster']
 
         check_controllers_running(self.node, cnames)
 
@@ -103,7 +103,7 @@ class TestFixture(unittest.TestCase):
 
         proc_action = Node(
             package='gz_ros2_control_demos',
-            executable='example_position',
+            executable='example_velocity',
             output='screen',
         )
 
