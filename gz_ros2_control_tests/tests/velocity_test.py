@@ -85,16 +85,6 @@ class TestFixture(unittest.TestCase):
         with WaitForTopics(topic_list, timeout=10.0):
             print('/clock is receiving messages!')
 
-    def test_controller_running(self, proc_output):
-
-        cnames = [
-                  'joint_trajectory_controller',
-                  'joint_state_broadcaster',
-                  'imu_sensor_broadcaster'
-                ]
-
-        check_controllers_running(self.node, cnames)
-
     def test_check_if_msgs_published(self):
         check_if_js_published(
             '/joint_states',
@@ -104,6 +94,14 @@ class TestFixture(unittest.TestCase):
         )
 
     def test_arm(self, launch_service, proc_info, proc_output):
+
+        # Check if the controllers are running
+        cnames = [
+                  'joint_trajectory_controller',
+                  'joint_state_broadcaster',
+                  'imu_sensor_broadcaster'
+                ]
+        check_controllers_running(self.node, cnames)
 
         proc_action = Node(
             package='gz_ros2_control_demos',
