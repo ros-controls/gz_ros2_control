@@ -17,7 +17,6 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
-find_package(rclcpp REQUIRED)
 
 install(DIRECTORY
   launch
@@ -29,45 +28,38 @@ install(DIRECTORY
 add_executable(example_position examples/example_position.cpp)
 ament_target_dependencies(example_position
   ament_index_cpp
-  rclcpp
 )
 
 # use the same example_position.cpp for example_velocity
 add_executable(example_velocity examples/example_position.cpp)
 ament_target_dependencies(example_velocity
   ament_index_cpp
-  rclcpp
 )
 
 # use the same example_position.cpp for example_effort
 add_executable(example_effort examples/example_position.cpp)
 ament_target_dependencies(example_effort
   ament_index_cpp
-  rclcpp
 )
 
 add_executable(example_diff_drive examples/example_diff_drive.cpp)
 ament_target_dependencies(example_diff_drive
   ament_index_cpp
-  rclcpp
 )
 
 add_executable(example_tricycle_drive examples/example_tricycle_drive.cpp)
 ament_target_dependencies(example_tricycle_drive
   ament_index_cpp
-  rclcpp
 )
 
 add_executable(example_ackermann_drive examples/example_ackermann_drive.cpp)
 ament_target_dependencies(example_ackermann_drive
   ament_index_cpp
-  rclcpp
 )
 
 add_executable(example_gripper examples/example_gripper.cpp)
 ament_target_dependencies(example_gripper
   ament_index_cpp
-  rclcpp
 )
 
 
