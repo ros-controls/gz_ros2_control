@@ -16,9 +16,10 @@ jobs:
           - docker-image: "ubuntu:24.04"
             ros-distro: "rolling"
             ros-repo-packages: "-testing"
-
+          - docker-image: "ubuntu:24.04"
+            ros-distro: "rolling"
+            ros-repo-packages: ""
     env:
-      DOCKER_IMAGE: ${{ matrix.docker-image }}
       ROS_DISTRO: ${{ matrix.ros-distro }}
       ROS_REPO_PACKAGES: ${{ matrix.ros-repo-packages }}
     container:
