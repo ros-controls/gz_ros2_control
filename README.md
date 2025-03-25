@@ -2,7 +2,11 @@
 
 ROS2 Distro | Build Status | Package build |
 :---------: | :----: | :----------: |
+<<<<<<< HEAD
 [![Licence](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) |  [![Build Status](https://build.ros2.org/buildStatus/icon?job=Jdev__gz_ros2_control__ubuntu_noble_amd64)](https://build.ros2.org/job/Jdev__gz_ros2_control__ubuntu_noble_amd64/) |  [![Build Status](https://build.ros2.org/buildStatus/icon?job=Jbin_uN64__gz_ros2_control__ubuntu_noble_amd64__binary)](https://build.ros2.org/job/Jbin_uN64__gz_ros2_control__ubuntu_noble_amd64__binary/) |
+=======
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) |  [![Build Status](https://build.ros2.org/buildStatus/icon?job=Rdev__gz_ros2_control__ubuntu_noble_amd64)](https://build.ros2.org/job/Rdev__gz_ros2_control__ubuntu_noble_amd64/) |  [![Build Status](https://build.ros2.org/buildStatus/icon?job=Rbin_uN64__gz_ros2_control__ubuntu_noble_amd64__binary)](https://build.ros2.org/job/Rbin_uN64__gz_ros2_control__ubuntu_noble_amd64__binary/) |
+>>>>>>> 77663df (Updates for new gz_ros2_control package on humble (#525))
 
 This is a ROS 2 package for integrating the `ros2_control` controller architecture with the [Gazebo](http://gazebosim.org/) simulator.
 More information about `ros2_control` can be found here: https://control.ros.org/
@@ -11,7 +15,8 @@ This package provides a Gazebo-Sim system plugin which instantiates a `ros2_cont
 
 ROS version | Gazebo version | Branch | Binaries hosted at | APT key
 -- | -- | -- | -- | --
-Humble | Fortress | [humble](https://github.com/ros-controls/gz_ros2_control/tree/humble) | https://packages.ros.org | `ros-humble-ign-ros2-control`
+Humble | Fortress | [humble](https://github.com/ros-controls/gz_ros2_control/tree/humble) | https://packages.ros.org | `ros-humble-gz-ros2-control`
+Humble | Harmonic | [humble](https://github.com/ros-controls/gz_ros2_control/tree/humble) | build from source | -
 Jazzy | Harmonic | [jazzy](https://github.com/ros-controls/gz_ros2_control/tree/jazzy) | https://packages.ros.org | `ros-jazzy-gz-ros2-control`
 Rolling | Ionic | [rolling](https://github.com/ros-controls/gz_ros2_control/tree/master) | https://packages.ros.org | `ros-rolling-gz-ros2-control`
 

@@ -1,0 +1,90 @@
+name: gz_ros2_control CI - Humble
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ humble ]
+  push:
+    branches: [ humble ]
+  schedule:
+    # Run every morning to detect flakiness and broken dependencies
+    - cron: '33 5 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - gz-version: fortress
+            ros-repo-packages: ""
+          - gz-version: fortress
+            ros-repo-packages: "-testing"
+          - gz-version: harmonic
+            ros-repo-packages: ""
+          - gz-version: harmonic
+            ros-repo-packages: "-testing"
+    env:
+      ROS_REPO_PACKAGES: ${{ matrix.ros-repo-packages }}
+      GZ_VERSION: ${{ matrix.gz-version }}
+    container:
+      image: ubuntu:22.04
+    steps:
+    - name: Checkout code
+      if: github.event_name != 'schedule'
+      uses: actions/checkout@v4
+    - name: Checkout code for scheduled workflow
+      if: github.event_name == 'schedule'
+      uses: actions/checkout@v4
+      with:
+        ref: humble
+    - name: Setup colcon workspace
+      id: configure
+      shell: bash
+      run: |
+        export DEBIAN_FRONTEND=noninteractive
+        apt update -qq
+        apt install -qq -y lsb-release wget curl gnupg2 git
+        cd ..
+        mkdir -p /home/ros2_ws/src
+        cp -r gz_ros2_control /home/ros2_ws/src/
+        curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2$ROS_REPO_PACKAGES/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+        if [ "$GZ_VERSION" == "harmonic" ]; then
+          # https://gazebosim.org/docs/harmonic/install_ubuntu/#binary-installation-on-ubuntu
+          curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+          export GZ_DEPS="gz-harmonic"
+        fi
+        apt-get update && apt-get upgrade -q -y
+        apt-get update && apt-get install -qq -y \
+          dirmngr \
+          python3-colcon-ros \
+          python3-colcon-common-extensions \
+          python3-rosdep \
+          build-essential \
+          ${GZ_DEPS}
+        cd /home/ros2_ws/src/
+        rosdep init
+        if [ "$GZ_VERSION" == "harmonic" ]; then
+          # https://github.com/gazebosim/ros_gz/tree/ros2#from-source
+          git clone https://github.com/gazebosim/ros_gz/ -b humble
+          # https://github.com/osrf/osrf-rosdep#installing-rosdep-rules-to-resolve-gazebo-harmonic-libraries
+          wget https://raw.githubusercontent.com/osrf/osrf-rosdep/master/gz/00-gazebo.list -O /etc/ros/rosdep/sources.list.d/00-gazebo.list
+        fi
+        rosdep update --rosdistro humble
+        rosdep install --from-paths ./ -i -y --rosdistro humble
+    - name: Build project
+      id: build
+      run: |
+        cd /home/ros2_ws/
+        . /opt/ros/humble/local_setup.sh
+        colcon build --packages-up-to gz_ros2_control_demos gz_ros2_control_tests
+    - name: Run tests
+      id: test
+      run: |
+        cd /home/ros2_ws/
+        . /opt/ros/humble/local_setup.sh
+        colcon test --event-handlers console_direct+ --packages-select gz_ros2_control gz_ros2_control_demos gz_ros2_control_tests
+        colcon test-result
