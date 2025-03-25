@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>ign_ros2_control_demos</name>
+  <version>0.7.12</version>
+  <description>Shim package for gz_ros2_control_demos</description>
+
+  <maintainer email="ahcorde@osrfoundation.org">Alejandro Hernandez</maintainer>
+
+  <license>Apache License 2.0</license>
+
+
+  <url type="website">https://github.com/ros-controls/gz_ros2_control/blob/master/README.md</url>
+  <url type="bugtracker">https://github.com/ros-controls/gz_ros2_control/issues</url>
+  <url type="repository">https://github.com/ros-controls/gz_ros2_control</url>
+
+  <author>Alejandro Hernández</author>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>ament_index_cpp</depend>
+  <depend>gz_ros2_control_demos</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

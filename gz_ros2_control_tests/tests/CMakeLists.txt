@@ -4,6 +4,10 @@ add_launch_test(position_test.py
   TIMEOUT 50
 )
 
+add_launch_test(position_test_backward_compatibility.py
+  TIMEOUT 50
+)
+
 add_launch_test(velocity_test.py
   TIMEOUT 50
 )
