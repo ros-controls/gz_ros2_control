@@ -327,6 +327,7 @@ You can run some of the mobile robots running the following commands:
   ros2 launch gz_ros2_control_demos diff_drive_example.launch.py
   ros2 launch gz_ros2_control_demos tricycle_drive_example.launch.py
   ros2 launch gz_ros2_control_demos ackermann_drive_example.launch.py
+  ros2 launch gz_ros2_control_demos mecanum_drive_example.launch.py
 
 When the Gazebo world is launched you can run some of the following commands to move the robots.
 
@@ -335,6 +336,16 @@ When the Gazebo world is launched you can run some of the following commands to 
   ros2 run gz_ros2_control_demos example_diff_drive
   ros2 run gz_ros2_control_demos example_tricycle_drive
   ros2 run gz_ros2_control_demos example_ackermann_drive
+
+You can drive the Mecanum mobile robot from the keyboard using the following command:
+
+.. code-block:: shell
+
+  ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=true
+
+For these demos you can verify that the robot is moving at the desired velocities be echoing the ``/gz/odom`` topic.
+This topic gets the simulation-real odometry of the robot from Gazebo.
+You can also echo the ``<controller_name>/odom`` topic to verify how accurate the odometry calculated by the controller is in comparison to the odometry from ``/gz/odom``.
 
 To demonstrate the setup of a namespaced robot, run
 
@@ -347,13 +358,6 @@ which will launch a diff drive robot within the namespace ``r1``.
 .. note::
 
   The ros2_control settings for the controller_manager and the controller defined in ``diff_drive_controller.yaml`` use wildcards to match all namespaces.
-
-To run the Mecanum mobile robot run the following commands to drive it from the keyboard:
-
-.. code-block:: shell
-
-  ros2 launch gz_ros2_control_demos mecanum_drive_example.launch.py
-  ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=true
 
 Gripper
 -----------------------------------------------------------
