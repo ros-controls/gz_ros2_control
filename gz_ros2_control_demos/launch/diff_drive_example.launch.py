@@ -62,7 +62,12 @@ def generate_launch_description():
     diff_drive_controller_spawner = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['diff_drive_controller', '--param-file', robot_controllers],
+        arguments=[
+            'diff_drive_controller',
+            '--param-file', robot_controllers,
+            '--controller-ros-args',
+            '-r /diff_drive_controller/cmd_vel:=/cmd_vel'
+        ],
     )
 
     # Launch just the Gazebo server as a composable node.

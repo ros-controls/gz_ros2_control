@@ -133,7 +133,7 @@ URDF:
 .. code-block:: xml
 
   <gazebo>
-    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
       <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
     </plugin>
   </gazebo>
@@ -142,7 +142,7 @@ SDF:
 
 .. code-block:: xml
 
-  <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+  <plugin filename="gz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
     <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
   </plugin>
 
@@ -172,7 +172,7 @@ URDF:
 .. code-block:: xml
 
   <gazebo>
-    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
       ...
       <ros>
         <namespace>my_namespace</namespace>
@@ -185,7 +185,7 @@ SDF:
 
 .. code-block:: xml
 
-  <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+  <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
     ...
     <ros>
       <namespace>my_namespace</namespace>
@@ -226,7 +226,7 @@ URDF:
     ...
   <ros2_control>
   <gazebo>
-    <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+    <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="gz_ros2_control-system">
       ...
     </plugin>
   </gazebo>
@@ -241,7 +241,7 @@ SDF:
     </hardware>
     ...
   <ros2_control>
-  <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+  <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="gz_ros2_control-system">
     ...
   </plugin>
 
@@ -329,19 +329,32 @@ You can run some of the mobile robots running the following commands:
   ros2 launch gz_ros2_control_demos ackermann_drive_example.launch.py
   ros2 launch gz_ros2_control_demos mecanum_drive_example.launch.py
 
-When the Gazebo world is launched you can run some of the following commands to move the robots.
+When the Gazebo world is launched you can run the following command to move the robots.
 
 .. code-block:: shell
 
-  ros2 run gz_ros2_control_demos example_diff_drive
-  ros2 run gz_ros2_control_demos example_tricycle_drive
-  ros2 run gz_ros2_control_demos example_ackermann_drive
+  ros2 run gz_ros2_control_demos example_mobile_robots
 
-You can drive the Mecanum mobile robot from the keyboard using the following command:
+You can also drive the robots from the keyboard using the following command:
 
 .. code-block:: shell
 
   ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=true
+
+You can also manually publish on the ``/cmd_vel`` topic to drive the robots:
+
+.. code-block:: shell
+
+  ros2 topic pub --rate 10 /cmd_vel geometry_msgs/msg/TwistStamped "
+  twist:
+    linear:
+      x: 0.7
+      y: 0.0
+      z: 0.0
+    angular:
+      x: 0.0
+      y: 0.0
+      z: 1.0"
 
 For these demos you can verify that the robot is moving at the desired velocities be echoing the ``/gz/odom`` topic.
 This topic gets the simulation-real odometry of the robot from Gazebo.
