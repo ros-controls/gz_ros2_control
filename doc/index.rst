@@ -327,33 +327,31 @@ You can run some of the mobile robots running the following commands:
   ros2 launch gz_ros2_control_demos diff_drive_example.launch.py
   ros2 launch gz_ros2_control_demos tricycle_drive_example.launch.py
   ros2 launch gz_ros2_control_demos ackermann_drive_example.launch.py
-
-When the Gazebo world is launched you can run some of the following commands to move the robots.
-
-.. code-block:: shell
-
-  ros2 run gz_ros2_control_demos example_diff_drive
-  ros2 run gz_ros2_control_demos example_tricycle_drive
-  ros2 run gz_ros2_control_demos example_ackermann_drive
-
-To demonstrate the setup of a namespaced robot, run
-
-.. code-block:: shell
-
-  ros2 launch gz_ros2_control_demos diff_drive_example_namespaced.launch.py
-
-which will launch a diff drive robot within the namespace ``r1``.
-
-.. note::
-
-  The ros2_control settings for the controller_manager and the controller defined in ``diff_drive_controller.yaml`` use wildcards to match all namespaces.
-
-To run the Mecanum mobile robot run the following commands to drive it from the keyboard:
-
-.. code-block:: shell
-
   ros2 launch gz_ros2_control_demos mecanum_drive_example.launch.py
+
+When the Gazebo world is launched you can run the following command to move the robots.
+
+.. code-block:: shell
+  ros2 run gz_ros2_control_demos example_mobile_robots
+
+You can also drive the robots from the keyboard using the following command:
+
+.. code-block:: shell
   ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=true
+
+You can also manually publish on the ``/cmd_vel`` topic to drive the robots:
+
+.. code-block:: shell
+  ros2 topic pub --rate 10 /cmd_vel geometry_msgs/msg/TwistStamped "
+  twist:
+    linear:
+      x: 0.7
+      y: 0.0
+      z: 0.0
+    angular:
+      x: 0.0
+      y: 0.0
+      z: 1.0"
 
 Gripper
 -----------------------------------------------------------
