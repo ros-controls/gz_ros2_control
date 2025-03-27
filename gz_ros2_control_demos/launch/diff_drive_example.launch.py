@@ -12,16 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, OpaqueFunction
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from ros_gz_bridge.actions import RosGzBridge
 from ros_gz_sim.actions import GzServer
-import xacro
 
 
 def generate_launch_description():
@@ -33,12 +30,16 @@ def generate_launch_description():
     def robot_state_publisher(context):
         description_format = LaunchConfiguration('description_format').perform(context)
         # Get URDF or SDF via xacro
-        xacro_processed = xacro.process(
-            os.path.join(
-                pkg_share,
-                description_format,
-                f'test_diff_drive.xacro.{description_format}'
-            )
+        xacro_processed = Command(
+            [
+                PathJoinSubstitution([FindExecutable(name='xacro')]),
+                ' ',
+                PathJoinSubstitution([
+                    pkg_share,
+                    description_format,
+                    f'test_diff_drive.xacro.{description_format}'
+                ]),
+            ]
         )
         node_robot_state_publisher = Node(
             package='robot_state_publisher',
@@ -48,11 +49,11 @@ def generate_launch_description():
         )
         return [node_robot_state_publisher]
 
-    robot_controllers = os.path.join(
+    robot_controllers = PathJoinSubstitution([
         pkg_share,
         'config',
         'diff_drive_controller.yaml'
-    )
+    ])
 
     joint_state_broadcaster_spawner = Node(
         package='controller_manager',
@@ -90,7 +91,7 @@ def generate_launch_description():
     # It is launched as a composable node in the container created by the Gazebo server.
     ros_gz_bridge = RosGzBridge(
         bridge_name='ros_gz_bridge',
-        config_file=os.path.join(pkg_share, 'config', 'ros_gz_bridge_config.yaml'),
+        config_file=PathJoinSubstitution([pkg_share, 'config', 'ros_gz_bridge_config.yaml']),
         container_name='ros_gz_container',
         create_own_container='False',
         use_composition='True',
