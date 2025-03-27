@@ -64,9 +64,7 @@ def generate_launch_description():
         executable='spawner',
         arguments=[
             'diff_drive_controller',
-            '--param-file', robot_controllers,
-            '--controller-ros-args',
-            '-r /diff_drive_controller/cmd_vel:=/cmd_vel'
+            '--param-file', robot_controllers
         ],
     )
 
