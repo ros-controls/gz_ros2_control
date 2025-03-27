@@ -343,10 +343,6 @@ To run the Mecanum mobile robot run the following commands to drive it from the 
   ros2 launch gz_ros2_control_demos mecanum_drive_example.launch.py
   ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=true
 
-For these demos you can verify that the robot is moving at the desired velocities be echoing the ``/gz/odom`` topic.
-This topic gets the simulation-real odometry of the robot from Gazebo.
-You can also echo the ``<controller_name>/odom`` topic to verify how accurate the odometry calculated by the controller is in comparison to the odometry from ``/gz/odom``.
-
 To demonstrate the setup of a namespaced robot, run
 
 .. code-block:: shell

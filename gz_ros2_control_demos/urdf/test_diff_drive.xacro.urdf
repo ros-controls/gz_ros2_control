@@ -176,12 +176,6 @@
       </ros>
       <parameters>$(find gz_ros2_control_demos)/config/diff_drive_controller.yaml</parameters>
     </plugin>
-
-    <plugin filename="gz-sim-odometry-publisher-system" name="gz::sim::systems::OdometryPublisher">
-      <odom_frame>diff_drive/odom</odom_frame>
-      <robot_base_frame>diff_drive</robot_base_frame>
-      <odom_topic>/gz/odom</odom_topic>
-    </plugin>
   </gazebo>
 
 </robot>
