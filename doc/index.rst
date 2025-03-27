@@ -356,6 +356,10 @@ You can also manually publish on the ``/cmd_vel`` topic to drive the robots:
       y: 0.0
       z: 1.0"
 
+For these demos you can verify that the robot is moving at the desired velocities be echoing the ``/gz/odom`` topic.
+This topic gets the simulation-real odometry of the robot from Gazebo.
+You can also echo the ``<controller_name>/odom`` topic to verify how accurate the odometry calculated by the controller is in comparison to the odometry from ``/gz/odom``.
+
 Gripper
 -----------------------------------------------------------
 
