@@ -53,7 +53,7 @@ ament_target_dependencies(example_effort
   control_msgs
 )
 
-add_executable(example_diff_drive examples/example_mobile_robots.cpp)
+add_executable(example_mobile_robots examples/example_mobile_robots.cpp)
 ament_target_dependencies(example_mobile_robots
   rclcpp
   geometry_msgs

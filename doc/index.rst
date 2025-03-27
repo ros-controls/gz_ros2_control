@@ -332,16 +332,19 @@ You can run some of the mobile robots running the following commands:
 When the Gazebo world is launched you can run the following command to move the robots.
 
 .. code-block:: shell
+
   ros2 run gz_ros2_control_demos example_mobile_robots
 
 You can also drive the robots from the keyboard using the following command:
 
 .. code-block:: shell
+
   ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=true
 
 You can also manually publish on the ``/cmd_vel`` topic to drive the robots:
 
 .. code-block:: shell
+
   ros2 topic pub --rate 10 /cmd_vel geometry_msgs/msg/TwistStamped "
   twist:
     linear:
