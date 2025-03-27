@@ -78,7 +78,9 @@ def generate_launch_description():
             'diff_drive_base_controller',
             '--param-file',
             robot_controllers,
-            ],
+            '--controller-ros-args',
+            '-r /diff_drive_controller/cmd_vel:=/cmd_vel',
+        ],
     )
 
     # Bridge

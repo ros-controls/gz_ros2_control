@@ -72,7 +72,9 @@ def generate_launch_description():
         arguments=[
             'joint_state_broadcaster',
             '-c', '/r1/controller_manager'
-            ],
+            '--controller-ros-args',
+            '-r /r1/diff_drive_controller/cmd_vel:=/r1/cmd_vel',
+        ],
     )
     diff_drive_base_controller_spawner = Node(
         package='controller_manager',
