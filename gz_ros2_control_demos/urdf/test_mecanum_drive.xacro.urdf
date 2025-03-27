@@ -261,7 +261,6 @@
     <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
       <parameters>$(find gz_ros2_control_demos)/config/mecanum_drive_controller.yaml</parameters>
       <ros>
-        <remapping>/mecanum_drive_controller/reference:=/cmd_vel</remapping>
         <remapping>/mecanum_drive_controller/odom:=/odom</remapping>
       </ros>
     </plugin>

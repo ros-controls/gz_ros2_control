@@ -68,25 +68,8 @@ def generate_launch_description():
             '--param-file', robot_controllers,
             '--controller-ros-args',
             '-r /ackermann_steering_controller/tf_odometry:=/tf',
+            '-r /ackermann_steering_controller/reference:=/cmd_vel'
         ],
-    )
-
-    # Launch just the Gazebo server as a composable node.
-    gz_server = GzServer(
-        world_sdf_file='empty.sdf',
-        container_name='ros_gz_container',
-        create_own_container='True',
-        use_composition='True',
-    )
-
-    gz_gui = ExecuteProcess(cmd=['gz', 'sim', '-g'], output='screen')
-
-    gz_spawn_entity = Node(
-        package='ros_gz_sim',
-        executable='create',
-        output='screen',
-        arguments=['-topic', 'robot_description', '-name',
-                   'ackermann_drive', '-allow_renaming', 'true'],
     )
 
     # Setup ros_gz_bridge to bridge topics between ROS and Gazebo.

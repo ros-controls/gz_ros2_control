@@ -64,27 +64,12 @@ def generate_launch_description():
         package='controller_manager',
         executable='spawner',
         arguments=[
-            'diff_drive_controller',
-            '--param-file', robot_controllers
+            'diff_drive_base_controller',
+            '--param-file',
+            robot_controllers,
+            '--controller-ros-args',
+            '-r /diff_drive_controller/cmd_vel:=/cmd_vel',
         ],
-    )
-
-    # Launch just the Gazebo server as a composable node.
-    gz_server = GzServer(
-        world_sdf_file='empty.sdf',
-        container_name='ros_gz_container',
-        create_own_container='True',
-        use_composition='True',
-    )
-
-    gz_gui = ExecuteProcess(cmd=['gz', 'sim', '-g'], output='screen')
-
-    gz_spawn_entity = Node(
-        package='ros_gz_sim',
-        executable='create',
-        output='screen',
-        arguments=['-topic', 'robot_description', '-name',
-                   'diff_drive', '-allow_renaming', 'true'],
     )
 
     # Setup ros_gz_bridge to bridge topics between ROS and Gazebo.
