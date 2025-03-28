@@ -441,6 +441,7 @@ void GazeboSimROS2ControlPlugin::Configure(
   arguments.push_back("__node:=" + controllerManagerNodeName);
   arguments.push_back("-r");
   arguments.push_back("__ns:=" + ns);
+  // Force setting of use_sim_time parameter
   arguments.push_back("-p");
   arguments.push_back("use_sim_time:=true");
   options.arguments(arguments);
