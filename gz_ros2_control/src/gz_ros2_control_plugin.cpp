@@ -441,6 +441,9 @@ void GazeboSimROS2ControlPlugin::Configure(
   arguments.push_back("__node:=" + controllerManagerNodeName);
   arguments.push_back("-r");
   arguments.push_back("__ns:=" + ns);
+  // Force setting of use_sim_time parameter
+  arguments.push_back("-p");
+  arguments.push_back("use_sim_time:=true");
   options.arguments(arguments);
   this->dataPtr->controller_manager_.reset(
     new controller_manager::ControllerManager(
@@ -454,10 +457,6 @@ void GazeboSimROS2ControlPlugin::Configure(
   this->dataPtr->control_period_ = rclcpp::Duration(
     std::chrono::duration_cast<std::chrono::nanoseconds>(
       std::chrono::duration<double>(1.0 / static_cast<double>(this->dataPtr->update_rate))));
-
-  // Force setting of use_sim_time parameter
-  this->dataPtr->controller_manager_->set_parameter(
-    rclcpp::Parameter("use_sim_time", rclcpp::ParameterValue(true)));
 
   // Wait for CM to receive robot description from the topic and then initialize Resource Manager
   while (!this->dataPtr->controller_manager_->is_resource_manager_initialized()) {
