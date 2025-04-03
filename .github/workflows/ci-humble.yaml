@@ -64,10 +64,6 @@ jobs:
           ${GZ_DEPS}
         cd /home/ros2_ws/src/
         rosdep init
-        if [ "$GZ_VERSION" == "harmonic" ]; then
-          # https://github.com/osrf/osrf-rosdep#installing-rosdep-rules-to-resolve-gazebo-harmonic-libraries
-          wget https://raw.githubusercontent.com/osrf/osrf-rosdep/master/gz/00-gazebo.list -O /etc/ros/rosdep/sources.list.d/00-gazebo.list
-        fi
         rosdep update --rosdistro humble
         rosdep install --from-paths ./ -i -y --rosdistro humble --skip-keys="${GZ_DEPS_ROSDEP}"
     - name: Build project
