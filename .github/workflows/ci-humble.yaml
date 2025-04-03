@@ -51,7 +51,8 @@ jobs:
           # https://gazebosim.org/docs/harmonic/install_ubuntu/#binary-installation-on-ubuntu
           curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
           echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
-          export GZ_DEPS="gz-harmonic ros-humble-ros-gzharmonic ros-humble-ros-gzharmonic-bridge"
+          export GZ_DEPS="gz-harmonic ros-humble-ros-gzharmonic ros-humble-ros-gzharmonic-bridge ros-humble-ros-gzharmonic-sim"
+          export GZ_DEPS_ROSDEP="ros_gz ros_gz_bridge ros_gz_sim"
         fi
         apt-get update && apt-get upgrade -q -y
         apt-get update && apt-get install -qq -y \
@@ -68,7 +69,7 @@ jobs:
           wget https://raw.githubusercontent.com/osrf/osrf-rosdep/master/gz/00-gazebo.list -O /etc/ros/rosdep/sources.list.d/00-gazebo.list
         fi
         rosdep update --rosdistro humble
-        rosdep install --from-paths ./ -i -y --rosdistro humble
+        rosdep install --from-paths ./ -i -y --rosdistro humble --skip-keys="${GZ_DEPS_ROSDEP}"
     - name: Build project
       id: build
       run: |

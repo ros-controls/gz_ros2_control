@@ -48,7 +48,7 @@ mkdir -p ~/gz_ros2_control_ws/src
 cd ~/gz_ros2_control_ws/src
 git clone https://github.com/ros-controls/gz_ros2_control -b humble
 export GZ_VERSION=harmonic
-rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
+rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y --skip-keys="ros_gz_bridge ros_gz_sim"
 cd ~/gz_ros2_control_ws
 colcon build
 ```
