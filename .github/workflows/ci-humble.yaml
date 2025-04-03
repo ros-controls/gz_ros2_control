@@ -51,7 +51,7 @@ jobs:
           # https://gazebosim.org/docs/harmonic/install_ubuntu/#binary-installation-on-ubuntu
           curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
           echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
-          export GZ_DEPS="gz-harmonic ros-humble-ros-gzharmonic"
+          export GZ_DEPS="gz-harmonic ros-humble-ros-gzharmonic ros-humble-ros-gzharmonic-bridge"
         fi
         apt-get update && apt-get upgrade -q -y
         apt-get update && apt-get install -qq -y \
