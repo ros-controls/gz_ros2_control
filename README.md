@@ -39,14 +39,13 @@ cd ~/gz_ros2_control_ws
 colcon build
 ```
 
-If you want to use `harmonic`, then follow the instructions in the [official Gazebo Harmonic documentation](https://gazebosim.org/docs/harmonic/ros_installation/#gazebo-harmonic-with-ros-2-humble-or-rolling-use-with-caution) how to install Gazebo Harmonic on ROS 2 humble.
+If you want to use `harmonic`, then follow the instructions in the [official Gazebo Harmonic documentation](https://gazebosim.org/docs/harmonic/ros_installation/#gazebo-harmonic-with-ros-2-humble-or-rolling-use-with-caution) how to install Gazebo Harmonic on ROS 2 humble, i.e, `apt-get install gz-harmonic ros-humble-ros-gzharmonic`. Additionally, you need to [install the rosdep rules](https://github.com/osrf/osrf-rosdep#installing-rosdep-rules-to-resolve-gazebo-harmonic-libraries) for gazebo harmonic.
 
 Then create a workspace, clone the correct branch of this repo and compile it by setting the environment variable `GZ_VERSION`:
 
 ```bash
 mkdir -p ~/gz_ros2_control_ws/src
 cd ~/gz_ros2_control_ws/src
-git clone https://github.com/gazebosim/ros_gz/ -b humble # only needed for harmonic
 git clone https://github.com/ros-controls/gz_ros2_control -b humble
 export GZ_VERSION=harmonic
 rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y

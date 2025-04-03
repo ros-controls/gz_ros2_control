@@ -51,7 +51,7 @@ jobs:
           # https://gazebosim.org/docs/harmonic/install_ubuntu/#binary-installation-on-ubuntu
           curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
           echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
-          export GZ_DEPS="gz-harmonic"
+          export GZ_DEPS="gz-harmonic ros-humble-ros-gzharmonic"
         fi
         apt-get update && apt-get upgrade -q -y
         apt-get update && apt-get install -qq -y \
@@ -64,8 +64,6 @@ jobs:
         cd /home/ros2_ws/src/
         rosdep init
         if [ "$GZ_VERSION" == "harmonic" ]; then
-          # https://github.com/gazebosim/ros_gz/tree/ros2#from-source
-          git clone https://github.com/gazebosim/ros_gz/ -b humble
           # https://github.com/osrf/osrf-rosdep#installing-rosdep-rules-to-resolve-gazebo-harmonic-libraries
           wget https://raw.githubusercontent.com/osrf/osrf-rosdep/master/gz/00-gazebo.list -O /etc/ros/rosdep/sources.list.d/00-gazebo.list
         fi
