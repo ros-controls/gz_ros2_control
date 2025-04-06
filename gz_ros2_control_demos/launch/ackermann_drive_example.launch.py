@@ -12,59 +12,48 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction
-from launch.actions import RegisterEventHandler
-from launch.event_handlers import OnProcessExit
-from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.actions import DeclareLaunchArgument, ExecuteProcess, OpaqueFunction
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
-
 from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
+from ros_gz_bridge.actions import RosGzBridge
+from ros_gz_sim.actions import GzServer
 
 
 def generate_launch_description():
+    pkg_share = get_package_share_directory('gz_ros2_control_demos')
+
     # Launch Arguments
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
 
     def robot_state_publisher(context):
-        performed_description_format = LaunchConfiguration('description_format').perform(context)
+        description_format = LaunchConfiguration('description_format').perform(context)
         # Get URDF or SDF via xacro
-        robot_description_content = Command(
+        xacro_processed = Command(
             [
                 PathJoinSubstitution([FindExecutable(name='xacro')]),
                 ' ',
                 PathJoinSubstitution([
-                    FindPackageShare('gz_ros2_control_demos'),
-                    performed_description_format,
-                    f'test_ackermann_drive.xacro.{performed_description_format}'
+                    pkg_share,
+                    description_format,
+                    f'test_ackermann_drive.xacro.{description_format}'
                 ]),
             ]
         )
-        robot_description = {'robot_description': robot_description_content}
         node_robot_state_publisher = Node(
             package='robot_state_publisher',
             executable='robot_state_publisher',
             output='screen',
-            parameters=[robot_description]
+            parameters=[{'robot_description': xacro_processed}]
         )
         return [node_robot_state_publisher]
 
-    robot_controllers = PathJoinSubstitution(
-        [
-            FindPackageShare('gz_ros2_control_demos'),
-            'config',
-            'ackermann_drive_controller.yaml',
-        ]
-    )
-
-    gz_spawn_entity = Node(
-        package='ros_gz_sim',
-        executable='create',
-        output='screen',
-        arguments=['-topic', 'robot_description', '-name',
-                   'ackermann', '-allow_renaming', 'true'],
-    )
+    robot_controllers = PathJoinSubstitution([
+        pkg_share,
+        'config',
+        'ackermann_drive_controller.yaml'
+    ])
 
     joint_state_broadcaster_spawner = Node(
         package='controller_manager',
@@ -74,45 +63,32 @@ def generate_launch_description():
     ackermann_steering_controller_spawner = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['ackermann_steering_controller',
-                   '--param-file',
-                   robot_controllers,
-                   '--controller-ros-args',
-                   '-r /ackermann_steering_controller/tf_odometry:=/tf',
-                   '-r /ackermann_steering_controller/reference:=/cmd_vel'
-                   ],
+        arguments=[
+            'ackermann_steering_controller',
+            '--param-file', robot_controllers,
+            '--controller-ros-args',
+            '-r /ackermann_steering_controller/tf_odometry:=/tf',
+            '-r /ackermann_steering_controller/reference:=/cmd_vel'
+        ],
     )
 
-    # Bridge
-    bridge = Node(
-        package='ros_gz_bridge',
-        executable='parameter_bridge',
-        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
-        output='screen'
+    # Setup ros_gz_bridge to bridge topics between ROS and Gazebo.
+    # It is launched as a composable node in the container created by the Gazebo server.
+    ros_gz_bridge = RosGzBridge(
+        bridge_name='ros_gz_bridge',
+        config_file=PathJoinSubstitution([pkg_share, 'config', 'ros_gz_bridge_config.yaml']),
+        container_name='ros_gz_container',
+        create_own_container='False',
+        use_composition='True',
     )
 
     ld = LaunchDescription([
-        bridge,
-        # Launch gazebo environment
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                [PathJoinSubstitution([FindPackageShare('ros_gz_sim'),
-                                       'launch',
-                                       'gz_sim.launch.py'])]),
-            launch_arguments=[('gz_args', [' -r -v 1 empty.sdf'])]),
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=gz_spawn_entity,
-                on_exit=[joint_state_broadcaster_spawner],
-            )
-        ),
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=joint_state_broadcaster_spawner,
-                on_exit=[ackermann_steering_controller_spawner],
-            )
-        ),
+        gz_server,
+        gz_gui,
         gz_spawn_entity,
+        ros_gz_bridge,
+        joint_state_broadcaster_spawner,
+        ackermann_steering_controller_spawner,
         # Launch Arguments
         DeclareLaunchArgument(
             'use_sim_time',

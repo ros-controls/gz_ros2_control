@@ -216,6 +216,12 @@
     <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
       <parameters>$(find gz_ros2_control_demos)/config/ackermann_drive_controller.yaml</parameters>
     </plugin>
+
+    <plugin filename="gz-sim-odometry-publisher-system" name="gz::sim::systems::OdometryPublisher">
+      <odom_frame>ackermann_drive/odom</odom_frame>
+      <robot_base_frame>ackermann_drive</robot_base_frame>
+      <odom_topic>/gz/odom</odom_topic>
+    </plugin>
   </gazebo>
 
 </robot>

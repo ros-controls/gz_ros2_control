@@ -133,7 +133,7 @@ URDF:
 .. code-block:: xml
 
   <gazebo>
-    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
       <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
     </plugin>
   </gazebo>
@@ -142,7 +142,7 @@ SDF:
 
 .. code-block:: xml
 
-  <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+  <plugin filename="gz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
     <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
   </plugin>
 
@@ -172,7 +172,7 @@ URDF:
 .. code-block:: xml
 
   <gazebo>
-    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
       ...
       <ros>
         <namespace>my_namespace</namespace>
@@ -185,7 +185,7 @@ SDF:
 
 .. code-block:: xml
 
-  <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+  <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
     ...
     <ros>
       <namespace>my_namespace</namespace>
@@ -226,7 +226,7 @@ URDF:
     ...
   <ros2_control>
   <gazebo>
-    <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+    <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="gz_ros2_control-system">
       ...
     </plugin>
   </gazebo>
@@ -241,7 +241,7 @@ SDF:
     </hardware>
     ...
   <ros2_control>
-  <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+  <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="gz_ros2_control-system">
     ...
   </plugin>
 
@@ -355,6 +355,10 @@ You can also manually publish on the ``/cmd_vel`` topic to drive the robots:
       x: 0.0
       y: 0.0
       z: 1.0"
+
+For these demos you can verify that the robot is moving at the desired velocities be echoing the ``/gz/odom`` topic.
+This topic gets the simulation-real odometry of the robot from Gazebo.
+You can also echo the ``<controller_name>/odom`` topic to verify how accurate the odometry calculated by the controller is in comparison to the odometry from ``/gz/odom``.
 
 Gripper
 -----------------------------------------------------------

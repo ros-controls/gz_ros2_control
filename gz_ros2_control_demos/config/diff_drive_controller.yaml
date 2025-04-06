@@ -5,14 +5,13 @@
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-/**/diff_drive_base_controller:
+/**/diff_drive_controller:
   ros__parameters:
     type: diff_drive_controller/DiffDriveController
     left_wheel_names: ["left_wheel_joint"]
     right_wheel_names: ["right_wheel_joint"]
 
     wheel_separation: 1.25
-    #wheels_per_side: 1  # actually 2, but both are controlled by 1 signal
     wheel_radius: 0.3
 
     wheel_separation_multiplier: 1.0
@@ -29,8 +28,8 @@
     enable_odom_tf: true
 
     cmd_vel_timeout: 0.5
-    #publish_limited_velocity: true
-    #velocity_rolling_window_size: 10
+    publish_limited_velocity: true
+    velocity_rolling_window_size: 10
 
     # Velocity and acceleration limits
     # Whenever a min_* is unspecified, default to -max_*
