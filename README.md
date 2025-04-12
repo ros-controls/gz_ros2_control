@@ -1,5 +1,4 @@
 # gz_ros2_control
-
 License | Build Status | Package build |
 :---------: | :----: | :----------: |
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) |  [![Build Status](https://build.ros2.org/buildStatus/icon?job=Rdev__gz_ros2_control__ubuntu_noble_amd64)](https://build.ros2.org/job/Rdev__gz_ros2_control__ubuntu_noble_amd64/) |  [![Build Status](https://build.ros2.org/buildStatus/icon?job=Rbin_uN64__gz_ros2_control__ubuntu_noble_amd64__binary)](https://build.ros2.org/job/Rbin_uN64__gz_ros2_control__ubuntu_noble_amd64__binary/) |
@@ -17,7 +16,6 @@ Humble | Fortress | [humble](https://github.com/ros-controls/gz_ros2_control/tre
 Humble | Harmonic | [humble](https://github.com/ros-controls/gz_ros2_control/tree/humble) | build from source | -
 
 ## Build status
-
 ROS 2 Distro | Branch | Build status | Documentation
 :----------: | :----: | :----------: | :-----------:
 **Rolling** | [`rolling`](https://github.com/ros-controls/gz_ros2_control/tree/rolling) | [![gazebo_ros2_control CI - Rolling](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-rolling.yaml/badge.svg?branch=rolling)](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-rolling.yaml) | [Documentation](https://control.ros.org/rolling/index.html) <br> [API Reference](https://control.ros.org/rolling/doc/api/index.html)
@@ -28,7 +26,6 @@ ROS 2 Distro | Branch | Build status | Documentation
 See the [documentation file](doc/index.rst) or [control.ros.org](https://control.ros.org/rolling/doc/gz_ros2_control/doc/index.html)
 
 # Compile from source
-
 Note that `gz_ros2_control` depends on the version of Gazebo that is
 provided by the Gazebo Vendor packages [`gz_plugin_vendor`](https://github.com/gazebo-release/gz_plugin_vendor) and [`gz_sim_vendor`](https://github.com/gazebo-release/gz_sim_vendor).
 Currently, for ROS 2 Jazzy and Rolling, the Gazebo version is Harmonic.
@@ -43,3 +40,6 @@ rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
 cd ~/gz_ros2_control_ws
 colcon build
 ```
+
+## Acknowledgements
+The project has received major contributions from the following companies and institutions: [control.ros.org](https://control.ros.org/rolling/doc/acknowledgements/acknowledgements.html)
