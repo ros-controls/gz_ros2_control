@@ -8,12 +8,20 @@ More information about `ros2_control` can be found here: https://control.ros.org
 
 This package provides a Gazebo-Sim system plugin which instantiates a `ros2_control` controller manager and connects it to a Gazebo model.
 
+## Compatibility Matrix
 ROS version | Gazebo version | Branch | Binaries hosted at | APT key
 -- | -- | -- | -- | --
 Rolling | Ionic | [rolling](https://github.com/ros-controls/gz_ros2_control/tree/rolling) | https://packages.ros.org | `ros-rolling-gz-ros2-control`
 Jazzy | Harmonic | [jazzy](https://github.com/ros-controls/gz_ros2_control/tree/jazzy) | https://packages.ros.org | `ros-jazzy-gz-ros2-control`
 Humble | Fortress | [humble](https://github.com/ros-controls/gz_ros2_control/tree/humble) | https://packages.ros.org | `ros-humble-gz-ros2-control`
 Humble | Harmonic | [humble](https://github.com/ros-controls/gz_ros2_control/tree/humble) | build from source | -
+
+## Documentation
+See the [documentation file](doc/index.rst) or [control.ros.org](https://control.ros.org/rolling/doc/gz_ros2_control/doc/index.html)
+
+## Contributing
+As an open-source project, we welcome each contributor, regardless of their background and experience. Pick a [PR](https://github.com/ros-controls/gz_ros2_control/pulls) and review it, or [create your own](https://github.com/ros-controls/gz_ros2_control/contribute)!
+If you are new to the project, please read the [contributing guide](https://control.ros.org/rolling/doc/contributing/contributing.html) for more information on how to get started. We are happy to help you with your first contribution.
 
 ## Build status
 ROS 2 Distro | Branch | Build status | Documentation
@@ -22,24 +30,5 @@ ROS 2 Distro | Branch | Build status | Documentation
 **Jazzy** | [`jazzy`](https://github.com/ros-controls/gz_ros2_control/tree/jazzy) | [![gazebo_ros2_control CI - Jazzy](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-jazzy.yaml/badge.svg?branch=rolling)](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-jazzy.yaml) | [Documentation](https://control.ros.org/jazzy/index.html) <br> [API Reference](https://control.ros.org/jazzy/doc/api/index.html)
 **Humble** | [`humble`](https://github.com/ros-controls/gz_ros2_control/tree/humble) | [![ign_ros2_control CI - Humble](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-humble.yaml/badge.svg?branch=humble)](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-humble.yaml) | [Documentation](https://control.ros.org/humble/index.html) <br> [API Reference](https://control.ros.org/humble/doc/api/index.html)
 
-## Documentation
-See the [documentation file](doc/index.rst) or [control.ros.org](https://control.ros.org/rolling/doc/gz_ros2_control/doc/index.html)
-
-# Compile from source
-Note that `gz_ros2_control` depends on the version of Gazebo that is
-provided by the Gazebo Vendor packages [`gz_plugin_vendor`](https://github.com/gazebo-release/gz_plugin_vendor) and [`gz_sim_vendor`](https://github.com/gazebo-release/gz_sim_vendor).
-Currently, for ROS 2 Jazzy and Rolling, the Gazebo version is Harmonic.
-
-To compile `gz_ros2_control` from source, create a workspace, clone the correct branch of this repo and compile it:
-
-```bash
-mkdir -p ~/gz_ros2_control_ws/src
-cd ~/gz_ros2_control_ws/src
-git clone https://github.com/ros-controls/gz_ros2_control -b {ROS_DISTRO}
-rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
-cd ~/gz_ros2_control_ws
-colcon build
-```
-
 ## Acknowledgements
-The project has received major contributions from the following companies and institutions: [control.ros.org](https://control.ros.org/rolling/doc/acknowledgements/acknowledgements.html)
+The project has received major contributions from companies and institutions [listed on control.ros.org](https://control.ros.org/rolling/doc/acknowledgements/acknowledgements.html)
