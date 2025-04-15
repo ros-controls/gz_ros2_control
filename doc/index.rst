@@ -409,13 +409,12 @@ To get started with your own launch file using `gz_ros2_control`, refer to the e
 
 `Example launch files <https://github.com/ros-controls/gz_ros2_control/tree/rolling/gz_ros2_control_demos/launch>`_
 
-
 Basic Elements
 --------------
 
 1. **Launching the Gazebo simulator**
 
-You can use the `gz_sim.launch.py` file provided by `gz_ros2_control` to launch Gazebo. Here's an example:
+You can use the ``gz_sim.launch.py`` file provided by ``gz_ros2_control`` to launch Gazebo. Here's an example:
 
 .. code-block:: python
 
@@ -434,7 +433,7 @@ Explanation of flags:
 
 2. **Launching the ros_gz_bridge and publishing the `/clock` topic**
 
-It is essential to publish the `/clock` topic for the `controller_manager` to function correctly:
+It is essential to publish the ``/clock`` topic for the ``controller_manager`` to function correctly:
 
 .. code-block:: python
 
@@ -450,7 +449,7 @@ It is essential to publish the `/clock` topic for the `controller_manager` to fu
 
 .. warning::
 
-   If you **do not** publish the `/clock` topic, the `controller_manager` will issue warnings or errors such as:
+   If you **do not** publish the ``/clock` `topic, the ``controller_manager`` will issue warnings or errors such as:
 
    .. code-block:: console
 
@@ -459,7 +458,7 @@ It is essential to publish the `/clock` topic for the `controller_manager` to fu
 Timing Issues
 -------------
 
-By default, the `controller_manager` launched by `gz_ros2_control` has ``use_sim_time=true``. If for any reason this is set to ``false``, it will fall back to the system clock.
+By default, the ``controller_manager`` launched by ``gz_ros2_control`` has ``use_sim_time=true``. If for any reason this is set to ``false``, it will fall back to the system clock.
 
 This results in logs like:
 
@@ -475,4 +474,4 @@ Eventually leading to a fatal error:
     [gazebo-1] terminate called after throwing an instance of 'std::runtime_error'
     [gazebo-1]   what():  can't compare times with different time sources
 
-Ensure `use_sim_time` is correctly set to `true` when working with simulation time to avoid such mismatches.
+Ensure ``use_sim_time`` is correctly set to ``true`` when working with simulation time to avoid such mismatches.
