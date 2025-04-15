@@ -449,7 +449,7 @@ It is essential to publish the ``/clock`` topic for the ``controller_manager`` t
 
 .. warning::
 
-   If you **do not** publish the ``/clock` `topic, the ``controller_manager`` will issue warnings or errors such as:
+   If you **do not** publish the ``/clock`` topic, the ``controller_manager`` will issue warnings or errors such as:
 
    .. code-block:: console
 
