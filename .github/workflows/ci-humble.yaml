@@ -1,6 +1,7 @@
 name: gz_ros2_control CI - Humble
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: [ humble ]
   push:
