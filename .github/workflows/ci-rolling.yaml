@@ -1,0 +1,47 @@
+name: gz_ros2_control CI - Rolling
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ rolling ]
+  push:
+    branches: [ rolling ]
+  schedule:
+    # Run every morning to detect flakiness and broken dependencies
+    - cron: '03 5 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ros-distro: "rolling"
+            ros-repo-packages: "-testing"
+          - ros-distro: "rolling"
+            ros-repo-packages: ""
+    env:
+      ROS_DISTRO: ${{ matrix.ros-distro }}
+    container:
+      image: ghcr.io/ros-controls/ros:${{ matrix.ros-distro }}-ubuntu${{ matrix.ros-repo-packages }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup colcon workspace
+      id: configure
+      shell: bash
+      run: |
+        apt-get update
+        rosdep update
+        rosdep install --from-paths ./ -i -y --rosdistro ${ROS_DISTRO}
+    - name: Build project
+      id: build
+      run: |
+        . /opt/ros/${ROS_DISTRO}/local_setup.sh
+        colcon build --packages-up-to gz_ros2_control_demos gz_ros2_control_tests
+    - name: Run tests
+      id: test
+      run: |
+        . /opt/ros/${ROS_DISTRO}/local_setup.sh
+        colcon test --event-handlers console_direct+ --packages-select gz_ros2_control gz_ros2_control_demos gz_ros2_control_tests
+        colcon test-result
