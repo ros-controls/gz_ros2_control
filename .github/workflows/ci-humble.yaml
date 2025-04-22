@@ -46,33 +46,15 @@ jobs:
           # https://gazebosim.org/docs/harmonic/install_ubuntu/#binary-installation-on-ubuntu
           wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
           echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
-<<<<<<< HEAD
-          export GZ_DEPS="gz-harmonic"
-        fi
-        apt-get update && apt-get upgrade -q -y
-        apt-get update && apt-get install -qq -y \
-          dirmngr \
-          python3-colcon-ros \
-          python3-colcon-common-extensions \
-          python3-rosdep \
-          build-essential \
-          ${GZ_DEPS}
-        cd /home/ros2_ws/src/
-        rosdep init
-        if [ "$GZ_VERSION" == "harmonic" ]; then
-          # https://github.com/gazebosim/ros_gz/tree/ros2#from-source
-          git clone https://github.com/gazebosim/ros_gz/ -b humble
-=======
           apt-get update && apt-get install --no-install-recommends -qq -y gz-harmonic ros-humble-ros-gzharmonic ros-humble-ros-gzharmonic-bridge ros-humble-ros-gzharmonic-sim
           export GZ_DEPS_ROSDEP="ros_gz ros_gz_bridge ros_gz_sim"
->>>>>>> fd5185d (Use docker images from ros-controls on humble (#559))
           # https://github.com/osrf/osrf-rosdep#installing-rosdep-rules-to-resolve-gazebo-harmonic-libraries
           wget https://raw.githubusercontent.com/osrf/osrf-rosdep/master/gz/00-gazebo.list -O /etc/ros/rosdep/sources.list.d/00-gazebo.list
         else
           apt-get update
         fi
         rosdep update --rosdistro humble
-        rosdep install --from-paths ./ -i -y --rosdistro humble
+        rosdep install --from-paths ./ -i -y --rosdistro humble --skip-keys="${GZ_DEPS_ROSDEP}"
     - name: Build project
       id: build
       run: |
