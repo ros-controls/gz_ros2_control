@@ -25,9 +25,9 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
 
-    print("###########################################################################")
-    print("This launch file is deprecated. Please use the one in gz_ros2_control_demos")
-    print("###########################################################################")
+    print('###########################################################################')
+    print('This launch file is deprecated. Please use the one in gz_ros2_control_demos')
+    print('###########################################################################')
 
     # Launch Arguments
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
