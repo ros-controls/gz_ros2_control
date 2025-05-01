@@ -11,7 +11,7 @@ This is a ROS 2 package for integrating the *ros2_control* controller architectu
 This package provides a Gazebo-Sim system plugin which instantiates a *ros2_control* controller manager and connects it to a Gazebo model.
 
 Installation
-=======================
+============
 
 Binary packages
 ---------------
