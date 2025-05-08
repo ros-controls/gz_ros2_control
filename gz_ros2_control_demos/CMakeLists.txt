@@ -31,7 +31,7 @@ install(DIRECTORY
 )
 
 add_executable(example_position examples/example_position.cpp)
-ament_target_dependencies(example_position
+target_link_libraries(example_position PUBLIC
   rclcpp
   rclcpp_action
   control_msgs
@@ -39,7 +39,7 @@ ament_target_dependencies(example_position
 
 # use the same example_position.cpp for example_velocity
 add_executable(example_velocity examples/example_position.cpp)
-ament_target_dependencies(example_velocity
+target_link_libraries(example_velocity PUBLIC
   rclcpp
   rclcpp_action
   control_msgs
@@ -47,20 +47,20 @@ ament_target_dependencies(example_velocity
 
 # use the same example_position.cpp for example_effort
 add_executable(example_effort examples/example_position.cpp)
-ament_target_dependencies(example_effort
+target_link_libraries(example_effort PUBLIC
   rclcpp
   rclcpp_action
   control_msgs
 )
 
 add_executable(example_mobile_robots examples/example_mobile_robots.cpp)
-ament_target_dependencies(example_mobile_robots
+target_link_libraries(example_mobile_robots PUBLIC
   rclcpp
   geometry_msgs
 )
 
 add_executable(example_gripper examples/example_gripper.cpp)
-ament_target_dependencies(example_gripper
+target_link_libraries(example_gripper PUBLIC
   rclcpp
   std_msgs
 )

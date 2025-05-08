@@ -40,7 +40,7 @@ target_link_libraries(${PROJECT_NAME}-system
   gz-sim::gz-sim
   gz-plugin::register
 )
-ament_target_dependencies(${PROJECT_NAME}-system
+target_link_libraries(${PROJECT_NAME}-system PUBLIC
   ament_index_cpp
   controller_manager
   hardware_interface
@@ -55,7 +55,7 @@ ament_target_dependencies(${PROJECT_NAME}-system
 add_library(gz_hardware_plugins SHARED
   src/gz_system.cpp
 )
-ament_target_dependencies(gz_hardware_plugins
+target_link_libraries(gz_hardware_plugins PUBLIC
   rclcpp_lifecycle
   hardware_interface
   rclcpp
