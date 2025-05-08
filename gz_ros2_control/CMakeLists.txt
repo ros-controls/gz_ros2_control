@@ -39,8 +39,7 @@ add_library(${PROJECT_NAME}-system SHARED
 target_link_libraries(${PROJECT_NAME}-system
   gz-sim::gz-sim
   gz-plugin::register
-)
-target_link_libraries(${PROJECT_NAME}-system PUBLIC
+  PUBLIC
   ament_index_cpp
   controller_manager
   hardware_interface
@@ -55,13 +54,12 @@ target_link_libraries(${PROJECT_NAME}-system PUBLIC
 add_library(gz_hardware_plugins SHARED
   src/gz_system.cpp
 )
-target_link_libraries(gz_hardware_plugins PUBLIC
+target_link_libraries(gz_hardware_plugins
+  gz-sim::gz-sim
+  PUBLIC
   rclcpp_lifecycle
   hardware_interface
   rclcpp
-)
-target_link_libraries(gz_hardware_plugins
-  gz-sim::gz-sim
 )
 
 ## Install
