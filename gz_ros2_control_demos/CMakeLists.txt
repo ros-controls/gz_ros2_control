@@ -32,37 +32,37 @@ install(DIRECTORY
 
 add_executable(example_position examples/example_position.cpp)
 target_link_libraries(example_position PUBLIC
-  rclcpp
-  rclcpp_action
-  control_msgs
+  ${control_msgs_TARGETS}
+  rclcpp::rclcpp
+  rclcpp_action::rclcpp_action
 )
 
 # use the same example_position.cpp for example_velocity
 add_executable(example_velocity examples/example_position.cpp)
 target_link_libraries(example_velocity PUBLIC
-  rclcpp
-  rclcpp_action
-  control_msgs
+  ${control_msgs_TARGETS}
+  rclcpp::rclcpp
+  rclcpp_action::rclcpp_action
 )
 
 # use the same example_position.cpp for example_effort
 add_executable(example_effort examples/example_position.cpp)
 target_link_libraries(example_effort PUBLIC
-  rclcpp
-  rclcpp_action
-  control_msgs
+  ${control_msgs_TARGETS}
+  rclcpp::rclcpp
+  rclcpp_action::rclcpp_action
 )
 
 add_executable(example_mobile_robots examples/example_mobile_robots.cpp)
-target_link_libraries(example_mobile_robots PUBLIC
+ament_target_dependencies(example_mobile_robots
   rclcpp
   geometry_msgs
 )
 
 add_executable(example_gripper examples/example_gripper.cpp)
 target_link_libraries(example_gripper PUBLIC
-  rclcpp
-  std_msgs
+  ${std_msgs_TARGETS}
+  rclcpp::rclcpp
 )
 
 if(BUILD_TESTING)

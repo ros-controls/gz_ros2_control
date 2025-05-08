@@ -37,16 +37,15 @@ add_library(${PROJECT_NAME}-system SHARED
 )
 
 target_link_libraries(${PROJECT_NAME}-system
+  PUBLIC
   gz-sim::gz-sim
   gz-plugin::register
-  PUBLIC
-  ament_index_cpp
-  controller_manager
-  hardware_interface
-  pluginlib
-  rclcpp
-  yaml_cpp_vendor
-  rclcpp_lifecycle
+  ament_index_cpp::ament_index_cpp
+  controller_manager::controller_manager
+  hardware_interface::mock_components
+  pluginlib::pluginlib
+  rclcpp::rclcpp
+  rclcpp_lifecycle::rclcpp_lifecycle
 )
 
 #########
@@ -56,10 +55,10 @@ add_library(gz_hardware_plugins SHARED
 )
 target_link_libraries(gz_hardware_plugins
   gz-sim::gz-sim
-  PUBLIC
-  rclcpp_lifecycle
-  hardware_interface
-  rclcpp
+PUBLIC
+  hardware_interface::mock_components
+  rclcpp::rclcpp
+  rclcpp_lifecycle::rclcpp_lifecycle
 )
 
 ## Install
