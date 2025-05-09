@@ -54,8 +54,8 @@ add_library(gz_hardware_plugins SHARED
   src/gz_system.cpp
 )
 target_link_libraries(gz_hardware_plugins
-  gz-sim::gz-sim
 PUBLIC
+  gz-sim::gz-sim
   hardware_interface::mock_components
   rclcpp::rclcpp
   rclcpp_lifecycle::rclcpp_lifecycle
