@@ -109,10 +109,10 @@
   </link>
 
   <joint name="left_wheel_steering_joint" type="revolute">
-    <origin xyz="0.9 -0.5 -0.2" rpy="1.57 0 0" />
+    <origin xyz="0.9 0.5 -0.2" rpy="0 0 0" />
     <parent link="chassis" />
     <child link="left_wheel_steering" />
-    <axis xyz="0 1 0" />
+    <axis xyz="0 0 1" />
     <dynamics damping="0.2" />
     <limit effort="1000.0" lower="-1.57" upper="1.57" velocity="30"/>
   </joint>
@@ -126,10 +126,10 @@
   </link>
 
   <joint name="right_wheel_steering_joint" type="revolute">
-    <origin xyz="0.9 0.5 -0.2" rpy="1.57 0 0" />
+    <origin xyz="0.9 -0.5 -0.2" rpy="0 0 0" />
     <parent link="chassis" />
     <child link="right_wheel_steering" />
-    <axis xyz="0 1 0" />
+    <axis xyz="0 0 1" />
     <dynamics damping="0.2" />
     <limit effort="1000.0" lower="-1.57" upper="1.57" velocity="30"/>
   </joint>
@@ -154,7 +154,7 @@
   </link>
 
   <joint name="front_left_wheel_joint" type="continuous">
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="-1.57 0 0" />
     <parent link="left_wheel_steering" />
     <child link="front_left_wheel" />
     <axis xyz="0 0 1" />
@@ -181,7 +181,7 @@
   </link>
 
   <joint name="front_right_wheel_joint" type="continuous">
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0" rpy="-1.57 0 0" />
     <parent link="right_wheel_steering" />
     <child link="front_right_wheel" />
     <axis xyz="0 0 1" />
