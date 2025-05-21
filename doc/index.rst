@@ -10,20 +10,45 @@ This is a ROS 2 package for integrating the *ros2_control* controller architectu
 
 This package provides a Gazebo-Sim system plugin which instantiates a *ros2_control* controller manager and connects it to a Gazebo model.
 
-Usage
-======
+Installation
+============
 
+Binary packages
+---------------
+``gz_ros2_control`` is released for ROS 2 {DISTRO} on Ubuntu. To use it, you have to install ``ros-{DISTRO}-gz-ros2-control`` package, e.g., by running the following command:
 
-Modifying or building your own
+.. code-block:: shell
+
+  sudo apt install ros-{DISTRO}-gz-ros2-control ros-{DISTRO}-gz-ros2-control-demos
+
+Building from source
+--------------------
+To use latest yet-to-be-released features or use a non-default Gazebo combination (see the compatibility matrix in the `README <https://github.com/ros-controls/gz_ros2_control/tree/humble?tab=readme-ov-file#compatibility-matrix>`__ for currently supported combinations), you have to build the package from source.
+
+Note that ``gz_ros2_control`` depends on the version of Gazebo that is provided by the Gazebo Vendor packages `gz_plugin_vendor <https://github.com/gazebo-release/gz_plugin_vendor>`__ and `gz_sim_vendor <https://github.com/gazebo-release/gz_sim_vendor>`__.
+Currently, for ROS 2 Jazzy and Rolling, the Gazebo version is Harmonic.
+
+To compile ``gz_ros2_control`` from source, create a workspace, clone the correct branch of this repo and compile it:
+
+.. code-block:: shell
+
+  mkdir -p ~/gz_ros2_control_ws/src
+  cd ~/gz_ros2_control_ws/src
+  git clone https://github.com/ros-controls/gz_ros2_control -b $ROS_DISTRO
+  rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
+  cd ~/gz_ros2_control_ws
+  colcon build
+
+Using docker
 ---------------------------------
+Build the docker image
 
 .. code-block:: shell
 
   cd Dockerfile
   docker build -t gz_ros2_control .
 
-To run the demo
----------------------------------
+and run the demo
 
 1. Using Docker
 

@@ -2,6 +2,9 @@
 Changelog for package gz_ros2_control_tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.7 (2025-04-04)
+------------------
+
 2.0.6 (2025-02-19)
 ------------------
 * Change the order of tests to fix timing issues (`#498 <https://github.com/ros-controls/gz_ros2_control/issues/498>`_)

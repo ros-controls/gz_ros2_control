@@ -2,6 +2,12 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.7 (2025-04-04)
+------------------
+* Set `use_sim_time` through CM NodeOptions (`#533 <https://github.com/ros-controls/gz_ros2_control/issues/533>`_)
+* Cleanup old ign\_ remnants (`#518 <https://github.com/ros-controls/gz_ros2_control/issues/518>`_)
+* Contributors: Christoph Fröhlich, Sai Kishor Kothakota
+
 2.0.6 (2025-02-19)
 ------------------
 

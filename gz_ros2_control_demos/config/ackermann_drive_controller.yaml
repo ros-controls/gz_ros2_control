@@ -9,14 +9,13 @@ ackermann_steering_controller:
   ros__parameters:
     type: 'ackermann_steering_controller/AckermannSteeringController'
     wheelbase: 1.7
-    front_wheel_track: 1.0
-    rear_wheel_track: 1.0
-    front_wheels_radius: 0.3
-    rear_wheels_radius: 0.3
-    front_steering: true
-    reference_timeout: 2.0
-    rear_wheels_names: ['rear_left_wheel_joint', 'rear_right_wheel_joint']
-    front_wheels_names: ['left_wheel_steering_joint', 'right_wheel_steering_joint']
+    traction_track_width: 1.0
+    steering_track_width: 1.0
+    traction_wheels_radius: 0.3
+    steering_wheels_radius: 0.3
+    reference_timeout: 2.0 # In s. Timeout to stop if no cmd_vel is received
+    traction_joints_names: ['rear_right_wheel_joint', 'rear_left_wheel_joint']
+    steering_joints_names: ['right_wheel_steering_joint', 'left_wheel_steering_joint']
     open_loop: false
     velocity_rolling_window_size: 10
     base_frame_id: base_link

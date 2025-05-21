@@ -2,6 +2,14 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.7 (2025-04-04)
+------------------
+* Remove gtest dependency (`#543 <https://github.com/ros-controls/gz_ros2_control/issues/543>`_)
+* Unify cmd_vel topics for mobile_robots demos (`#530 <https://github.com/ros-controls/gz_ros2_control/issues/530>`_)
+* Don't access node after reset (`#514 <https://github.com/ros-controls/gz_ros2_control/issues/514>`_)
+* Remap to /tf (`#506 <https://github.com/ros-controls/gz_ros2_control/issues/506>`_)
+* Contributors: Aarav Gupta, Christoph Fröhlich
+
 2.0.6 (2025-02-19)
 ------------------
 * Update diff_drive_controller.yaml (`#494 <https://github.com/ros-controls/gz_ros2_control/issues/494>`_)
