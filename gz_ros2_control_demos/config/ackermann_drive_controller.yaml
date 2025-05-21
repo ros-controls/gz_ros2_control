@@ -12,6 +12,7 @@ controller_manager:
 ackermann_steering_controller:
   ros__parameters:
     wheelbase: 1.7
+<<<<<<< HEAD
     front_wheel_track: 1.0
     rear_wheel_track: 1.0
     front_wheels_radius: 0.3
@@ -21,6 +22,15 @@ ackermann_steering_controller:
     rear_wheels_names: ['rear_left_wheel_joint', 'rear_right_wheel_joint']
     front_wheels_names: ['left_wheel_steering_joint', 'right_wheel_steering_joint']
     use_stamped_vel: true
+=======
+    traction_track_width: 1.0
+    steering_track_width: 1.0
+    traction_wheels_radius: 0.3
+    steering_wheels_radius: 0.3
+    reference_timeout: 2.0 # In s. Timeout to stop if no cmd_vel is received
+    traction_joints_names: ['rear_right_wheel_joint', 'rear_left_wheel_joint']
+    steering_joints_names: ['right_wheel_steering_joint', 'left_wheel_steering_joint']
+>>>>>>> 51c1d10 (Fix ackermann demo (#582))
     open_loop: false
     velocity_rolling_window_size: 10
     base_frame_id: base_link
