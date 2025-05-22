@@ -54,9 +54,9 @@ target_link_libraries(example_effort PUBLIC
 )
 
 add_executable(example_mobile_robots examples/example_mobile_robots.cpp)
-ament_target_dependencies(example_mobile_robots
-  rclcpp
-  geometry_msgs
+target_link_libraries(example_mobile_robots
+  rclcpp::rclcpp
+  ${geometry_msgs_TARGETS}
 )
 
 add_executable(example_gripper examples/example_gripper.cpp)
