@@ -23,6 +23,14 @@
   <depend>rclcpp_lifecycle</depend>
   <depend>rclcpp</depend>
   <depend>yaml_cpp_vendor</depend>
+<<<<<<< HEAD
+=======
+  <depend>rclcpp_lifecycle</depend>
+
+  <depend>controller_manager</depend>
+  <depend>hardware_interface</depend>
+  <depend>ros2_control_cmake</depend>
+>>>>>>> a5c5448 (Use ros2_control_cmake (#588))
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
