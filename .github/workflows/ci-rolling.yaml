@@ -4,14 +4,10 @@ on:
   pull_request:
     branches: [ master ]
   push:
-<<<<<<< HEAD
-    branches: [ master ]
-=======
     branches: [ rolling ]
   schedule:
     # Run every morning to detect flakiness and broken dependencies
     - cron: '03 5 * * MON-FRI'
->>>>>>> 7c2b953 (Run workflows only on weekdays (#587))
 
 jobs:
   build:
