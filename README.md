@@ -14,6 +14,7 @@ This package provides a Gazebo-Sim system plugin which instantiates a `ros2_cont
 ROS version | Gazebo version | Branch | Binaries hosted at | APT key
 -- | -- | -- | -- | --
 Rolling | Ionic | [rolling](https://github.com/ros-controls/gz_ros2_control/tree/rolling) | [packages.ros.org](https://packages.ros.org) | `ros-rolling-gz-ros2-control`
+Kilted | Ionic | [kilted](https://github.com/ros-controls/gz_ros2_control/tree/kilted) | [packages.ros.org](https://packages.ros.org) | `ros-kilted-gz-ros2-control`
 Jazzy | Harmonic | [jazzy](https://github.com/ros-controls/gz_ros2_control/tree/jazzy) | [packages.ros.org](https://packages.ros.org) | `ros-jazzy-gz-ros2-control`
 Humble | Fortress | [humble](https://github.com/ros-controls/gz_ros2_control/tree/humble) | [packages.ros.org](https://packages.ros.org) | `ros-humble-gz-ros2-control`
 Humble | Harmonic | [humble](https://github.com/ros-controls/gz_ros2_control/tree/humble) | build from source | -
@@ -32,6 +33,7 @@ If you are new to the project, please read the [contributing guide](https://cont
 ROS 2 Distro | Branch | Build status | Documentation
 :----------: | :----: | :----------: | :-----------:
 **Rolling** | [`rolling`](https://github.com/ros-controls/gz_ros2_control/tree/rolling) | [![gazebo_ros2_control CI - Rolling](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-rolling.yaml/badge.svg?branch=rolling)](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-rolling.yaml) | [Documentation](https://control.ros.org/rolling/index.html) <br> [API Reference](https://control.ros.org/rolling/doc/api/index.html)
+**Kilted** | [`kilted`](https://github.com/ros-controls/gz_ros2_control/tree/kilted) | [![gazebo_ros2_control CI - Kilted](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-kilted.yaml/badge.svg?branch=rolling)](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-kilted.yaml) | [Documentation](https://control.ros.org/kilted/index.html) <br> [API Reference](https://control.ros.org/kilted/doc/api/index.html)
 **Jazzy** | [`jazzy`](https://github.com/ros-controls/gz_ros2_control/tree/jazzy) | [![gazebo_ros2_control CI - Jazzy](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-jazzy.yaml/badge.svg?branch=rolling)](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-jazzy.yaml) | [Documentation](https://control.ros.org/jazzy/index.html) <br> [API Reference](https://control.ros.org/jazzy/doc/api/index.html)
 **Humble** | [`humble`](https://github.com/ros-controls/gz_ros2_control/tree/humble) | [![ign_ros2_control CI - Humble](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-humble.yaml/badge.svg?branch=humble)](https://github.com/ros-controls/gz_ros2_control/actions/workflows/ci-humble.yaml) | [Documentation](https://control.ros.org/humble/index.html) <br> [API Reference](https://control.ros.org/humble/doc/api/index.html)
 
