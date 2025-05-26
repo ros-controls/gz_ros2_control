@@ -1,14 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 project(gz_ros2_control)
 
-# Default to C11
-if(NOT CMAKE_C_STANDARD)
-    set(CMAKE_C_STANDARD 11)
-endif()
-# Default to C++17
-if(NOT CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 17)
-endif()
+find_package(ros2_control_cmake REQUIRED)
+set_compiler_options()
+export_windows_symbols()
 
 # Compiler options
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -37,17 +32,15 @@ add_library(${PROJECT_NAME}-system SHARED
 )
 
 target_link_libraries(${PROJECT_NAME}-system
+  PUBLIC
   gz-sim::gz-sim
   gz-plugin::register
-)
-ament_target_dependencies(${PROJECT_NAME}-system
-  ament_index_cpp
-  controller_manager
-  hardware_interface
-  pluginlib
-  rclcpp
-  yaml_cpp_vendor
-  rclcpp_lifecycle
+  ament_index_cpp::ament_index_cpp
+  controller_manager::controller_manager
+  hardware_interface::mock_components
+  pluginlib::pluginlib
+  rclcpp::rclcpp
+  rclcpp_lifecycle::rclcpp_lifecycle
 )
 
 #########
@@ -55,13 +48,12 @@ ament_target_dependencies(${PROJECT_NAME}-system
 add_library(gz_hardware_plugins SHARED
   src/gz_system.cpp
 )
-ament_target_dependencies(gz_hardware_plugins
-  rclcpp_lifecycle
-  hardware_interface
-  rclcpp
-)
 target_link_libraries(gz_hardware_plugins
+PUBLIC
   gz-sim::gz-sim
+  hardware_interface::mock_components
+  rclcpp::rclcpp
+  rclcpp_lifecycle::rclcpp_lifecycle
 )
 
 ## Install
