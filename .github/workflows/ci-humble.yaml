@@ -8,7 +8,7 @@ on:
     branches: [ humble ]
   schedule:
     # Run every morning to detect flakiness and broken dependencies
-    - cron: '33 5 * * *'
+    - cron: '33 5 * * MON-FRI'
 
 jobs:
   build:
