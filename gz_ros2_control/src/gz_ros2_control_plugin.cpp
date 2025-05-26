@@ -292,12 +292,12 @@ void GazeboSimROS2ControlPlugin::Configure(
 
   auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
 
-  sdf::ElementPtr argument_sdf = sdfPtr->GetElement("parameters");
-  while (argument_sdf) {
-    std::string argument = argument_sdf->Get<std::string>();
+  sdf::ElementPtr argument_sdf_param = sdfPtr->GetElement("parameters");
+  while (argument_sdf_param) {
+    std::string argument = argument_sdf_param->Get<std::string>();
     arguments.push_back(RCL_PARAM_FILE_FLAG);
     arguments.push_back(argument);
-    argument_sdf = argument_sdf->GetNextElement("parameters");
+    argument_sdf_param = argument_sdf_param->GetNextElement("parameters");
   }
 
   // Get controller manager node name
@@ -335,14 +335,14 @@ void GazeboSimROS2ControlPlugin::Configure(
 
     // Get list of remapping rules from SDF
     if (sdfRos->HasElement("remapping")) {
-      sdf::ElementPtr argument_sdf = sdfRos->GetElement("remapping");
+      sdf::ElementPtr argument_sdf_remapping = sdfRos->GetElement("remapping");
 
       arguments.push_back(RCL_ROS_ARGS_FLAG);
-      while (argument_sdf) {
-        std::string argument = argument_sdf->Get<std::string>();
+      while (argument_sdf_remapping) {
+        std::string argument = argument_sdf_remapping->Get<std::string>();
         arguments.push_back(RCL_REMAP_FLAG);
         arguments.push_back(argument);
-        argument_sdf = argument_sdf->GetNextElement("remapping");
+        argument_sdf_remapping = argument_sdf_remapping->GetNextElement("remapping");
       }
     }
   }

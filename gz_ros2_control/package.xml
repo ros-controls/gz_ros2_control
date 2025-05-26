@@ -18,8 +18,10 @@
   <depend>rclcpp</depend>
   <depend>yaml_cpp_vendor</depend>
   <depend>rclcpp_lifecycle</depend>
-  <depend>hardware_interface</depend>
+
   <depend>controller_manager</depend>
+  <depend>hardware_interface</depend>
+  <depend>ros2_control_cmake</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
