@@ -433,7 +433,8 @@ void GazeboSimROS2ControlPlugin::Configure(
   }
 
   std::unique_ptr<hardware_interface::ResourceManager> resource_manager_ =
-    std::make_unique<gz_ros2_control::GZResourceManager>(this->dataPtr->node_, _ecm, enabledJoints, this->dataPtr->executor_);
+    std::make_unique<gz_ros2_control::GZResourceManager>(this->dataPtr->node_, _ecm, enabledJoints,
+      this->dataPtr->executor_);
 
   // Create the controller manager
   RCLCPP_INFO(this->dataPtr->node_->get_logger(), "Loading controller_manager");
