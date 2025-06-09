@@ -53,9 +53,10 @@ public:
   GZResourceManager(
     rclcpp::Node::SharedPtr & node,
     sim::EntityComponentManager & ecm,
-    std::map<std::string, sim::Entity> enabledJoints)
+    std::map<std::string, sim::Entity> enabledJoints,
+    rclcpp::Executor::SharedPtr executor)
   : hardware_interface::ResourceManager(
-      node->get_node_clock_interface(), node->get_node_logging_interface()),
+      node->get_node_clock_interface(), node->get_node_logging_interface(), executor),
     gz_system_loader_("gz_ros2_control", "gz_ros2_control::GazeboSimSystemInterface"),
     logger_(node->get_logger().get_child("GZResourceManager"))
   {
@@ -432,7 +433,7 @@ void GazeboSimROS2ControlPlugin::Configure(
   }
 
   std::unique_ptr<hardware_interface::ResourceManager> resource_manager_ =
-    std::make_unique<gz_ros2_control::GZResourceManager>(this->dataPtr->node_, _ecm, enabledJoints);
+    std::make_unique<gz_ros2_control::GZResourceManager>(this->dataPtr->node_, _ecm, enabledJoints, this->dataPtr->executor_);
 
   // Create the controller manager
   RCLCPP_INFO(this->dataPtr->node_->get_logger(), "Loading controller_manager");
