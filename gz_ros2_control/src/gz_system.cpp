@@ -45,18 +45,21 @@
 #define GZ_TRANSPORT_NAMESPACE gz::transport::
 #define GZ_MSGS_NAMESPACE gz::msgs::
 #define GZ_PHYSICS_NAMESPACE gz::physics::
+#define GZ_VECTOR_DOT dot
 #else
 #include <ignition/msgs/imu.pb.h>
 
-#include <ignition/gazebo/Geometry.hh>
+#include <ignition/math/Vector3.hh>
 #include <ignition/gazebo/components/AngularVelocity.hh>
 #include <ignition/gazebo/components/Imu.hh>
-#include <ignition/gazebo/components/JointForce.hh>
+#include <ignition/gazebo/components/JointAxis.hh>
 #include <ignition/gazebo/components/JointForceCmd.hh>
 #include <ignition/gazebo/components/JointPosition.hh>
 #include <ignition/gazebo/components/JointPositionReset.hh>
-#include <ignition/gazebo/components/JointVelocity.hh>
+#include <ignition/gazebo/components/JointTransmittedWrench.hh>
+#include <ignition/gazebo/components/JointType.hh>
 #include <ignition/gazebo/components/JointVelocityCmd.hh>
+#include <ignition/gazebo/components/JointVelocity.hh>
 #include <ignition/gazebo/components/JointVelocityReset.hh>
 #include <ignition/gazebo/components/LinearAcceleration.hh>
 #include <ignition/gazebo/components/Name.hh>
@@ -67,6 +70,7 @@
 #define GZ_TRANSPORT_NAMESPACE ignition::transport::
 #define GZ_MSGS_NAMESPACE ignition::msgs::
 #define GZ_PHYSICS_NAMESPACE ignition::math::
+#define GZ_VECTOR_DOT Dot
 #endif
 
 #include <hardware_interface/hardware_info.hpp>
@@ -613,7 +617,7 @@ hardware_interface::return_type GazeboSimSystem::read(
         jointWrench->Data().torque().y(), jointWrench->Data().torque().z()};
     }
     // Calculate the scalar effort along the joint axis
-    this->dataPtr->joints_[i].joint_effort = force_or_torque.dot(
+    this->dataPtr->joints_[i].joint_effort = force_or_torque.GZ_VECTOR_DOT(
       GZ_PHYSICS_NAMESPACE Vector3d{this->dataPtr->joints_[i].joint_axis.Xyz()[0],
         this->dataPtr->joints_[i].joint_axis.Xyz()[1],
         this->dataPtr->joints_[i].joint_axis.Xyz()[2]});
