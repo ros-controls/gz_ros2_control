@@ -15,6 +15,7 @@
 #include "gz_ros2_control/gz_system.hpp"
 
 #include <gz/msgs/imu.pb.h>
+#include <gz/msgs/wrench.pb.h>
 
 #include <limits>
 #include <map>
@@ -22,9 +23,10 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <array>
+#include <cstddef>
 
 #include <gz/physics/Geometry.hh>
-#include <gz/msgs/wrench.pb.h>
 #include <gz/sim/components/AngularVelocity.hh>
 #include <gz/sim/components/Imu.hh>
 #include <gz/sim/components/ForceTorque.hh>
@@ -89,21 +91,13 @@ struct jointData
   gz_ros2_control::GazeboSimSystemInterface::ControlMethod joint_control_method;
 };
 
-struct MimicJoint
-{
-  std::size_t joint_index;
-  std::size_t mimicked_joint_index;
-  double multiplier = 1.0;
-  std::vector<std::string> interfaces_to_mimic;
-};
-
 class ForceTorqueData
 {
 public:
-  /// \brief imu's name.
+  /// \brief force torque sensor's name.
   std::string name{};
 
-  /// \brief imu's topic name.
+  /// \brief force torque sensor's topic name.
   std::string topicName{};
 
   /// \brief handles to the force torque from within Gazebo
