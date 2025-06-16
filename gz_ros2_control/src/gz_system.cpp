@@ -17,14 +17,14 @@
 #include <gz/msgs/imu.pb.h>
 #include <gz/msgs/wrench.pb.h>
 
+#include <array>
+#include <cstddef>
 #include <limits>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-#include <array>
-#include <cstddef>
 
 #include <gz/physics/Geometry.hh>
 #include <gz/sim/components/AngularVelocity.hh>
