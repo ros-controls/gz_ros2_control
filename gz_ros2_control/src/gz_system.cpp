@@ -168,9 +168,10 @@ public:
   /// \brief vector with the joint's names.
   std::vector<struct jointData> joints_;
 
-  /// \brief vector with the imus .
+  /// \brief vector with the imus.
   std::vector<std::shared_ptr<ImuData>> imus_;
 
+  /// \brief vector with the force torque sensors.
   std::vector<std::shared_ptr<ForceTorqueData>> ft_sensors_;
 
   /// \brief state interfaces that will be exported to the Resource Manager
