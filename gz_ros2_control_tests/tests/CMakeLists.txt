@@ -14,4 +14,3 @@ add_launch_test(effort_test.py
 add_launch_test(ft_sensor_test.py
   TIMEOUT 50
 )
-
