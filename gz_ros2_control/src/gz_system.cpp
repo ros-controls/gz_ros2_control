@@ -499,6 +499,12 @@ GazeboSimSystem::on_init(const hardware_interface::HardwareInfo & info)
   return CallbackReturn::SUCCESS;
 }
 
+CallbackReturn
+GazeboSimSystem::on_init(const hardware_interface::HardwareComponentInterfaceParams & params)
+{
+  return on_init(params.hardware_info);
+}
+
 CallbackReturn GazeboSimSystem::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
