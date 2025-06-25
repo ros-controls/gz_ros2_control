@@ -655,8 +655,8 @@ hardware_interface::return_type GazeboSimSystem::write(
     } else if (this->dataPtr->joints_[i].joint_control_method & POSITION) {
       // Get error in position
       double error;
-      error = (this->dataPtr->joints_[i].joint_position -
-        this->dataPtr->joints_[i].joint_position_cmd) * this->dataPtr->update_rate;
+      error = this->dataPtr->joints_[i].joint_position -
+        this->dataPtr->joints_[i].joint_position_cmd;
 
       // Calculate target velcity
       double target_vel = -this->dataPtr->position_proportional_gain_ * error;
@@ -719,7 +719,7 @@ hardware_interface::return_type GazeboSimSystem::write(
     double position_error =
       position_mimic_joint - position_mimicked_joint * mimic_joint.multiplier;
 
-    double velocity_sp = (-1.0) * position_error * this->dataPtr->update_rate;
+    double velocity_sp = (-1.0) * position_error;
 
     auto vel =
       this->dataPtr->ecm->Component<sim::components::JointVelocityCmd>(
