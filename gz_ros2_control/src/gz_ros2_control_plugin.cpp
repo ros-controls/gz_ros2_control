@@ -76,7 +76,6 @@ public:
     params.update_rate = update_rate;
     params.clock = node_->get_clock();
     params.logger = node_->get_logger();
-    params.executor = node_->get_node_executor_interface();
 
     return load_and_initialize_components(params);
   }
@@ -126,13 +125,13 @@ public:
         logger_, "Initialized robot simulation interface %s!",
         robot_hw_sim_type_str_.c_str());
 
-      hardware_interface::HardwareComponentParams params;
-      params.hardware_info = individual_hardware_info;
-      params.executor = params.executor;
-      params.clock = params.clock;
-      params.logger = params.logger;
+      hardware_interface::HardwareComponentParams component_params;
+      component_params.hardware_info = individual_hardware_info;
+      component_params.executor = params.executor;
+      component_params.clock = params.clock;
+      component_params.logger = params.logger;
       // initialize hardware
-      import_component(std::move(gzSimSystem), params);
+      import_component(std::move(gzSimSystem), component_params);
     }
 
     return components_are_loaded_and_initialized_;
