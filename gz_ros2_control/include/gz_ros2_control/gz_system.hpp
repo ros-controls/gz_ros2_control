@@ -39,8 +39,6 @@ class GazeboSimSystem : public GazeboSimSystemInterface
 {
 public:
   // Documentation Inherited
-  CallbackReturn on_init(const hardware_interface::HardwareInfo & system_info)
-  override;
   CallbackReturn on_init(const hardware_interface::HardwareComponentInterfaceParams & params)
   override;
 
