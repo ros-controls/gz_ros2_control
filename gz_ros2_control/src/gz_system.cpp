@@ -502,7 +502,10 @@ GazeboSimSystem::on_init(const hardware_interface::HardwareInfo & info)
 CallbackReturn
 GazeboSimSystem::on_init(const hardware_interface::HardwareComponentInterfaceParams & params)
 {
-  return on_init(params.hardware_info);
+  if (hardware_interface::SystemInterface::on_init(info) != CallbackReturn::SUCCESS) {
+    return CallbackReturn::ERROR;
+  }
+  return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn GazeboSimSystem::on_configure(
