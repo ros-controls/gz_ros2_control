@@ -68,19 +68,6 @@ public:
 
   // Called from Controller Manager when robot description is initialized from callback
   bool load_and_initialize_components(
-    const std::string & urdf,
-    unsigned int update_rate) override
-  {
-    hardware_interface::ResourceManagerParams params;
-    params.robot_description = urdf;
-    params.update_rate = update_rate;
-    params.clock = node_->get_clock();
-    params.logger = node_->get_logger();
-
-    return load_and_initialize_components(params);
-  }
-
-  bool load_and_initialize_components(
     const hardware_interface::ResourceManagerParams & params) override
   {
     components_are_loaded_and_initialized_ = true;
