@@ -48,14 +48,6 @@ target_link_libraries(example_effort PUBLIC
   rclcpp_action::rclcpp_action
 )
 
-# use the same example_position.cpp for example_ft_sensor
-add_executable(example_ft_sensor examples/example_position.cpp)
-target_link_libraries(example_ft_sensor PUBLIC
-  ${control_msgs_TARGETS}
-  rclcpp::rclcpp
-  rclcpp_action::rclcpp_action
-)
-
 add_executable(example_mobile_robots examples/example_mobile_robots.cpp)
 target_link_libraries(example_mobile_robots
   rclcpp::rclcpp
@@ -80,7 +72,6 @@ install(
     example_position
     example_velocity
     example_effort
-    example_ft_sensor
     example_mobile_robots
     example_gripper
   DESTINATION

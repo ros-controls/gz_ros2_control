@@ -105,7 +105,7 @@ class TestFixture(unittest.TestCase):
 
         proc_action = Node(
             package='gz_ros2_control_demos',
-            executable='example_ft_sensor',
+            executable='example_position',
             output='screen',
         )
 
