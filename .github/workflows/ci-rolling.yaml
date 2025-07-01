@@ -19,14 +19,22 @@ jobs:
         include:
           - ros-distro: "rolling"
             ros-repo-packages: "-testing"
+            upstream-repos: "gz_ros2_control.rolling.repos"
+          - ros-distro: "rolling"
+            ros-repo-packages: "-testing"
+            upstream-repos: ""
           - ros-distro: "rolling"
             ros-repo-packages: ""
+            upstream-repos: ""
     env:
       ROS_DISTRO: ${{ matrix.ros-distro }}
     container:
       image: ghcr.io/ros-controls/ros:${{ matrix.ros-distro }}-ubuntu${{ matrix.ros-repo-packages }}
     steps:
     - uses: actions/checkout@v4
+    - name: Checkout ros2_control framework for semi-binary builds
+      if: ${{ matrix.upstream-repos != '' }}
+      run: vcs import --input ${{ matrix.upstream-repos }}
     - name: Setup colcon workspace
       id: configure
       shell: bash
