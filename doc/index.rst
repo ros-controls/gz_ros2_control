@@ -143,6 +143,21 @@ To use ``mimic`` joints in *gz_ros2_control* you should define its parameters in
 
 The mimic joint must not have command interfaces configured in the ``<ros2_control>`` tag, but state interfaces can be configured.
 
+Using force-torque sensors in simulation
+-----------------------------------------------------------
+
+To use ``force-torque`` sensors in *gz_ros2_control* you should define its parameters in your URDF or SDF (see the `SDF specification <http://sdformat.org/spec?ver=1.12&elem=sensor#sensor_force_torque>`__)
+
+.. code-block:: xml
+
+  <sensor name="force_torque_sensor" type="force_torque">
+    <update_rate>10.0</update_rate>
+    <always_on>true</always_on>
+    <visualize>true</visualize>
+    <topic>force_torque_sensor</topic>
+  </sensor>
+
+It is important to add this as ``reference`` sensor in the ``<gazebo>`` tag in your URDF file.
 
 Add the gz_ros2_control plugin
 ==========================================

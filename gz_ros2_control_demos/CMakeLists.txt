@@ -21,6 +21,7 @@ install(DIRECTORY
   config
   sdf
   urdf
+  worlds
   DESTINATION share/${PROJECT_NAME}/
 )
 
