@@ -7,10 +7,6 @@ repositories:
     type: git
     url: https://github.com/ros-controls/control_toolbox.git
     version: jazzy
-  ros-controls/gz_ros2_control:
-    type: git
-    url: https://github.com/ros-controls/gz_ros2_control.git
-    version: jazzy
   ros-controls/kinematics_interface:
     type: git
     url: https://github.com/ros-controls/kinematics_interface.git
