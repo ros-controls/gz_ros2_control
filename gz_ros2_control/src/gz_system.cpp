@@ -490,9 +490,6 @@ void GazeboSimSystem::registerSensors(
     });
 }
 
-[[deprecated(
-  "Replaced by GazeboSimSystem::on_init(const "
-  "hardware_interface::HardwareComponentInterfaceParams & params).")]]
 CallbackReturn
 GazeboSimSystem::on_init(const hardware_interface::HardwareInfo & info)
 {

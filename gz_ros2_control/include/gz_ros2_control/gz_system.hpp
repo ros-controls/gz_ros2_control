@@ -39,6 +39,9 @@ class GazeboSimSystem : public GazeboSimSystemInterface
 {
 public:
   // Documentation Inherited
+  [[deprecated(
+  "Replaced by GazeboSimSystem::on_init(const "
+  "hardware_interface::HardwareComponentInterfaceParams & params).")]]
   CallbackReturn on_init(const hardware_interface::HardwareInfo & info) override;
 
   // Documentation Inherited
