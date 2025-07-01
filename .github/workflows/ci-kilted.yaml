@@ -17,19 +17,22 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - docker-image: "ubuntu:24.04"
-            ros-distro: "kilted"
-            ros-repo-packages: "-testing"
-          - docker-image: "ubuntu:24.04"
-            ros-distro: "kilted"
-            ros-repo-packages: ""
+          - ros-repo-packages: "-testing"
+            upstream-repos: ""
+          - ros-repo-packages: ""
+            upstream-repos: ""
+          - ros-repo-packages: "-testing"
+            upstream-repos: gz_ros2_control.kilted.repos"
     env:
-      ROS_DISTRO: ${{ matrix.ros-distro }}
+      ROS_DISTRO: kilted
       ROS_REPO_PACKAGES: ${{ matrix.ros-repo-packages }}
     container:
-      image: ${{ matrix.docker-image }}
+      image: ghcr.io/ros-controls/ros:kilted-ubuntu${{ matrix.ros-repo-packages }}
     steps:
     - uses: actions/checkout@v4
+    - name: Checkout ros2_control framework for semi-binary builds
+      if: ${{ matrix.upstream-repos != '' }}
+      run: vcs import --input ${{ matrix.upstream-repos }}
     - name: Setup colcon workspace
       id: configure
       shell: bash
