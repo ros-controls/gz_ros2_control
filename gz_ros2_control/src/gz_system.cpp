@@ -14,6 +14,14 @@
 
 #include "gz_ros2_control/gz_system.hpp"
 
+<<<<<<< HEAD
+=======
+#include <gz/msgs/imu.pb.h>
+#include <gz/msgs/wrench.pb.h>
+
+#include <array>
+#include <cstddef>
+>>>>>>> a678ab9 (Provide force-torque sensor data through gz_system to controller_manager - fixes to original PR  (#610))
 #include <limits>
 #include <map>
 #include <memory>
@@ -26,7 +34,12 @@
 
 #include <gz/sim/components/AngularVelocity.hh>
 #include <gz/sim/components/Imu.hh>
+<<<<<<< HEAD
 #include <gz/sim/components/JointForce.hh>
+=======
+#include <gz/sim/components/ForceTorque.hh>
+#include <gz/sim/components/JointAxis.hh>
+>>>>>>> a678ab9 (Provide force-torque sensor data through gz_system to controller_manager - fixes to original PR  (#610))
 #include <gz/sim/components/JointForceCmd.hh>
 #include <gz/sim/components/JointPosition.hh>
 #include <gz/sim/components/JointPositionReset.hh>
@@ -98,6 +111,7 @@ struct jointData
   gz_ros2_control::GazeboSimSystemInterface::ControlMethod joint_control_method;
 };
 
+<<<<<<< HEAD
 struct MimicJoint
 {
   std::size_t joint_index;
@@ -106,6 +120,37 @@ struct MimicJoint
   std::vector<std::string> interfaces_to_mimic;
 };
 
+=======
+class ForceTorqueData
+{
+public:
+  /// \brief force torque sensor's name.
+  std::string name{};
+
+  /// \brief force torque sensor's topic name.
+  std::string topicName{};
+
+  /// \brief handles to the force torque from within Gazebo
+  sim::Entity sim_ft_sensors_ = sim::kNullEntity;
+
+  /// \brief An array per FT
+  std::array<double, 6> ft_sensor_data_;
+
+  /// \brief callback to get the Force Torque topic values
+  void OnForceTorque(const GZ_MSGS_NAMESPACE Wrench & _msg);
+};
+
+void ForceTorqueData::OnForceTorque(const GZ_MSGS_NAMESPACE Wrench & _msg)
+{
+  this->ft_sensor_data_[0] = _msg.force().x();
+  this->ft_sensor_data_[1] = _msg.force().y();
+  this->ft_sensor_data_[2] = _msg.force().z();
+  this->ft_sensor_data_[3] = _msg.torque().x();
+  this->ft_sensor_data_[4] = _msg.torque().y();
+  this->ft_sensor_data_[5] = _msg.torque().z();
+}
+
+>>>>>>> a678ab9 (Provide force-torque sensor data through gz_system to controller_manager - fixes to original PR  (#610))
 class ImuData
 {
 public:
@@ -154,8 +199,11 @@ public:
   /// \brief vector with the joint's names.
   std::vector<struct jointData> joints_;
 
-  /// \brief vector with the imus .
+  /// \brief vector with the imus.
   std::vector<std::shared_ptr<ImuData>> imus_;
+
+  /// \brief vector with the force torque sensors.
+  std::vector<std::shared_ptr<ForceTorqueData>> ft_sensors_;
 
   /// \brief state interfaces that will be exported to the Resource Manager
   std::vector<hardware_interface::StateInterface> state_interfaces_;
@@ -501,6 +549,55 @@ void GazeboSimSystem::registerSensors(
       this->dataPtr->imus_.push_back(imuData);
       return true;
     });
+
+  this->dataPtr->ecm->Each<sim::components::ForceTorque,
+    sim::components::Name>(
+    [&](const sim::Entity & _entity,
+    const sim::components::ForceTorque *,
+    const sim::components::Name * _name) -> bool
+    {
+      auto ftData = std::make_shared<ForceTorqueData>();
+      RCLCPP_INFO_STREAM(this->nh_->get_logger(), "Loading sensor: " << _name->Data());
+
+      auto sensorTopicComp = this->dataPtr->ecm->Component<
+        sim::components::SensorTopic>(_entity);
+      if (sensorTopicComp) {
+        RCLCPP_INFO_STREAM(this->nh_->get_logger(), "Topic name: " << sensorTopicComp->Data());
+      }
+
+      RCLCPP_INFO_STREAM(
+        this->nh_->get_logger(), "\tState:");
+      ftData->name = _name->Data();
+      ftData->sim_ft_sensors_ = _entity;
+
+      hardware_interface::ComponentInfo component;
+      for (auto & comp : sensor_components_) {
+        if (comp.name == _name->Data()) {
+          component = comp;
+        }
+      }
+
+      static const std::map<std::string, size_t> interface_name_map = {
+        {"force.x", 0},
+        {"force.y", 1},
+        {"force.z", 2},
+        {"torque.x", 3},
+        {"torque.y", 4},
+        {"torque.z", 5},
+      };
+
+      for (const auto & state_interface : component.state_interfaces) {
+        RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t " << state_interface.name);
+
+        size_t data_index = interface_name_map.at(state_interface.name);
+        this->dataPtr->state_interfaces_.emplace_back(
+          ftData->name,
+          state_interface.name,
+          &ftData->ft_sensor_data_[data_index]);
+      }
+      this->dataPtr->ft_sensors_.push_back(ftData);
+      return true;
+    });
 }
 
 CallbackReturn
@@ -608,6 +705,24 @@ hardware_interface::return_type GazeboSimSystem::read(
       }
     }
   }
+
+  for (unsigned int i = 0; i < this->dataPtr->ft_sensors_.size(); ++i) {
+    if (this->dataPtr->ft_sensors_[i]->topicName.empty()) {
+      auto sensorTopicComp = this->dataPtr->ecm->Component<
+        sim::components::SensorTopic>(this->dataPtr->ft_sensors_[i]->sim_ft_sensors_);
+      if (sensorTopicComp) {
+        this->dataPtr->ft_sensors_[i]->topicName = sensorTopicComp->Data();
+        RCLCPP_INFO_STREAM(
+          this->nh_->get_logger(), "ForceTorque " << this->dataPtr->ft_sensors_[i]->name <<
+            " has a topic name: " << sensorTopicComp->Data());
+
+        this->dataPtr->node.Subscribe(
+          this->dataPtr->ft_sensors_[i]->topicName, &ForceTorqueData::OnForceTorque,
+          this->dataPtr->ft_sensors_[i].get());
+      }
+    }
+  }
+
   return hardware_interface::return_type::OK;
 }
 

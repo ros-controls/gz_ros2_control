@@ -1,0 +1,23 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 1000  # Hz
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+joint_trajectory_controller:
+  ros__parameters:
+    type: joint_trajectory_controller/JointTrajectoryController
+    joints:
+      - slider_to_cart
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+
+force_torque_sensor_broadcaster:
+  ros__parameters:
+    type: force_torque_sensor_broadcaster/ForceTorqueSensorBroadcaster
+    sensor_name: "force_torque_sensor"
+    frame_id: "slider_to_cart"
