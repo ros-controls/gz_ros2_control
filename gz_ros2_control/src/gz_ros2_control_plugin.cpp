@@ -68,12 +68,12 @@ public:
 
   // Called from Controller Manager when robot description is initialized from callback
   bool load_and_initialize_components(
-    const std::string & urdf,
-    unsigned int update_rate) override
+    const hardware_interface::ResourceManagerParams & params) override
   {
     components_are_loaded_and_initialized_ = true;
 
-    const auto hardware_info = hardware_interface::parse_control_resources_from_urdf(urdf);
+    const auto hardware_info =
+      hardware_interface::parse_control_resources_from_urdf(params.robot_description);
 
     for (const auto & individual_hardware_info : hardware_info) {
       std::string robot_hw_sim_type_str_ = individual_hardware_info.hardware_plugin_name;
@@ -101,7 +101,7 @@ public:
           enabledJoints_,
           individual_hardware_info,
           *ecm_,
-          update_rate))
+          params.update_rate))
       {
         RCLCPP_FATAL(
           logger_, "Could not initialize robot simulation interface");
@@ -112,8 +112,13 @@ public:
         logger_, "Initialized robot simulation interface %s!",
         robot_hw_sim_type_str_.c_str());
 
+      hardware_interface::HardwareComponentParams component_params;
+      component_params.hardware_info = individual_hardware_info;
+      component_params.executor = params.executor;
+      component_params.clock = params.clock;
+      component_params.logger = params.logger;
       // initialize hardware
-      import_component(std::move(gzSimSystem), individual_hardware_info);
+      import_component(std::move(gzSimSystem), component_params);
     }
 
     return components_are_loaded_and_initialized_;
