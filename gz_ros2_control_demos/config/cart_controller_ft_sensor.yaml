@@ -21,4 +21,3 @@ force_torque_sensor_broadcaster:
     type: force_torque_sensor_broadcaster/ForceTorqueSensorBroadcaster
     sensor_name: "force_torque_sensor"
     frame_id: "slider_to_cart"
-
