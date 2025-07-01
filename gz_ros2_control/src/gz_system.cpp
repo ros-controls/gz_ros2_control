@@ -493,7 +493,7 @@ void GazeboSimSystem::registerSensors(
 CallbackReturn
 GazeboSimSystem::on_init(const hardware_interface::HardwareComponentInterfaceParams & params)
 {
-  if (hardware_interface::SystemInterface::on_init(params.hardware_info) !=
+  if (hardware_interface::SystemInterface::on_init(params) !=
     CallbackReturn::SUCCESS)
   {
     return CallbackReturn::ERROR;
