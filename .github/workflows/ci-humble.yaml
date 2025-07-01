@@ -19,12 +19,22 @@ jobs:
         include:
           - gz-version: fortress
             ros-repo-packages: ""
+            upstream-repos: ""
           - gz-version: fortress
             ros-repo-packages: "-testing"
+            upstream-repos: ""
           - gz-version: harmonic
             ros-repo-packages: ""
+            upstream-repos: ""
           - gz-version: harmonic
             ros-repo-packages: "-testing"
+            upstream-repos: ""
+          - gz-version: fortress
+            ros-repo-packages: "-testing"
+            upstream-repos: "gz_ros2_control.humble.repos"
+          - gz-version: harmonic
+            ros-repo-packages: "-testing"
+            upstream-repos: "gz_ros2_control.humble.repos"
     env:
       GZ_VERSION: ${{ matrix.gz-version }}
     container:
@@ -38,6 +48,9 @@ jobs:
       uses: actions/checkout@v4
       with:
         ref: humble
+    - name: Checkout ros2_control framework for semi-binary builds
+      if: ${{ matrix.upstream-repos != '' }}
+      run: vcs import --input ${{ matrix.upstream-repos }}
     - name: Setup colcon workspace
       id: configure
       shell: bash
