@@ -22,7 +22,7 @@ jobs:
           - ros-repo-packages: ""
             upstream-repos: ""
           - ros-repo-packages: "-testing"
-            upstream-repos: gz_ros2_control.kilted.repos"
+            upstream-repos: "gz_ros2_control.kilted.repos"
     env:
       ROS_DISTRO: kilted
       ROS_REPO_PACKAGES: ${{ matrix.ros-repo-packages }}
