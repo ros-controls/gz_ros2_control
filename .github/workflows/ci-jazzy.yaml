@@ -17,14 +17,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - ros-distro: "jazzy"
-            ros-repo-packages: "-testing"
-          - ros-distro: "jazzy"
-            ros-repo-packages: ""
+          - ros-repo-packages: "-testing"
+            upstream-repos: ""
+          - ros-repo-packages: ""
+            upstream-repos: ""
+          - ros-repo-packages: "-testing"
+            upstream-repos: "gz_ros2_control.jazzy.repos"
     env:
-      ROS_DISTRO: ${{ matrix.ros-distro }}
+      ROS_DISTRO: jazzy
     container:
-      image: ghcr.io/ros-controls/ros:${{ matrix.ros-distro }}-ubuntu${{ matrix.ros-repo-packages }}
+      image: ghcr.io/ros-controls/ros:jazzy-ubuntu${{ matrix.ros-repo-packages }}
     steps:
     - name: Checkout code
       if: github.event_name != 'schedule'
@@ -34,6 +36,9 @@ jobs:
       uses: actions/checkout@v4
       with:
         ref: jazzy
+    - name: Checkout ros2_control framework for semi-binary builds
+      if: ${{ matrix.upstream-repos != '' }}
+      run: vcs import --input ${{ matrix.upstream-repos }}
     - name: Setup colcon workspace
       id: configure
       shell: bash
