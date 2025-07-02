@@ -40,6 +40,7 @@
   <exec_depend>control_msgs</exec_depend>
   <exec_depend>diff_drive_controller</exec_depend>
   <exec_depend>effort_controllers</exec_depend>
+  <exec_depend>force_torque_sensor_broadcaster</exec_depend>
   <exec_depend>gz_ros2_control</exec_depend>
   <exec_depend>hardware_interface</exec_depend>
   <exec_depend>imu_sensor_broadcaster</exec_depend>
