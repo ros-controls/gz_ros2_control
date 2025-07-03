@@ -17,6 +17,10 @@ on:
       - '!.github/**' # exclude yaml files in .github directory
       - '.github/workflows/jazzy-check-docs.yml'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check-docs:
     name: Check Docs
