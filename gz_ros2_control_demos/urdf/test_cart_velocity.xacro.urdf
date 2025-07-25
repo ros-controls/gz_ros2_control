@@ -114,7 +114,7 @@
 
   <ros2_control name="GazeboSimSystem" type="system">
     <hardware>
-      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      <plugin>gz_ros2_control::GazeboSimSystem</plugin>
     </hardware>
     <joint name="slider_to_cart">
       <command_interface name="velocity">

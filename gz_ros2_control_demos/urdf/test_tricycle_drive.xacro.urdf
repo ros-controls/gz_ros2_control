@@ -152,7 +152,7 @@
 
   <ros2_control name="GazeboSystem" type="system">
     <hardware>
-      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      <plugin>gz_ros2_control::GazeboSimSystem</plugin>
     </hardware>
     <joint name="steering_joint">
       <command_interface name="position" />

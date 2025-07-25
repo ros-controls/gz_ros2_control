@@ -220,7 +220,7 @@
   <!-- Define the vehicles hardware, command and state interfaces -->
   <ros2_control name="GazeboSimSystem" type="system">
     <hardware>
-      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      <plugin>gz_ros2_control::GazeboSimSystem</plugin>
     </hardware>
     <joint name="front_left_wheel_joint">
       <command_interface name="velocity">
