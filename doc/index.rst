@@ -383,4 +383,3 @@ Their current behavior is described below:
   For those who are designing control systems: This means that the response of the joint is equivalent to a discrete-time first-order system.
   The system's time constant is ``T = 1 / (position_proportional_gain * controller_manager_update_rate)``.
   In theory, ``position_proportional_gain`` cannot be greater than 2 to maintain system stability, and cannot be greater than 1 to avoid oscillations.
-
