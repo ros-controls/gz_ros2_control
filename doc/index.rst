@@ -440,3 +440,21 @@ This uses the effort command interface for the cart's degree of freedom on the r
 
   ros2 launch gz_ros2_control_demos pendulum_example_position.launch.py
   ros2 run gz_ros2_control_demos example_position
+
+Notes on the command interface
+==============================
+
+The *gz_ros2_control* plugin receives commands from the ROS2 Control controllers through various command interfaces
+and applies them to Gazebo simulated joints. Specifically, there are three types of command interfaces.
+Their current behavior is described below:
+
+* **Effort Command Interface**: The force or torque requested by the controller is applied directly to the joint as is.
+* **Velocity Command Interface**: The velocity requested by the controller is applied directly to the joint as is.
+  Note that on some vehicle models, using the velocity command interface to drive the wheels may cause slippage and odometer errors.
+  This is because the wheels are accelerated to the required speed instantaneously, but the chassis cannot reach the same speed immediately.
+* **Position Command Interface**: The *gz_ros2_control* plugin controls the velocity of the joints to make them reach the position required by the controller.
+  The velocity is calculated as ``joint_velocity = position_proportional_gain * joint_position_error * controller_manager_update_rate``,
+  where ``position_proportional_gain`` is configurable as described above.
+  For those who are designing control systems: This means that the response of the joint is equivalent to a discrete-time first-order system.
+  The system's time constant is ``T = 1 / (position_proportional_gain * controller_manager_update_rate)``.
+  In theory, ``position_proportional_gain`` cannot be greater than 2 to maintain system stability, and cannot be greater than 1 to avoid oscillations.
