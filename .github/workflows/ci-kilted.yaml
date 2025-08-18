@@ -29,7 +29,7 @@ jobs:
     container:
       image: ghcr.io/ros-controls/ros:kilted-ubuntu${{ matrix.ros-repo-packages }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Checkout ros2_control framework for semi-binary builds
       if: ${{ matrix.upstream-repos != '' }}
       run: vcs import --input ${{ matrix.upstream-repos }}
