@@ -2,6 +2,9 @@
 Changelog for package gz_ros2_control_tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.11 (2025-08-18)
+-------------------
+
 2.0.10 (2025-07-09)
 -------------------
 * Provide force-torque sensor data through gz_system to controller_manager - fixes to original PR  (backport `#610 <https://github.com/ros-controls/gz_ros2_control/issues/610>`_) (`#623 <https://github.com/ros-controls/gz_ros2_control/issues/623>`_)

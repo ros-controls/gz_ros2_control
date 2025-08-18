@@ -2,6 +2,9 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.11 (2025-08-18)
+-------------------
+
 2.0.10 (2025-07-09)
 -------------------
 * Shift to Struct based Method and Constructors, with Executor passed from CM to on_init() (`#613 <https://github.com/ros-controls/gz_ros2_control/issues/613>`_) (`#627 <https://github.com/ros-controls/gz_ros2_control/issues/627>`_)
