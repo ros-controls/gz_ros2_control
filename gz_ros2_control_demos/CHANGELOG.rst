@@ -2,6 +2,11 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.15 (2025-08-18)
+-------------------
+* Fix ackermann example inertial and joint tf publish (`#641 <https://github.com/ros-controls/gz_ros2_control/issues/641>`_) (`#644 <https://github.com/ros-controls/gz_ros2_control/issues/644>`_)
+* Contributors: mergify[bot]
+
 1.2.14 (2025-07-09)
 -------------------
 * Provide force-torque sensor data through gz_system to controller_manager - fixes to original PR  (backport `#610 <https://github.com/ros-controls/gz_ros2_control/issues/610>`_) (`#624 <https://github.com/ros-controls/gz_ros2_control/issues/624>`_)
