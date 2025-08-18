@@ -2,6 +2,11 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.3 (2025-08-18)
+------------------
+* Fix ackermann example inertial and joint tf publish (`#641 <https://github.com/ros-controls/gz_ros2_control/issues/641>`_)
+* Contributors: Reza Kermani
+
 3.0.2 (2025-07-09)
 ------------------
 * Added missing exec depend (`#626 <https://github.com/ros-controls/gz_ros2_control/issues/626>`_)
