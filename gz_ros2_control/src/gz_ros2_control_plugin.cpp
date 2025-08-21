@@ -264,6 +264,15 @@ GazeboSimROS2ControlPlugin::~GazeboSimROS2ControlPlugin()
 }
 
 //////////////////////////////////////////////////
+void GazeboSimROS2ControlPlugin::Reset(const gz::sim::UpdateInfo &/*_info*/,
+  gz::sim::EntityComponentManager &/*_ecm*/)
+{
+  RCLCPP_ERROR(
+    this->dataPtr->node_->get_logger(),
+    "Resetting gz_ros2_control plugin");
+}
+
+//////////////////////////////////////////////////
 void GazeboSimROS2ControlPlugin::Configure(
   const sim::Entity & _entity,
   const std::shared_ptr<const sdf::Element> & _sdf,
@@ -540,4 +549,5 @@ GZ_ADD_PLUGIN(
   gz::sim::System,
   gz_ros2_control::GazeboSimROS2ControlPlugin::ISystemConfigure,
   gz_ros2_control::GazeboSimROS2ControlPlugin::ISystemPreUpdate,
+  gz_ros2_control::GazeboSimROS2ControlPlugin::ISystemReset,
   gz_ros2_control::GazeboSimROS2ControlPlugin::ISystemPostUpdate)

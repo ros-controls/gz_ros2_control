@@ -29,7 +29,8 @@ class GazeboSimROS2ControlPlugin
   : public sim::System,
   public sim::ISystemConfigure,
   public sim::ISystemPreUpdate,
-  public sim::ISystemPostUpdate
+  public sim::ISystemPostUpdate,
+  public sim::ISystemReset
 {
 public:
   /// \brief Constructor
@@ -53,6 +54,10 @@ public:
   void PostUpdate(
     const sim::UpdateInfo & _info,
     const sim::EntityComponentManager & _ecm) override;
+
+  void Reset(
+    const gz::sim::UpdateInfo & _info,
+    gz::sim::EntityComponentManager & _ecm) override;
 
 private:
   /// \brief Private data pointer.
