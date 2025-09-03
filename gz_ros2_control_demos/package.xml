@@ -20,6 +20,7 @@
   <build_depend>geometry_msgs</build_depend>
   <build_depend>rclcpp</build_depend>
   <build_depend>rclcpp_action</build_depend>
+  <build_depend>ros2_control_cmake</build_depend>
   <build_depend>std_msgs</build_depend>
 
   <exec_depend>ament_index_python</exec_depend>
@@ -35,7 +36,6 @@
   <exec_depend>xacro</exec_depend>
 
   <!-- ros2_control -->
-  <depend>ros2_control_cmake</depend>
   <exec_depend>ackermann_steering_controller</exec_depend>
   <exec_depend>control_msgs</exec_depend>
   <exec_depend>diff_drive_controller</exec_depend>
