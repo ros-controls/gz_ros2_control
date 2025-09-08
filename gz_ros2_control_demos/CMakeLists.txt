@@ -60,9 +60,6 @@ target_link_libraries(example_gripper PUBLIC
   rclcpp::rclcpp
 )
 
-if(BUILD_TESTING)
-endif()
-
 ## Install
 install(
   TARGETS
