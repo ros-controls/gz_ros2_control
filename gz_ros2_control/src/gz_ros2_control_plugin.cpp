@@ -458,7 +458,8 @@ void GazeboSimROS2ControlPlugin::Configure(
       this->dataPtr->node_->get_namespace(), options));
   this->dataPtr->executor_->add_node(this->dataPtr->controller_manager_);
 
-  this->dataPtr->update_rate = this->dataPtr->controller_manager_->get_update_rate();
+  this->dataPtr->update_rate =
+    static_cast<int>(this->dataPtr->controller_manager_->get_update_rate());
   this->dataPtr->control_period_ = rclcpp::Duration(
     std::chrono::duration_cast<std::chrono::nanoseconds>(
       std::chrono::duration<double>(1.0 / static_cast<double>(this->dataPtr->update_rate))));
