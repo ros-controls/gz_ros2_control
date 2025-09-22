@@ -171,7 +171,7 @@ public:
 
   /// \brief Last time the update method was called
   rclcpp::Time last_update_sim_time_ros_ =
-    rclcpp::Time((int64_t)0, RCL_ROS_TIME);
+    rclcpp::Time(static_cast<int64_t>(0), RCL_ROS_TIME);
 
   /// \brief ECM pointer
   sim::EntityComponentManager * ecm{nullptr};
