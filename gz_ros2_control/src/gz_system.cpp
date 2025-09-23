@@ -578,12 +578,24 @@ void GazeboSimSystem::registerSensors(
 CallbackReturn
 GazeboSimSystem::on_init(const hardware_interface::HardwareInfo & info)
 {
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
   if (hardware_interface::SystemInterface::on_init(info) !=
     CallbackReturn::SUCCESS)
   {
     return CallbackReturn::ERROR;
   }
   return CallbackReturn::SUCCESS;
+#ifdef _MSC_VER
+#pragma warning(pop)
+#else
+#pragma GCC diagnostic pop
+#endif
 }
 
 CallbackReturn
