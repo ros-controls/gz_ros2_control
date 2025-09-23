@@ -507,7 +507,6 @@ void GazeboSimROS2ControlPlugin::Configure(
       this->dataPtr->node_->get_namespace()));
   this->dataPtr->executor_->add_node(this->dataPtr->controller_manager_);
 
-<<<<<<< HEAD
   if (!this->dataPtr->controller_manager_->has_parameter("update_rate")) {
     RCLCPP_ERROR_STREAM(
       this->dataPtr->node_->get_logger(),
@@ -517,10 +516,6 @@ void GazeboSimROS2ControlPlugin::Configure(
 
   this->dataPtr->update_rate =
     this->dataPtr->controller_manager_->get_parameter("update_rate").as_int();
-=======
-  this->dataPtr->update_rate =
-    static_cast<int>(this->dataPtr->controller_manager_->get_update_rate());
->>>>>>> 7550a71 (Fix compiler warnings (#674))
   this->dataPtr->control_period_ = rclcpp::Duration(
     std::chrono::duration_cast<std::chrono::nanoseconds>(
       std::chrono::duration<double>(1.0 / static_cast<double>(this->dataPtr->update_rate))));
