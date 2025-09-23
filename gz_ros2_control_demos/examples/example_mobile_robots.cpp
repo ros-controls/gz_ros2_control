@@ -27,6 +27,9 @@ int main(int argc, char * argv[])
   std::shared_ptr<rclcpp::Node> node =
     std::make_shared<rclcpp::Node>("example_mobile_robots_node");
 
+  rclcpp::executors::SingleThreadedExecutor executor;
+  executor.add_node(node);
+
   auto publisher = node->create_publisher<geometry_msgs::msg::TwistStamped>(
     "/cmd_vel", 10);
 
@@ -46,7 +49,7 @@ int main(int argc, char * argv[])
     command.header.stamp = node->now();
     publisher->publish(command);
     std::this_thread::sleep_for(50ms);
-    rclcpp::spin_some(node);
+    executor.spin_some();
   }
   rclcpp::shutdown();
 
