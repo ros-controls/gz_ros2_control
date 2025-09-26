@@ -11,7 +11,6 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>ament_index_cpp</depend>
-  <!-- default version to use in official ROS 2 packages is Gazebo Harmonic for ROS 2 Rolling -->
   <depend>gz_sim_vendor</depend>
   <depend>gz_plugin_vendor</depend>
   <depend>pluginlib</depend>
