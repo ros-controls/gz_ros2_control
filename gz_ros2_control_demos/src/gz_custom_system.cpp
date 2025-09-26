@@ -37,11 +37,8 @@
 #include <gz/sim/components/LinearAcceleration.hh>
 #include <gz/sim/components/Name.hh>
 #include <gz/sim/components/ParentEntity.hh>
-#include <gz/sim/components/Pose.hh>
-#include <gz/transport/Node.hh>
-#define GZ_TRANSPORT_NAMESPACE gz::transport::
-#define GZ_MSGS_NAMESPACE gz::msgs::
 
+#include "control_toolbox/low_pass_filter.hpp"
 #include <hardware_interface/hardware_info.hpp>
 #include <hardware_interface/lexical_casts.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
@@ -71,6 +68,9 @@ struct jointData
 
   /// \brief handles to the joints from within Gazebo
   sim::Entity sim_joint;
+
+  /// damping_frequency for a first-order low pass
+  std::unique_ptr<control_toolbox::LowPassFilter<double>> lpf;
 };
 
 class gz_ros2_control_demos::GazeboSimSystemPrivate
@@ -100,9 +100,6 @@ public:
 
   /// \brief controller update rate
   unsigned int update_rate;
-
-  /// \brief Gazebo communication node.
-  GZ_TRANSPORT_NAMESPACE Node node;
 };
 
 namespace gz_ros2_control_demos
@@ -251,6 +248,23 @@ bool GazeboCustomSimSystem::initSim(
           this->dataPtr->joints_[j].joint_velocity_cmd = initial_velocity;
         }
       }
+      auto it = joint_info.command_interfaces[i].parameters.find("damping_frequency");
+      if (it != joint_info.command_interfaces[i].parameters.end()) {
+        double damping_frequency = stod(it->second);
+        RCLCPP_INFO(this->nh_->get_logger(), "\t\t\t with damping_frequency %.2fs.",
+            damping_frequency);
+        double damping_intensity = 1.0;
+        auto it2 = joint_info.command_interfaces[i].parameters.find("damping_intensity");
+        if (it2 != joint_info.command_interfaces[i].parameters.end()) {
+          damping_intensity = stod(it2->second);
+        }
+        RCLCPP_INFO(this->nh_->get_logger(), "\t\t\t with damping_intensity %.2fs.",
+            damping_intensity);
+        this->dataPtr->joints_[j].lpf =
+          std::make_unique<control_toolbox::LowPassFilter<double>>(update_rate, damping_frequency,
+            damping_intensity);
+        this->dataPtr->joints_[j].lpf->configure();
+      }
       // independently of existence of command interface set initial value if defined
       if (!std::isnan(initial_position)) {
         this->dataPtr->joints_[j].joint_position = initial_position;
@@ -366,10 +380,15 @@ hardware_interface::return_type GazeboCustomSimSystem::write(
     if (this->dataPtr->joints_[i].sim_joint == sim::kNullEntity) {
       continue;
     }
-
+    double vel_cmd;
+    if (this->dataPtr->joints_[i].lpf && this->dataPtr->joints_[i].lpf->is_configured()) {
+      this->dataPtr->joints_[i].lpf->update(this->dataPtr->joints_[i].joint_velocity_cmd, vel_cmd);
+    } else {
+      vel_cmd = this->dataPtr->joints_[i].joint_velocity_cmd;
+    }
     this->dataPtr->ecm->SetComponentData<sim::components::JointVelocityCmd>(
       this->dataPtr->joints_[i].sim_joint,
-      {this->dataPtr->joints_[i].joint_velocity_cmd});
+      {vel_cmd});
   }
 
   return hardware_interface::return_type::OK;

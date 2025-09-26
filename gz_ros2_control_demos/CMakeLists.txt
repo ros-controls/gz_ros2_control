@@ -20,6 +20,7 @@ find_package(rclcpp_lifecycle REQUIRED)
 find_package(std_msgs REQUIRED)
 
 find_package(control_msgs REQUIRED)
+find_package(control_toolbox REQUIRED)
 find_package(gz_ros2_control REQUIRED)
 find_package(hardware_interface REQUIRED)
 
@@ -79,6 +80,7 @@ target_include_directories(gz_custom_hardware_plugins PUBLIC
 target_link_libraries(gz_custom_hardware_plugins
 PUBLIC
   gz-sim::gz-sim
+  control_toolbox::control_toolbox
   gz_ros2_control::gz_ros2_control-system
   hardware_interface::hardware_interface
   rclcpp::rclcpp
