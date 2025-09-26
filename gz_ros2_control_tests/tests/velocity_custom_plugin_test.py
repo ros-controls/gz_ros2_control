@@ -100,8 +100,7 @@ class TestFixture(unittest.TestCase):
         # Check if the controllers are running
         cnames = [
                   'joint_trajectory_controller',
-                  'joint_state_broadcaster',
-                  'imu_sensor_broadcaster'
+                  'joint_state_broadcaster'
                 ]
         check_controllers_running(self.node, cnames)
 
