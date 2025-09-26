@@ -31,6 +31,8 @@ include_directories(include)
 add_library(${PROJECT_NAME}-system SHARED
   src/gz_ros2_control_plugin.cpp
 )
+# TODO do we need this alias?
+add_library(${PROJECT_NAME}-system::${PROJECT_NAME}-system ALIAS ${PROJECT_NAME}-system)
 
 target_link_libraries(${PROJECT_NAME}-system
   PUBLIC
@@ -39,9 +41,13 @@ target_link_libraries(${PROJECT_NAME}-system
   ament_index_cpp::ament_index_cpp
   controller_manager::controller_manager
   hardware_interface::hardware_interface
-  pluginlib::pluginlib
+  ${pluginlib_TARGETS}
   rclcpp::rclcpp
   rclcpp_lifecycle::rclcpp_lifecycle
+)
+target_include_directories(${PROJECT_NAME}-system PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
 )
 
 #########
@@ -57,17 +63,24 @@ PUBLIC
   rclcpp_lifecycle::rclcpp_lifecycle
 )
 
-## Install
+# Install headers
+install(DIRECTORY include/
+  DESTINATION include/${PROJECT_NAME}
+)
+
+# Install library and export targets
 install(TARGETS
+  ${PROJECT_NAME}-system
   gz_hardware_plugins
+  EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
 
-install(DIRECTORY
-  include/
-  DESTINATION include
+install(EXPORT export_${PROJECT_NAME}
+  NAMESPACE ${PROJECT_NAME}::
+  DESTINATION share/${PROJECT_NAME}/cmake
 )
 
 # Testing and linting
@@ -76,12 +89,20 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+# Export old-style CMake variables
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME}-system gz_hardware_plugins)
 
-# Install directories
-install(TARGETS ${PROJECT_NAME}-system
-  DESTINATION lib
+# Export modern CMake targets
+# TODO() do we need HAS_LIBRARY_TARGET?
+ament_export_targets(
+  export_${PROJECT_NAME}
+  HAS_LIBRARY_TARGET
+)
+
+ament_export_dependencies(
+    controller_manager
+    hardware_interface
 )
 
 pluginlib_export_plugin_description_file(gz_ros2_control gz_hardware_plugins.xml)
