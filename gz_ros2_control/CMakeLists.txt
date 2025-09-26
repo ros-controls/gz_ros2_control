@@ -31,7 +31,6 @@ include_directories(include)
 add_library(${PROJECT_NAME}-system SHARED
   src/gz_ros2_control_plugin.cpp
 )
-# TODO do we need this alias?
 add_library(${PROJECT_NAME}-system::${PROJECT_NAME}-system ALIAS ${PROJECT_NAME}-system)
 
 target_link_libraries(${PROJECT_NAME}-system
