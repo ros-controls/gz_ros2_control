@@ -251,18 +251,20 @@ bool GazeboCustomSimSystem::initSim(
       auto it = joint_info.command_interfaces[i].parameters.find("damping_frequency");
       if (it != joint_info.command_interfaces[i].parameters.end()) {
         double damping_frequency = stod(it->second);
-        RCLCPP_INFO(this->nh_->get_logger(), "\t\t\t with damping_frequency %.2fs.",
-            damping_frequency);
+        RCLCPP_INFO(
+          this->nh_->get_logger(), "\t\t\t with damping_frequency %.2fs.",
+          damping_frequency);
         double damping_intensity = 1.0;
         auto it2 = joint_info.command_interfaces[i].parameters.find("damping_intensity");
         if (it2 != joint_info.command_interfaces[i].parameters.end()) {
           damping_intensity = stod(it2->second);
         }
-        RCLCPP_INFO(this->nh_->get_logger(), "\t\t\t with damping_intensity %.2fs.",
-            damping_intensity);
+        RCLCPP_INFO(
+          this->nh_->get_logger(), "\t\t\t with damping_intensity %.2fs.",
+          damping_intensity);
         this->dataPtr->joints_[j].lpf =
-          std::make_unique<control_toolbox::LowPassFilter<double>>(update_rate, damping_frequency,
-            damping_intensity);
+          std::make_unique<control_toolbox::LowPassFilter<double>>(
+            update_rate, damping_frequency, damping_intensity);
         this->dataPtr->joints_[j].lpf->configure();
       }
       // independently of existence of command interface set initial value if defined
