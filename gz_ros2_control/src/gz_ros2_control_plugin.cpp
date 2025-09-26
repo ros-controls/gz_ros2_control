@@ -264,7 +264,8 @@ GazeboSimROS2ControlPlugin::~GazeboSimROS2ControlPlugin()
 }
 
 //////////////////////////////////////////////////
-void GazeboSimROS2ControlPlugin::Reset(const gz::sim::UpdateInfo &/*_info*/,
+void GazeboSimROS2ControlPlugin::Reset(
+  const gz::sim::UpdateInfo &/*_info*/,
   gz::sim::EntityComponentManager &/*_ecm*/)
 {
   RCLCPP_ERROR(
