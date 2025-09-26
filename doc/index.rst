@@ -247,13 +247,14 @@ The default behavior provides the following ros2_control interfaces:
 Advanced: custom gz_ros2_control Simulation Plugins
 -----------------------------------------------------------
 
-The *gz_ros2_control* Gazebo plugin also provides a pluginlib-based interface to implement custom interfaces between Gazebo and *ros2_control* for simulating more complex mechanisms (nonlinear springs, linkages, etc).
+The *gz_ros2_control* Gazebo plugin also provides a pluginlib-based interface to implement custom interfaces between
+Gazebo and *ros2_control* for simulating more complex mechanisms (nonlinear springs, linkages, etc) or actuator dynamics.
 
 These plugins must inherit the ``gz_ros2_control::GazeboSimSystemInterface``, which implements a simulated *ros2_control*
-``hardware_interface::SystemInterface``. SystemInterface provides API-level access to read and command joint properties.
+``hardware_interface::SystemInterface``.
 
-The respective GazeboSimSystemInterface sub-class is specified in a URDF or SDF model and is loaded when the
-robot model is loaded. For example, the following XML will load the default plugin:
+The respective GazeboSimSystemInterface is specified in a URDF or SDF model and is loaded when the
+robot model is loaded. For example, the following XML will load a custom plugin instead:
 
 URDF:
 
@@ -284,6 +285,16 @@ SDF:
   <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
     ...
   </plugin>
+
+The ``gz_ros2_control_demos/GazeboCustomSimSystem`` demonstrates how to implement actuator dynamics for a joint with
+velocity command interface by using a configurable low pass filter. Run
+
+.. code-block:: shell
+
+  ros2 launch gz_ros2_control_demos cart_example_velocity_custom_plugin.launch.py
+
+and compare it with the behavior of ``cart_example_velocity.launch.py`` using any plotting tool like plotjuggler.
+
 
 Set up controllers
 -----------------------------------------------------------
