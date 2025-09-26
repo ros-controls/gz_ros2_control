@@ -37,7 +37,7 @@ target_link_libraries(${PROJECT_NAME}-system
   gz-plugin::register
   ament_index_cpp::ament_index_cpp
   controller_manager::controller_manager
-  hardware_interface::mock_components
+  hardware_interface::hardware_interface
   pluginlib::pluginlib
   rclcpp::rclcpp
   rclcpp_lifecycle::rclcpp_lifecycle
@@ -51,7 +51,7 @@ add_library(gz_hardware_plugins SHARED
 target_link_libraries(gz_hardware_plugins
 PUBLIC
   gz-sim::gz-sim
-  hardware_interface::mock_components
+  hardware_interface::hardware_interface
   rclcpp::rclcpp
   rclcpp_lifecycle::rclcpp_lifecycle
 )
