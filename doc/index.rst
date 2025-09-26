@@ -233,17 +233,6 @@ SDF:
     </ros>
   </plugin>
 
-Default gz_ros2_control Behavior
------------------------------------------------------------
-
-By default, without a ``<plugin>`` tag, *gz_ros2_control* will attempt to get all of the information it needs to interface with a ros2_control-based controller out of the URDF or SDF. This is sufficient for most cases, and good for at least getting started.
-
-The default behavior provides the following ros2_control interfaces:
-
-* hardware_interface::JointStateInterface
-* hardware_interface::EffortJointInterface
-* hardware_interface::VelocityJointInterface
-
 Advanced: custom gz_ros2_control Simulation Plugins
 -----------------------------------------------------------
 
