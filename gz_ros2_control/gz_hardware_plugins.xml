@@ -1,7 +1,4 @@
 <library path="gz_hardware_plugins">
-  <!-- https://docs.ros.org/en/foxy/Tutorials/Beginner-Client-Libraries/Pluginlib.html#plugin-declaration-xml -->
-  <!-- name: There used to be a name attribute, but it is no longer required. -->
-  <!-- TODO(christophfroehlich): remove the name attribute before ROS-K release -->
   <class
     name="gz_ros2_control/GazeboSimSystem"
     type="gz_ros2_control::GazeboSimSystem"
