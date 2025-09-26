@@ -93,10 +93,8 @@ ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME}-system gz_hardware_plugins)
 
 # Export modern CMake targets
-# TODO() do we need HAS_LIBRARY_TARGET?
 ament_export_targets(
   export_${PROJECT_NAME}
-  HAS_LIBRARY_TARGET
 )
 
 ament_export_dependencies(
