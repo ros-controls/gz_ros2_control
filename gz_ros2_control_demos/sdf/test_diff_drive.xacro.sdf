@@ -1,6 +1,9 @@
 <?xml version="1.0" ?>
 <sdf version="1.8" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <model name="diff_drive" canonical_link="base_link">
+
+    <xacro:arg name="namespace" default="" />
+
     <link name="base_link">
       <must_be_base_link>true</must_be_base_link>
     </link>
@@ -212,7 +215,10 @@
     </ros2_control>
 
     <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-      <parameters>$(find gz_ros2_control_demos)/config/diff_drive_controller_velocity.yaml</parameters>
+      <ros>
+        <namespace>$(arg namespace)</namespace>
+      </ros>
+      <parameters>$(find gz_ros2_control_demos)/config/diff_drive_controller.yaml</parameters>
     </plugin>
 
   </model>

@@ -173,7 +173,7 @@ URDF:
 .. code-block:: xml
 
   <gazebo>
-    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
       <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
     </plugin>
   </gazebo>
@@ -182,7 +182,7 @@ SDF:
 
 .. code-block:: xml
 
-  <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+  <plugin filename="gz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
     <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
   </plugin>
 
@@ -212,7 +212,7 @@ URDF:
 .. code-block:: xml
 
   <gazebo>
-    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
       ...
       <ros>
         <namespace>my_namespace</namespace>
@@ -225,7 +225,7 @@ SDF:
 
 .. code-block:: xml
 
-  <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+  <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
     ...
     <ros>
       <namespace>my_namespace</namespace>
@@ -266,7 +266,7 @@ URDF:
     ...
   <ros2_control>
   <gazebo>
-    <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+    <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="gz_ros2_control-system">
       ...
     </plugin>
   </gazebo>
@@ -281,7 +281,7 @@ SDF:
     </hardware>
     ...
   <ros2_control>
-  <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+  <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="gz_ros2_control-system">
     ...
   </plugin>
 
