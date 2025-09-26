@@ -264,7 +264,7 @@ bool GazeboCustomSimSystem::initSim(
           damping_intensity);
         this->dataPtr->joints_[j].lpf =
           std::make_unique<control_toolbox::LowPassFilter<double>>(
-            update_rate, damping_frequency, damping_intensity);
+          update_rate, damping_frequency, damping_intensity);
         this->dataPtr->joints_[j].lpf->configure();
       }
       // independently of existence of command interface set initial value if defined
