@@ -35,7 +35,7 @@ def generate_launch_description():
             ' ',
             PathJoinSubstitution(
                 [FindPackageShare('gz_ros2_control_demos'),
-                 'urdf', 'test_cart_position_custom_plugin.xacro.urdf']
+                 'urdf', 'test_cart_velocity_custom_plugin.xacro.urdf']
             ),
         ]
     )
@@ -44,7 +44,7 @@ def generate_launch_description():
         [
             FindPackageShare('gz_ros2_control_demos'),
             'config',
-            'cart_controller_position.yaml',
+            'cart_controller_velocity.yaml',
         ]
     )
 
