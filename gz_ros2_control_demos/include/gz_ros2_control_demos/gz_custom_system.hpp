@@ -32,7 +32,7 @@ using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface
 // Forward declaration
 class GazeboSimSystemPrivate;
 
-// These class must inherit `gz_ros2_control_demos::GazeboSimSystemInterface` which implements a
+// These class must inherit `gz_ros2_control::GazeboSimSystemInterface` which implements a
 // simulated `ros2_control` `hardware_interface::SystemInterface`.
 
 class GazeboCustomSimSystem : public gz_ros2_control::GazeboSimSystemInterface
@@ -57,11 +57,6 @@ public:
   CallbackReturn on_deactivate(const rclcpp_lifecycle::State & previous_state) override;
 
   // Documentation Inherited
-  hardware_interface::return_type perform_command_mode_switch(
-    const std::vector<std::string> & start_interfaces,
-    const std::vector<std::string> & stop_interfaces) override;
-
-  // Documentation Inherited
   hardware_interface::return_type read(
     const rclcpp::Time & time,
     const rclcpp::Duration & period) override;
@@ -80,12 +75,6 @@ public:
     unsigned int update_rate) override;
 
 private:
-  // Register a sensor (for now just IMUs)
-  // \param[in] hardware_info hardware information where the data of
-  // the sensors is extract.
-  void registerSensors(
-    const hardware_interface::HardwareInfo & hardware_info);
-
   /// \brief Private data class
   std::unique_ptr<GazeboSimSystemPrivate> dataPtr;
 };
