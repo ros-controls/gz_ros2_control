@@ -2,6 +2,11 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.12 (2025-09-29)
+-------------------
+* Update docs (`#692 <https://github.com/ros-controls/gz_ros2_control/issues/692>`_) (`#695 <https://github.com/ros-controls/gz_ros2_control/issues/695>`_)
+* Contributors: mergify[bot]
+
 2.0.11 (2025-08-18)
 -------------------
 * Fix ackermann example inertial and joint tf publish (`#641 <https://github.com/ros-controls/gz_ros2_control/issues/641>`_) (`#643 <https://github.com/ros-controls/gz_ros2_control/issues/643>`_)

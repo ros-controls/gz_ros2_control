@@ -2,6 +2,15 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.12 (2025-09-29)
+-------------------
+* Modernize CMakeLists (`#688 <https://github.com/ros-controls/gz_ros2_control/issues/688>`_) (`#697 <https://github.com/ros-controls/gz_ros2_control/issues/697>`_)
+* Remove outdated comment (`#687 <https://github.com/ros-controls/gz_ros2_control/issues/687>`_) (`#689 <https://github.com/ros-controls/gz_ros2_control/issues/689>`_)
+* Don't remove the node at destruction (`#683 <https://github.com/ros-controls/gz_ros2_control/issues/683>`_) (`#684 <https://github.com/ros-controls/gz_ros2_control/issues/684>`_)
+* Suppress warning (`#679 <https://github.com/ros-controls/gz_ros2_control/issues/679>`_) (`#680 <https://github.com/ros-controls/gz_ros2_control/issues/680>`_)
+* Fix compiler warnings (`#674 <https://github.com/ros-controls/gz_ros2_control/issues/674>`_) (`#675 <https://github.com/ros-controls/gz_ros2_control/issues/675>`_)
+* Contributors: mergify[bot]
+
 2.0.11 (2025-08-18)
 -------------------
 
