@@ -187,6 +187,7 @@ controller manager. By default the *gz_ros2_control* plugin is very simple, thou
 extensible via an additional plugin architecture to allow power users to create their own custom
 robot hardware interfaces between *ros2_control* and Gazebo.
 
+<<<<<<< HEAD
 .. code-block:: xml
 
   <gazebo>
@@ -197,6 +198,28 @@ robot hardware interfaces between *ros2_control* and Gazebo.
     </plugin>
   </gazebo>
 
+=======
+.. tabs::
+
+  .. group-tab:: URDF
+
+    .. code-block:: xml
+
+      <gazebo>
+        <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+          <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
+        </plugin>
+      </gazebo>
+
+  .. group-tab:: SDF
+
+    .. code-block:: xml
+
+      <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
+      </plugin>
+
+>>>>>>> 1f191aa (Update docs (#692))
 The *gz_ros2_control* ``<plugin>`` tag also has the following optional child elements:
 
 * ``<robot_param>``: The location of the ``robot_description`` (URDF) on the parameter server, defaults to ``robot_description``
@@ -206,6 +229,7 @@ The *gz_ros2_control* ``<plugin>`` tag also has the following optional child ele
 
 Additionally, one can specify a namespace and remapping rules, which will be forwarded to the controller_manager and loaded controllers. Add the following ``<ros>`` section:
 
+<<<<<<< HEAD
 .. code-block:: xml
 
   <gazebo>
@@ -228,6 +252,35 @@ The default behavior provides the following ros2_control interfaces:
 * hardware_interface::JointStateInterface
 * hardware_interface::EffortJointInterface
 * hardware_interface::VelocityJointInterface
+=======
+.. tabs::
+
+  .. group-tab:: URDF
+
+    .. code-block:: xml
+
+      <gazebo>
+        <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+          ...
+          <ros>
+            <namespace>my_namespace</namespace>
+            <remapping>/robot_description:=/robot_description_full</remapping>
+          </ros>
+        </plugin>
+      </gazebo>
+
+  .. group-tab:: SDF
+
+    .. code-block:: xml
+
+      <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        ...
+        <ros>
+          <namespace>my_namespace</namespace>
+          <remapping>/robot_description:=/robot_description_full</remapping>
+        </ros>
+      </plugin>
+>>>>>>> 1f191aa (Update docs (#692))
 
 Advanced: custom gz_ros2_control Simulation Plugins
 -----------------------------------------------------------
@@ -237,6 +290,7 @@ The *gz_ros2_control* Gazebo plugin also provides a pluginlib-based interface to
 These plugins must inherit the ``gz_ros2_control::GazeboSimSystemInterface``, which implements a simulated *ros2_control*
 ``hardware_interface::SystemInterface``. SystemInterface provides API-level access to read and command joint properties.
 
+<<<<<<< HEAD
 The respective GazeboSimSystemInterface sub-class is specified in a URDF model and is loaded when the
 robot model is loaded. For example, the following XML will load the default plugin:
 
@@ -254,14 +308,58 @@ robot model is loaded. For example, the following XML will load the default plug
     </plugin>
   </gazebo>
 
+=======
+The respective GazeboSimSystemInterface is specified in a URDF or SDF model and is loaded when the
+robot model is loaded. For example, the following XML will load a custom plugin:
+
+.. tabs::
+
+  .. group-tab:: URDF
+
+    .. code-block:: xml
+
+      <ros2_control name="GazeboSimSystem" type="system">
+        <hardware>
+          <plugin>gz_ros2_control_demos/GazeboCustomSimSystem</plugin>
+        </hardware>
+        ...
+      <ros2_control>
+      <gazebo>
+        <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+          ...
+        </plugin>
+      </gazebo>
+
+  .. group-tab:: SDF
+
+    .. code-block:: xml
+
+      <ros2_control name="GazeboSimSystem" type="system">
+        <hardware>
+          <plugin>gz_ros2_control_demos/GazeboCustomSimSystem</plugin>
+        </hardware>
+        ...
+      <ros2_control>
+      <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+        ...
+      </plugin>
+
+>>>>>>> 1f191aa (Update docs (#692))
 Set up controllers
 -----------------------------------------------------------
 
 Use the tag ``<parameters>`` inside ``<plugin>`` to set the YAML file with the controller configuration
+<<<<<<< HEAD
 and use the tag ``<controller_manager_name>`` to set the controller manager node name.
+=======
+and use the tag ``<controller_manager_prefix_node_name>`` to set the controller manager node name.
 
-.. code-block:: xml
+.. tabs::
+>>>>>>> 1f191aa (Update docs (#692))
 
+  .. group-tab:: URDF
+
+<<<<<<< HEAD
   <gazebo>
     <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
       <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
@@ -269,6 +367,26 @@ and use the tag ``<controller_manager_name>`` to set the controller manager node
     </plugin>
   <gazebo>
 
+=======
+    .. code-block:: xml
+
+      <gazebo>
+        <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+          <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
+          <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
+        </plugin>
+      <gazebo>
+
+  .. group-tab:: SDF
+
+    .. code-block:: xml
+
+      <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+        <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
+        <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
+      </plugin>
+
+>>>>>>> 1f191aa (Update docs (#692))
 The following is a basic configuration of the controllers:
 
 - ``joint_state_broadcaster``: This controller publishes the state of all resources registered to a ``hardware_interface::StateInterface`` to a topic of type ``sensor_msgs/msg/JointState``.
