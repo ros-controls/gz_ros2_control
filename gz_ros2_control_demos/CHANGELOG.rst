@@ -2,6 +2,13 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.4 (2025-09-29)
+------------------
+* Add a custom plugin for simulating actuator dynamics to the demos (`#693 <https://github.com/ros-controls/gz_ros2_control/issues/693>`_)
+* Update docs (`#692 <https://github.com/ros-controls/gz_ros2_control/issues/692>`_)
+* get rid of deprecated rclcpp::spin_some() (`#678 <https://github.com/ros-controls/gz_ros2_control/issues/678>`_)
+* Contributors: Alejandro Hernández Cordero, Christoph Fröhlich
+
 3.0.3 (2025-08-18)
 ------------------
 * Fix ackermann example inertial and joint tf publish (`#641 <https://github.com/ros-controls/gz_ros2_control/issues/641>`_)
