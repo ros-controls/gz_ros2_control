@@ -1,0 +1,10 @@
+<library path="gz_custom_hardware_plugins">
+  <class
+    name="gz_ros2_control_demos/GazeboCustomSimSystem"
+    type="gz_ros2_control_demos::GazeboCustomSimSystem"
+    base_class_type="gz_ros2_control::GazeboSimSystemInterface">
+    <description>
+      Custom ros2_control hardware component to be loaded by the gazebo plugin.
+    </description>
+  </class>
+</library>
