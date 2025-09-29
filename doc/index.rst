@@ -226,7 +226,7 @@ The *gz_ros2_control* Gazebo plugin also provides a pluginlib-based interface to
 These plugins must inherit the ``gz_ros2_control::GazeboSimSystemInterface``, which implements a simulated *ros2_control*
 ``hardware_interface::SystemInterface``. SystemInterface provides API-level access to read and command joint properties.
 
-The respective GazeboSimSystemInterface is specified in a URDF or SDF model and is loaded when the
+The respective GazeboSimSystemInterface is specified in a URDF model and is loaded when the
 robot model is loaded. For example, the following XML will load a custom plugin:
 
 .. code-block:: xml
