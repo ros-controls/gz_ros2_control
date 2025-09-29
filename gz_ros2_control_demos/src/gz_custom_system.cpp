@@ -26,7 +26,6 @@
 #include <gz/physics/Geometry.hh>
 #include <gz/sim/components/AngularVelocity.hh>
 #include <gz/sim/components/JointAxis.hh>
-#include <gz/sim/components/JointForceCmd.hh>
 #include <gz/sim/components/JointPosition.hh>
 #include <gz/sim/components/JointPositionReset.hh>
 #include <gz/sim/components/JointTransmittedWrench.hh>
@@ -34,14 +33,13 @@
 #include <gz/sim/components/JointVelocityCmd.hh>
 #include <gz/sim/components/JointVelocity.hh>
 #include <gz/sim/components/JointVelocityReset.hh>
-#include <gz/sim/components/LinearAcceleration.hh>
 #include <gz/sim/components/Name.hh>
 #include <gz/sim/components/ParentEntity.hh>
 
 #include "control_toolbox/low_pass_filter.hpp"
-#include <hardware_interface/hardware_info.hpp>
-#include <hardware_interface/lexical_casts.hpp>
-#include <hardware_interface/types/hardware_interface_type_values.hpp>
+#include "hardware_interface/hardware_info.hpp"
+#include "hardware_interface/lexical_casts.hpp"
+#include "hardware_interface/types/hardware_interface_type_values.hpp"
 
 struct jointData
 {
