@@ -290,7 +290,6 @@ velocity command interface by using a configurable low pass filter. Run
 
 and compare it with the behavior of ``cart_example_velocity.launch.py`` using any plotting tool like plotjuggler.
 
-
 Set up controllers
 -----------------------------------------------------------
 
