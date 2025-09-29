@@ -168,23 +168,25 @@ controller manager. By default the *gz_ros2_control* plugin is very simple, thou
 extensible via an additional plugin architecture to allow power users to create their own custom
 robot hardware interfaces between *ros2_control* and Gazebo.
 
-URDF:
+.. tabs::
 
-.. code-block:: xml
+  .. group-tab:: URDF
 
-  <gazebo>
-    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-      <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
-    </plugin>
-  </gazebo>
+    .. code-block:: xml
 
-SDF:
+      <gazebo>
+        <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+          <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
+        </plugin>
+      </gazebo>
 
-.. code-block:: xml
+  .. group-tab:: SDF
 
-  <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-    <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
-  </plugin>
+    .. code-block:: xml
+
+      <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
+      </plugin>
 
 The *gz_ros2_control* ``<plugin>`` tag also has the following optional child elements:
 
@@ -207,42 +209,33 @@ or via ROS parameters:
 
 Additionally, one can specify a namespace and remapping rules, which will be forwarded to the controller_manager and loaded controllers. Add the following ``<ros>`` section:
 
-URDF:
+.. tabs::
 
-.. code-block:: xml
+  .. group-tab:: URDF
 
-  <gazebo>
-    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-      ...
-      <ros>
-        <namespace>my_namespace</namespace>
-        <remapping>/robot_description:=/robot_description_full</remapping>
-      </ros>
-    </plugin>
-  </gazebo>
+    .. code-block:: xml
 
-SDF:
+      <gazebo>
+        <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+          ...
+          <ros>
+            <namespace>my_namespace</namespace>
+            <remapping>/robot_description:=/robot_description_full</remapping>
+          </ros>
+        </plugin>
+      </gazebo>
 
-.. code-block:: xml
+  .. group-tab:: SDF
 
-  <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-    ...
-    <ros>
-      <namespace>my_namespace</namespace>
-      <remapping>/robot_description:=/robot_description_full</remapping>
-    </ros>
-  </plugin>
+    .. code-block:: xml
 
-Default gz_ros2_control Behavior
------------------------------------------------------------
-
-By default, without a ``<plugin>`` tag, *gz_ros2_control* will attempt to get all of the information it needs to interface with a ros2_control-based controller out of the URDF or SDF. This is sufficient for most cases, and good for at least getting started.
-
-The default behavior provides the following ros2_control interfaces:
-
-* hardware_interface::JointStateInterface
-* hardware_interface::EffortJointInterface
-* hardware_interface::VelocityJointInterface
+      <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        ...
+        <ros>
+          <namespace>my_namespace</namespace>
+          <remapping>/robot_description:=/robot_description_full</remapping>
+        </ros>
+      </plugin>
 
 Advanced: custom gz_ros2_control Simulation Plugins
 -----------------------------------------------------------
@@ -252,38 +245,40 @@ The *gz_ros2_control* Gazebo plugin also provides a pluginlib-based interface to
 These plugins must inherit the ``gz_ros2_control::GazeboSimSystemInterface``, which implements a simulated *ros2_control*
 ``hardware_interface::SystemInterface``. SystemInterface provides API-level access to read and command joint properties.
 
-The respective GazeboSimSystemInterface sub-class is specified in a URDF or SDF model and is loaded when the
-robot model is loaded. For example, the following XML will load the default plugin:
+The respective GazeboSimSystemInterface is specified in a URDF or SDF model and is loaded when the
+robot model is loaded. For example, the following XML will load a custom plugin:
 
-URDF:
+.. tabs::
 
-.. code-block:: xml
+  .. group-tab:: URDF
 
-  <ros2_control name="GazeboSimSystem" type="system">
-    <hardware>
-      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
-    </hardware>
-    ...
-  <ros2_control>
-  <gazebo>
-    <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
-      ...
-    </plugin>
-  </gazebo>
+    .. code-block:: xml
 
-SDF:
+      <ros2_control name="GazeboSimSystem" type="system">
+        <hardware>
+          <plugin>gz_ros2_control_demos/GazeboCustomSimSystem</plugin>
+        </hardware>
+        ...
+      <ros2_control>
+      <gazebo>
+        <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+          ...
+        </plugin>
+      </gazebo>
 
-.. code-block:: xml
+  .. group-tab:: SDF
 
-  <ros2_control name="GazeboSimSystem" type="system">
-    <hardware>
-      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
-    </hardware>
-    ...
-  <ros2_control>
-  <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
-    ...
-  </plugin>
+    .. code-block:: xml
+
+      <ros2_control name="GazeboSimSystem" type="system">
+        <hardware>
+          <plugin>gz_ros2_control_demos/GazeboCustomSimSystem</plugin>
+        </hardware>
+        ...
+      <ros2_control>
+      <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+        ...
+      </plugin>
 
 Set up controllers
 -----------------------------------------------------------
@@ -291,25 +286,27 @@ Set up controllers
 Use the tag ``<parameters>`` inside ``<plugin>`` to set the YAML file with the controller configuration
 and use the tag ``<controller_manager_prefix_node_name>`` to set the controller manager node name.
 
-URDF:
+.. tabs::
 
-.. code-block:: xml
+  .. group-tab:: URDF
 
-  <gazebo>
-    <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
-      <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
-      <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
-    </plugin>
-  <gazebo>
+    .. code-block:: xml
 
-SDF:
+      <gazebo>
+        <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+          <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
+          <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
+        </plugin>
+      <gazebo>
 
-.. code-block:: xml
+  .. group-tab:: SDF
 
-  <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
-    <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
-    <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
-  </plugin>
+    .. code-block:: xml
+
+      <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system">
+        <parameters>$(find gz_ros2_control_demos)/config/cart_controller.yaml</parameters>
+        <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
+      </plugin>
 
 The following is a basic configuration of the controllers:
 

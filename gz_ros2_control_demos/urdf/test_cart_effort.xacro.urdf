@@ -77,7 +77,6 @@
   </gazebo>
 
   <gazebo>
-    <!-- Joint state publisher -->
     <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
       <parameters>$(find gz_ros2_control_demos)/config/cart_controller_effort.yaml</parameters>
     </plugin>
