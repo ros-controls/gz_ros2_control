@@ -38,7 +38,6 @@ add_library(${PROJECT_NAME}-system::${PROJECT_NAME}-system ALIAS ${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}-system
   gz-sim::gz-sim
   gz-plugin::register
-<<<<<<< HEAD
 )
 ament_target_dependencies(${PROJECT_NAME}-system
   ament_index_cpp
@@ -48,14 +47,6 @@ ament_target_dependencies(${PROJECT_NAME}-system
   rclcpp
   yaml_cpp_vendor
   rclcpp_lifecycle
-=======
-  ament_index_cpp::ament_index_cpp
-  controller_manager::controller_manager
-  hardware_interface::hardware_interface
-  ${pluginlib_TARGETS}
-  rclcpp::rclcpp
-  rclcpp_lifecycle::rclcpp_lifecycle
->>>>>>> 2e53b95 (Modernize CMakeLists (#688))
 )
 target_include_directories(${PROJECT_NAME}-system PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -74,12 +65,6 @@ ament_target_dependencies(gz_hardware_plugins
 )
 target_link_libraries(gz_hardware_plugins
   gz-sim::gz-sim
-<<<<<<< HEAD
-=======
-  hardware_interface::hardware_interface
-  rclcpp::rclcpp
-  rclcpp_lifecycle::rclcpp_lifecycle
->>>>>>> 2e53b95 (Modernize CMakeLists (#688))
 )
 
 # Install headers
