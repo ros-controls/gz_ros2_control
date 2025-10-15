@@ -13,7 +13,7 @@ This package provides a Gazebo-Sim system plugin which instantiates a `ros2_cont
 
 ROS version | Gazebo version | Branch | Binaries hosted at | APT key
 -- | -- | -- | -- | --
-Rolling | Ionic | [rolling](https://github.com/ros-controls/gz_ros2_control/tree/rolling) | [packages.ros.org](https://packages.ros.org) | `ros-rolling-gz-ros2-control`
+Rolling | Jetty | [rolling](https://github.com/ros-controls/gz_ros2_control/tree/rolling) | [packages.ros.org](https://packages.ros.org) | `ros-rolling-gz-ros2-control`
 Kilted | Ionic | [kilted](https://github.com/ros-controls/gz_ros2_control/tree/kilted) | [packages.ros.org](https://packages.ros.org) | `ros-kilted-gz-ros2-control`
 Jazzy | Harmonic | [jazzy](https://github.com/ros-controls/gz_ros2_control/tree/jazzy) | [packages.ros.org](https://packages.ros.org) | `ros-jazzy-gz-ros2-control`
 Humble | Fortress | [humble](https://github.com/ros-controls/gz_ros2_control/tree/humble) | [packages.ros.org](https://packages.ros.org) | `ros-humble-gz-ros2-control`
