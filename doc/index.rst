@@ -37,7 +37,7 @@ If you want compile this from source, you have to choose the Gazebo version firs
   cd ~/gz_ros2_control_ws
   colcon build
 
-If you want to use ``harmonic``, then follow the instructions in the `official Gazebo Harmonic documentation <https://gazebosim.org/docs/harmonic/ros_installation/#gazebo-harmonic-with-ros-2-humble-or-rolling-use-with-caution>`__ how to install Gazebo Harmonic on ROS 2 humble, i.e, ``apt-get install gz-harmonic ros-humble-ros-gzharmonic ros-humble-ros-gzharmonic-bridge``. Additionally, you need to `install the rosdep rules <https://github.com/osrf/osrf-rosdep#installing-rosdep-rules-to-resolve-gazebo-harmonic-libraries>`__ for Gazebo Harmonic.
+If you want to use ``harmonic``, then follow the instructions in the `official Gazebo Harmonic documentation <https://gazebosim.org/docs/harmonic/ros_installation/#gazebo-harmonic-with-ros-2-humble>`__ how to install Gazebo Harmonic on ROS 2 humble, i.e, ``apt-get install gz-harmonic ros-humble-ros-gzharmonic ros-humble-ros-gzharmonic-bridge``. Additionally, you need to `install the rosdep rules <https://github.com/osrf/osrf-rosdep#installing-rosdep-rules-to-resolve-gazebo-harmonic-libraries>`__ for Gazebo Harmonic.
 
 Then create a workspace, clone the correct branch of this repo and compile it by setting the environment variable ``GZ_VERSION``:
 
