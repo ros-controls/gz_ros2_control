@@ -2,6 +2,9 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.5 (2025-10-16)
+------------------
+
 3.0.4 (2025-09-29)
 ------------------
 * Add a custom plugin for simulating actuator dynamics to the demos (`#693 <https://github.com/ros-controls/gz_ros2_control/issues/693>`_)
