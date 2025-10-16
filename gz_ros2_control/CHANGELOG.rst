@@ -2,6 +2,11 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.13 (2025-10-16)
+-------------------
+* Remove deprecated on_init (`#699 <https://github.com/ros-controls/gz_ros2_control/issues/699>`_) (`#704 <https://github.com/ros-controls/gz_ros2_control/issues/704>`_)
+* Contributors: mergify[bot]
+
 2.0.12 (2025-09-29)
 -------------------
 * Modernize CMakeLists (`#688 <https://github.com/ros-controls/gz_ros2_control/issues/688>`_) (`#697 <https://github.com/ros-controls/gz_ros2_control/issues/697>`_)
