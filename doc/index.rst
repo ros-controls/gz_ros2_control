@@ -164,8 +164,8 @@ It is important to add this as ``reference`` sensor in the ``<gazebo>`` tag in y
 .. code-block:: xml
 
   <gazebo reference="attached_joint">
-    <!-- If using 'attached_joint' is of 'fixed' type,
-    setting preserveFixedJoint' to true will prevent the
+    <!-- If 'attached_joint' is of 'fixed' type,
+    setting 'preserveFixedJoint' to true will prevent the
     links from being lumped together during the URDF to
     SDF conversion. Otherwise, it can be omitted. -->
     <preserveFixedJoint>true</preserveFixedJoint>
