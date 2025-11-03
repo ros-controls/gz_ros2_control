@@ -163,19 +163,19 @@ It is important to add this as ``reference`` sensor in the ``<gazebo>`` tag in y
 
 .. code-block:: xml
 
-<gazebo reference="attached_joint">
-  <!-- If using 'attached_joint' is of 'fixed' type, 
-  setting preserveFixedJoint' to true will prevent the 
-  links from being lumped together during the URDF to 
-  SDF conversion. Otherwise, it can be omitted. -->
-  <preserveFixedJoint>true</preserveFixedJoint>
-  <sensor name="force_torque_sensor" type="force_torque">
-    <update_rate>10.0</update_rate>
-    <always_on>true</always_on>
-    <visualize>true</visualize>
-    <topic>force_torque_sensor</topic>
-  </sensor>
-</gazebo>
+  <gazebo reference="attached_joint">
+    <!-- If using 'attached_joint' is of 'fixed' type,
+    setting preserveFixedJoint' to true will prevent the
+    links from being lumped together during the URDF to
+    SDF conversion. Otherwise, it can be omitted. -->
+    <preserveFixedJoint>true</preserveFixedJoint>
+    <sensor name="force_torque_sensor" type="force_torque">
+      <update_rate>10.0</update_rate>
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <topic>force_torque_sensor</topic>
+    </sensor>
+  </gazebo>
 
 Add the gz_ros2_control plugin
 ==========================================
