@@ -576,12 +576,12 @@ void GazeboSimSystem::registerSensors(
 }
 
 CallbackReturn
-GazeboSimSystem::on_init(const hardware_interface::HardwareInfo & info)
+GazeboSimSystem::on_init(const hardware_interface::HardwareComponentInterfaceParams & params)
 {
-  if (hardware_interface::SystemInterface::on_init(info) != CallbackReturn::SUCCESS) {
+  if (hardware_interface::SystemInterface::on_init(params) != CallbackReturn::SUCCESS) {
     return CallbackReturn::ERROR;
   }
-  if (info.hardware_plugin_name.compare("gz_ros2_control/GazeboSimSystem") != 0) {
+  if (params.hardware_info.hardware_plugin_name.compare("gz_ros2_control/GazeboSimSystem") != 0) {
     RCLCPP_WARN(
       this->nh_->get_logger(),
       "The ign_ros2_control plugin got renamed to gz_ros2_control.\n"
