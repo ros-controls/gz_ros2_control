@@ -478,7 +478,7 @@ void GazeboSimROS2ControlPlugin::PreUpdate(
     rclcpp::Duration gazebo_period(_info.dt);
 
     // Check the period against the simulation period
-    if (this->dataPtr->control_period_ < _info.dt) {
+    if (this->dataPtr->control_period_ < gazebo_period) {
       RCLCPP_ERROR_STREAM(
         this->dataPtr->node_->get_logger(),
         "Desired controller update period (" << this->dataPtr->control_period_.seconds() <<
