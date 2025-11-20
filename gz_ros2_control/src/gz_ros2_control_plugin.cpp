@@ -226,7 +226,7 @@ GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
           RCLCPP_WARN_STREAM(
             node_->get_logger(),
             "[gz_ros2_control] Joint [" << jointName << "] (Entity=" << jointEntity
-            << " is of unsupported type. Only joints with a single axis are supported."
+                                        << " is of unsupported type. Only joints with a single axis are supported."
           );
           continue;
         }
@@ -235,7 +235,7 @@ GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
           RCLCPP_WARN_STREAM(
             node_->get_logger(),
             "[gz_ros2_control] Joint [" << jointName << "] (Entity=" << jointEntity
-            << ") is of unknown type."
+                                        << ") is of unknown type."
           );
         }
     }
@@ -269,12 +269,12 @@ void GazeboSimROS2ControlPlugin::Configure(
   // Make sure the controller is attached to a valid model
   const auto model = sim::Model(_entity);
   if (!model.Valid(_ecm)) {
-      RCLCPP_ERROR_STREAM(
-        logger,
-        "[Gazebo ROS 2 Control] Failed to initialize because ["
+    RCLCPP_ERROR_STREAM(
+      logger,
+      "[Gazebo ROS 2 Control] Failed to initialize because ["
         << model.Name(_ecm) << "] (Entity=" << _entity << ") is not a model. "
         << "Please make sure that Gazebo ROS 2 Control is attached to a valid model."
-      );
+    );
     return;
   }
 
