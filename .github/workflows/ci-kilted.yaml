@@ -30,10 +30,10 @@ jobs:
     steps:
     - name: Checkout code
       if: github.event_name != 'schedule'
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
     - name: Checkout code for scheduled workflow
       if: github.event_name == 'schedule'
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         ref: kilted
     - name: Checkout ros2_control framework for semi-binary builds
