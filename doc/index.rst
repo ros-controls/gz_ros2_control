@@ -121,7 +121,7 @@ include:
 Using mimic joints in simulation
 -----------------------------------------------------------
 
-To use ``mimic`` joints in *gz_ros2_control* you should define its parameters in your URDF or SDF, i.e, set the ``<mimic>`` tag to the mimicked joint (see the `URDF specification <https://wiki.ros.org/urdf/XML/joint>`__ or the `SDF specification <http://sdformat.org/spec?ver=1.11&elem=joint#axis_mimic>`__)
+To use ``mimic`` joints in *gz_ros2_control* you should define its parameters in your URDF or SDF, i.e, set the ``<mimic>`` tag to the mimicked joint (see the `URDF specification <https://control.ros.org/humble/doc/gz_ros2_control/doc/index.html?utm_source=chatgpt.com#:~:text=To%20use-,mimic,-joints%20in%20gz_ros2_control>`__ or the `SDF specification <https://sdformat.org/spec/1.11/joint#axis2_mimic>`__)
 
 .. code-block:: xml
 
@@ -146,7 +146,7 @@ The mimic joint must not have command interfaces configured in the ``<ros2_contr
 Using force-torque sensors in simulation
 -----------------------------------------------------------
 
-To use ``force-torque`` sensors in *gz_ros2_control* you should define its parameters in your URDF or SDF (see the `SDF specification <http://sdformat.org/spec?ver=1.12&elem=sensor#sensor_force_torque>`__)
+To use ``force-torque`` sensors in *gz_ros2_control* you should define its parameters in your URDF or SDF (see the `URDF specification <https://control.ros.org/humble/doc/gz_ros2_control/doc/index.html?utm_source=chatgpt.com#:~:text=be%20attaching%20the-,force%20torque%20sensor,-to%3A>`__ or the `SDF specification <https://sdformat.org/spec/1.12/sensor/#sensor_force_torque>`__)
 
 An example in SDF is shown here:
 
