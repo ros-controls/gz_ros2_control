@@ -136,7 +136,7 @@ Using mimic joints in simulation
 To use ``mimic`` joints in *gz_ros2_control* you should define its parameters to your URDF.
 We should include:
 
-* ``<mimic>`` tag to the mimicked joint `detailed manual <https://wiki.ros.org/urdf/XML/joint>`__
+* ``<mimic>`` tag to the mimicked joint `detailed manual <https://wiki.ros.org/urdf/XML/joint>`__ or the `SDF specification <https://sdformat.org/spec/1.11/joint/#axis_mimic>`__
 * ``mimic`` and ``multiplier`` parameters to joint definition in ``<ros2_control>`` tag
 
 .. code-block:: xml
@@ -165,7 +165,7 @@ We should include:
 Using force-torque sensors in simulation
 ----------------------------------------
 
-To use ``force-torque`` sensors in *gz_ros2_control* you should define its parameters in your URDF or SDF (see the `SDF specification <http://sdformat.org/spec?ver=1.12&elem=sensor#sensor_force_torque>`__)
+To use ``force-torque`` sensors in *gz_ros2_control* you should define its parameters in your URDF or SDF (see the `SDF specification <https://sdformat.org/spec/1.12/sensor/#sensor_force_torque>`__)
 
 An example in SDF is shown here:
 
