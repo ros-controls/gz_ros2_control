@@ -12,7 +12,6 @@ endif()
 
 # Find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(ament_index_cpp REQUIRED)
 find_package(controller_manager REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
@@ -37,7 +36,6 @@ target_link_libraries(${PROJECT_NAME}-system
   PUBLIC
   gz-sim::gz-sim
   gz-plugin::register
-  ament_index_cpp::ament_index_cpp
   controller_manager::controller_manager
   hardware_interface::hardware_interface
   ${pluginlib_TARGETS}
