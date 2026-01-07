@@ -133,15 +133,11 @@ include:
 Using mimic joints in simulation
 -----------------------------------------------------------
 
-<<<<<<< HEAD
 To use ``mimic`` joints in *gz_ros2_control* you should define its parameters to your URDF.
 We should include:
 
-* ``<mimic>`` tag to the mimicked joint `detailed manual <https://wiki.ros.org/urdf/XML/joint>`__
+* ``<mimic>`` tag to the mimicked joint `detailed manual <https://wiki.ros.org/urdf/XML/joint>`__ or the `SDF specification <https://sdformat.org/spec/1.11/joint/#axis_mimic>`__
 * ``mimic`` and ``multiplier`` parameters to joint definition in ``<ros2_control>`` tag
-=======
-To use ``mimic`` joints in *gz_ros2_control* you should define its parameters in your URDF or SDF, i.e, set the ``<mimic>`` tag to the mimicked joint (see the `URDF specification <https://wiki.ros.org/urdf/XML/joint>`__ or the `SDF specification <https://sdformat.org/spec/1.11/joint/#axis_mimic>`__)
->>>>>>> c8fafd8 (docs: fix broken SDF documentation links (#749) (#756))
 
 .. code-block:: xml
 
