@@ -12,7 +12,6 @@ endif()
 
 # Find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(ament_index_cpp REQUIRED)
 find_package(controller_manager REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
@@ -38,6 +37,7 @@ add_library(${PROJECT_NAME}-system::${PROJECT_NAME}-system ALIAS ${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}-system
   gz-sim::gz-sim
   gz-plugin::register
+<<<<<<< HEAD
 )
 ament_target_dependencies(${PROJECT_NAME}-system
   ament_index_cpp
@@ -47,6 +47,13 @@ ament_target_dependencies(${PROJECT_NAME}-system
   rclcpp
   yaml_cpp_vendor
   rclcpp_lifecycle
+=======
+  controller_manager::controller_manager
+  hardware_interface::hardware_interface
+  ${pluginlib_TARGETS}
+  rclcpp::rclcpp
+  rclcpp_lifecycle::rclcpp_lifecycle
+>>>>>>> 3520493 (Removed unused ament_index_cpp (#760))
 )
 target_include_directories(${PROJECT_NAME}-system PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
