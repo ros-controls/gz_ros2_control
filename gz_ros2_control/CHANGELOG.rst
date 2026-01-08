@@ -2,6 +2,12 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.14 (2026-01-08)
+-------------------
+* Removed unused ament_index_cpp (`#760 <https://github.com/ros-controls/gz_ros2_control/issues/760>`_) (`#761 <https://github.com/ros-controls/gz_ros2_control/issues/761>`_)
+* Minor code consistency fix (`#732 <https://github.com/ros-controls/gz_ros2_control/issues/732>`_) (`#733 <https://github.com/ros-controls/gz_ros2_control/issues/733>`_)
+* Contributors: mergify[bot]
+
 2.0.13 (2025-10-16)
 -------------------
 * Remove deprecated on_init (`#699 <https://github.com/ros-controls/gz_ros2_control/issues/699>`_) (`#704 <https://github.com/ros-controls/gz_ros2_control/issues/704>`_)
