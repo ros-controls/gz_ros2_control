@@ -84,6 +84,9 @@ struct jointData
   /// \brief flag if joint is actuated (has command interfaces) or passive
   bool is_actuated;
 
+  /// \brief When true, the current effort is feedforwarded to the given effort command
+  bool compensate_gravity{false};
+
   /// \brief handles to the joints from within Gazebo
   sim::Entity sim_joint;
 
@@ -425,6 +428,17 @@ bool GazeboSimSystem::initSim(
         }
       } else if (joint_info.command_interfaces[i].name == "effort") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
+        bool compensate_gravity = false;
+        const auto & it_cg = joint_info.command_interfaces[i].parameters.find("compensate_gravity");
+        if (it_cg != joint_info.command_interfaces[i].parameters.end()) {
+          compensate_gravity = hardware_interface::parse_bool(it_cg->second);
+        }
+        this->dataPtr->joints_[j].compensate_gravity = compensate_gravity;
+        RCLCPP_INFO_EXPRESSION(
+          this->nh_->get_logger(),
+          compensate_gravity,
+          "\t\t\t gravity compensation enabled for effort control of joint: '%s'",
+            joint_name.c_str());
         this->dataPtr->command_interfaces_.emplace_back(
           joint_name,
           hardware_interface::HW_IF_EFFORT,
@@ -785,11 +799,17 @@ hardware_interface::return_type GazeboSimSystem::write(
           this->dataPtr->joints_[i].sim_joint,
           sim::components::JointForceCmd({0}));
       } else {
+        const double joint_effort_command = this->dataPtr->joints_[i].joint_effort_cmd;
+        if (this->dataPtr->joints_[i].compensate_gravity) {
+          // Add current effort to the command for gravity compensation
+          this->dataPtr->joints_[i].joint_effort_cmd +=
+            this->dataPtr->joints_[i].joint_effort;
+        }
         const auto jointEffortCmd =
           this->dataPtr->ecm->Component<sim::components::JointForceCmd>(
           this->dataPtr->joints_[i].sim_joint);
         *jointEffortCmd = sim::components::JointForceCmd(
-          {this->dataPtr->joints_[i].joint_effort_cmd});
+          {joint_effort_command});
       }
     } else if (this->dataPtr->joints_[i].is_actuated && this->dataPtr->hold_joints_) {
       // Fallback case is a velocity command of zero (only for actuated joints)
