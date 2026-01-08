@@ -2,6 +2,11 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.18 (2026-01-08)
+-------------------
+* Minor code consistency fix (`#732 <https://github.com/ros-controls/gz_ros2_control/issues/732>`_) (`#735 <https://github.com/ros-controls/gz_ros2_control/issues/735>`_)
+* Contributors: mergify[bot]
+
 0.7.17 (2025-09-29)
 -------------------
 * Remove outdated comment (`#687 <https://github.com/ros-controls/gz_ros2_control/issues/687>`_) (`#691 <https://github.com/ros-controls/gz_ros2_control/issues/691>`_)
