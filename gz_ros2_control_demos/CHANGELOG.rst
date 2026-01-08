@@ -2,6 +2,9 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.17 (2026-01-08)
+-------------------
+
 1.2.16 (2025-09-29)
 -------------------
 * Update docs (`#692 <https://github.com/ros-controls/gz_ros2_control/issues/692>`_) (`#696 <https://github.com/ros-controls/gz_ros2_control/issues/696>`_)

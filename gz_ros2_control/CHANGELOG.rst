@@ -2,6 +2,12 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.17 (2026-01-08)
+-------------------
+* Removed unused ament_index_cpp (backport `#760 <https://github.com/ros-controls/gz_ros2_control/issues/760>`_) (`#762 <https://github.com/ros-controls/gz_ros2_control/issues/762>`_)
+* Minor code consistency fix (`#732 <https://github.com/ros-controls/gz_ros2_control/issues/732>`_) (`#734 <https://github.com/ros-controls/gz_ros2_control/issues/734>`_)
+* Contributors: mergify[bot]
+
 1.2.16 (2025-09-29)
 -------------------
 * Modernize CMakeLists (backport `#688 <https://github.com/ros-controls/gz_ros2_control/issues/688>`_) (`#698 <https://github.com/ros-controls/gz_ros2_control/issues/698>`_)
