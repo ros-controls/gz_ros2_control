@@ -12,7 +12,6 @@ endif()
 
 # Find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(ament_index_cpp REQUIRED)
 find_package(controller_manager REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
@@ -40,7 +39,6 @@ target_link_libraries(${PROJECT_NAME}-system
   gz-plugin::register
 )
 ament_target_dependencies(${PROJECT_NAME}-system
-  ament_index_cpp
   controller_manager
   hardware_interface
   pluginlib
@@ -98,7 +96,6 @@ target_link_libraries(ign_ros2_control-system
   gz-plugin::register
 )
 ament_target_dependencies(ign_ros2_control-system
-  ament_index_cpp
   controller_manager
   hardware_interface
   pluginlib
