@@ -2,6 +2,14 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.6 (2026-01-08)
+------------------
+* Removed unused ament_index_cpp (`#760 <https://github.com/ros-controls/gz_ros2_control/issues/760>`_)
+* fix failing pre-commit (`#741 <https://github.com/ros-controls/gz_ros2_control/issues/741>`_)
+* Fix platform-independent logging in `gz_ros2_control` plugin (`#740 <https://github.com/ros-controls/gz_ros2_control/issues/740>`_)
+* Minor code consistency fix (`#732 <https://github.com/ros-controls/gz_ros2_control/issues/732>`_)
+* Contributors: Alejandro Hernández Cordero, Dhruv Patel, Patrick Roncagliolo, Sai Kishor Kothakota
+
 3.0.5 (2025-10-16)
 ------------------
 * Remove deprecated on_init (`#699 <https://github.com/ros-controls/gz_ros2_control/issues/699>`_)
