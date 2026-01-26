@@ -410,8 +410,8 @@ bool GazeboSimSystem::initSim(
         initial_position = get_initial_value(joint_info.state_interfaces[i]);
         this->dataPtr->joints_[j].position.state =
           std::make_shared<hardware_interface::StateInterface>(
-            joint_name,
-            hardware_interface::HW_IF_POSITION);
+          joint_name,
+          hardware_interface::HW_IF_POSITION);
         (void)this->dataPtr->joints_[j].position.state->set_value(initial_position, true);
         this->dataPtr->state_interfaces_.push_back(this->dataPtr->joints_[j].position.state);
       }
@@ -420,8 +420,8 @@ bool GazeboSimSystem::initSim(
         initial_velocity = get_initial_value(joint_info.state_interfaces[i]);
         this->dataPtr->joints_[j].velocity.state =
           std::make_shared<hardware_interface::StateInterface>(
-            joint_name,
-            hardware_interface::HW_IF_VELOCITY);
+          joint_name,
+          hardware_interface::HW_IF_VELOCITY);
         (void)this->dataPtr->joints_[j].velocity.state->set_value(initial_velocity, true);
         this->dataPtr->state_interfaces_.push_back(this->dataPtr->joints_[j].velocity.state);
       }
@@ -800,7 +800,7 @@ hardware_interface::return_type GazeboSimSystem::write(
 
     if (this->dataPtr->joints_[i].joint_control_method & VELOCITY) {
       double velocity_cmd = 0.0;
-      if(this->dataPtr->joints_[i].velocity.command->get_value(velocity_cmd, true)) {
+      if (this->dataPtr->joints_[i].velocity.command->get_value(velocity_cmd, true)) {
         this->dataPtr->ecm->SetComponentData<sim::components::JointVelocityCmd>(
           this->dataPtr->joints_[i].sim_joint,
           {velocity_cmd});
@@ -809,22 +809,22 @@ hardware_interface::return_type GazeboSimSystem::write(
       // Get error in position
       double position_state = 0.0;
       double position_cmd = 0.0;
-      if(this->dataPtr->joints_[i].position.state->get_value(position_state, true) &&
+      if (this->dataPtr->joints_[i].position.state->get_value(position_state, true) &&
         this->dataPtr->joints_[i].position.command->get_value(position_cmd, true))
       {
         double error = (position_state - position_cmd) * this->dataPtr->update_rate;
 
-      // Calculate target velcity
+        // Calculate target velcity
         double target_vel = -this->dataPtr->position_proportional_gain_ * error;
 
         auto vel =
           this->dataPtr->ecm->Component<sim::components::JointVelocityCmd>(
-        this->dataPtr->joints_[i].sim_joint);
+          this->dataPtr->joints_[i].sim_joint);
 
         if (vel == nullptr) {
           this->dataPtr->ecm->CreateComponent(
-          this->dataPtr->joints_[i].sim_joint,
-          sim::components::JointVelocityCmd({target_vel}));
+            this->dataPtr->joints_[i].sim_joint,
+            sim::components::JointVelocityCmd({target_vel}));
         } else if (!vel->Data().empty()) {
           vel->Data()[0] = target_vel;
         }
@@ -838,10 +838,10 @@ hardware_interface::return_type GazeboSimSystem::write(
           sim::components::JointForceCmd({0}));
       } else {
         double effort_cmd = 0.0;
-        if(this->dataPtr->joints_[i].effort.command->get_value(effort_cmd, true)) {
+        if (this->dataPtr->joints_[i].effort.command->get_value(effort_cmd, true)) {
           const auto jointEffortCmd =
             this->dataPtr->ecm->Component<sim::components::JointForceCmd>(
-          this->dataPtr->joints_[i].sim_joint);
+            this->dataPtr->joints_[i].sim_joint);
           *jointEffortCmd = sim::components::JointForceCmd({effort_cmd});
         }
       }
