@@ -55,6 +55,30 @@ def generate_test_description():
     return LaunchDescription([launch_include, KeepAliveProc(), ReadyToTest()])
 
 
+def wait_for_controller(node, controller_name, timeout_sec=10.0):
+    import time
+    from controller_manager_msgs.srv import ListControllers
+
+    client = node.create_client(ListControllers, '/controller_manager/list_controllers')
+    if not client.wait_for_service(timeout_sec=timeout_sec):
+        raise RuntimeError('Service /controller_manager/list_controllers not available')
+
+    end_time = time.time() + timeout_sec
+    while time.time() < end_time:
+        req = ListControllers.Request()
+        future = client.call_async(req)
+        rclpy.spin_until_future_complete(node, future, timeout_sec=1.0)
+        if future.result() is not None:
+            for c in future.result().controller:
+                if c.name == controller_name and c.state == 'active':
+                    node.destroy_client(client)
+                    return
+        time.sleep(0.2)
+
+    node.destroy_client(client)
+    raise RuntimeError(f'Controller {controller_name} not active after {timeout_sec} seconds')
+
+
 class TestFixture(unittest.TestCase):
 
     @classmethod
@@ -93,6 +117,31 @@ class TestFixture(unittest.TestCase):
             ],
         )
 
+    def test_initial_position(self):
+        # Test initial_value before motion
+        from sensor_msgs.msg import JointState
+        msg = None
+
+        def callback(m):
+            nonlocal msg
+            msg = m
+
+        sub = self.node.create_subscription(
+            JointState,
+            '/joint_states',
+            callback,
+            10
+        )
+
+        end_time = self.node.get_clock().now().nanoseconds + int(5e9)
+        while msg is None and self.node.get_clock().now().nanoseconds < end_time:
+            rclpy.spin_once(self.node, timeout_sec=0.1)
+
+        self.node.destroy_subscription(sub)
+
+        self.assertIsNotNone(msg)
+        self.assertIn('slider_to_cart', msg.name)
+
     def test_arm(self, launch_service, proc_info, proc_output):
 
         # Check if the controllers are running
@@ -101,8 +150,9 @@ class TestFixture(unittest.TestCase):
                   'joint_state_broadcaster',
                   'imu_sensor_broadcaster'
                 ]
+        for cname in cnames:
+            wait_for_controller(self.node, cname, timeout_sec=10.0)
         check_controllers_running(self.node, cnames)
-
         proc_action = Node(
             package='gz_ros2_control_demos',
             executable='example_velocity',
