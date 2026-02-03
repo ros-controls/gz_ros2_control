@@ -687,8 +687,12 @@ hardware_interface::return_type GazeboSimSystem::read(
       this->dataPtr->ecm->Component<sim::components::JointPosition>(
       this->dataPtr->joints_[i].sim_joint);
 
-    (void)this->dataPtr->joints_[i].position.state->set_value(jointPositions->Data()[0], true);
-    (void)this->dataPtr->joints_[i].velocity.state->set_value(jointVelocity->Data()[0], true);
+    if(this->dataPtr->joints_[i].position.state) {
+      (void)this->dataPtr->joints_[i].position.state->set_value(jointPositions->Data()[0], true);
+    }
+    if(this->dataPtr->joints_[i].velocity.state) {
+      (void)this->dataPtr->joints_[i].velocity.state->set_value(jointVelocity->Data()[0], true);
+    }
     gz::physics::Vector3d force_or_torque;
     if (this->dataPtr->joints_[i].joint_type == sdf::JointType::PRISMATIC) {
       force_or_torque = {jointWrench->Data().force().x(),
@@ -702,7 +706,9 @@ hardware_interface::return_type GazeboSimSystem::read(
       gz::physics::Vector3d{this->dataPtr->joints_[i].joint_axis.Xyz()[0],
         this->dataPtr->joints_[i].joint_axis.Xyz()[1],
         this->dataPtr->joints_[i].joint_axis.Xyz()[2]});
-    (void)this->dataPtr->joints_[i].effort.state->set_value(effort, true);
+    if(this->dataPtr->joints_[i].effort.state) {
+      (void)this->dataPtr->joints_[i].effort.state->set_value(effort, true);
+    }
   }
 
   for (unsigned int i = 0; i < this->dataPtr->imus_.size(); ++i) {
