@@ -95,6 +95,47 @@ class TestFixture(unittest.TestCase):
             ],
         )
 
+    def test_slider_position(self):
+        """Test initial_value before motion."""
+        from sensor_msgs.msg import JointState
+        msg = None
+
+        def callback(m):
+            nonlocal msg
+            msg = m
+
+        sub = self.node.create_subscription(
+            JointState,
+            '/joint_states',
+            callback,
+            10
+        )
+
+        end_time = self.node.get_clock().now().nanoseconds + int(5e9)
+        while msg is None and self.node.get_clock().now().nanoseconds < end_time:
+            rclpy.spin_once(self.node, timeout_sec=0.1)
+
+        self.node.destroy_subscription(sub)
+
+        # Verify the message exists
+        self.assertIsNotNone(msg, "No joint_state message received")
+        self.assertIn('slider_to_cart', msg.name, "Joint 'slider_to_cart' not found in message")
+
+        # Verify initial value
+        joint_idx = msg.name.index('slider_to_cart')
+
+        expected_initial_value = 1.0
+        actual_value = msg.position[joint_idx]
+
+        self.assertAlmostEqual(
+            actual_value,
+            expected_initial_value,
+            places=2,
+            msg=f"Initial position mismatch: expected {expected_initial_value}, got {actual_value}"
+        )
+
+        print(f"Initial value verified: {actual_value} ≈ {expected_initial_value}")
+
     def test_arm(self, launch_service, proc_info, proc_output):
 
         # Check if the controllers are running
@@ -111,5 +152,8 @@ class TestFixture(unittest.TestCase):
             launch_service, proc_action, proc_info, proc_output
         ):
             proc_info.assertWaitForShutdown(process=proc_action, timeout=300)
-            launch_testing.asserts.assertExitCodes(proc_info, process=proc_action,
-                                                   allowable_exit_codes=[0])
+            launch_testing.asserts.assertExitCodes(
+                proc_info,
+                process=proc_action,
+                allowable_exit_codes=[0]
+            )
