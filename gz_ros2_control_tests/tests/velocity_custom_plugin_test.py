@@ -46,37 +46,13 @@ def generate_test_description():
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory('gz_ros2_control_demos'),
-                'launch/cart_example_velocity.launch.py',
+                'launch', 'cart_example_velocity_custom_plugin.launch.py',
             )
         ),
         launch_arguments={'gz_args': '--headless-rendering -s'}.items(),
     )
 
     return LaunchDescription([launch_include, KeepAliveProc(), ReadyToTest()])
-
-
-def wait_for_controller(node, controller_name, timeout_sec=10.0):
-    import time
-    from controller_manager_msgs.srv import ListControllers
-
-    client = node.create_client(ListControllers, '/controller_manager/list_controllers')
-    if not client.wait_for_service(timeout_sec=timeout_sec):
-        raise RuntimeError('Service /controller_manager/list_controllers not available')
-
-    end_time = time.time() + timeout_sec
-    while time.time() < end_time:
-        req = ListControllers.Request()
-        future = client.call_async(req)
-        rclpy.spin_until_future_complete(node, future, timeout_sec=1.0)
-        if future.result() is not None:
-            for c in future.result().controller:
-                if c.name == controller_name and c.state == 'active':
-                    node.destroy_client(client)
-                    return
-        time.sleep(0.2)
-
-    node.destroy_client(client)
-    raise RuntimeError(f'Controller {controller_name} not active after {timeout_sec} seconds')
 
 
 class TestFixture(unittest.TestCase):
@@ -89,9 +65,11 @@ class TestFixture(unittest.TestCase):
     def tearDownClass(cls):
         for proc in psutil.process_iter():
             # check whether the process name matches
-            if proc.name() == 'ruby':
+            if proc.name() == 'ruby' or 'gz sim' in proc.name():
+                # up to version 9 of gz-sim
                 proc.kill()
-            if 'gz sim' in proc.name():
+            if 'gz-sim' in proc.name():
+                # from version 10 of gz-sim
                 proc.kill()
         rclpy.shutdown()
 
@@ -162,9 +140,8 @@ class TestFixture(unittest.TestCase):
 
         # Check if the controllers are running
         cnames = [
-                'joint_trajectory_controller',
-                'joint_state_broadcaster',
-                'imu_sensor_broadcaster'
+                  'joint_trajectory_controller',
+                  'joint_state_broadcaster'
                 ]
         check_controllers_running(self.node, cnames)
 
@@ -178,8 +155,5 @@ class TestFixture(unittest.TestCase):
             launch_service, proc_action, proc_info, proc_output
         ):
             proc_info.assertWaitForShutdown(process=proc_action, timeout=300)
-            launch_testing.asserts.assertExitCodes(
-                proc_info,
-                process=proc_action,
-                allowable_exit_codes=[0]
-            )
+            launch_testing.asserts.assertExitCodes(proc_info, process=proc_action,
+                                                   allowable_exit_codes=[0])
