@@ -41,6 +41,15 @@
 #include "hardware_interface/lexical_casts.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 
+struct InterfaceData
+{
+  /// \brief State interface shared pointer
+  hardware_interface::StateInterface::SharedPtr state;
+
+  /// \brief Command interface shared pointer
+  hardware_interface::CommandInterface::SharedPtr command;
+};
+
 struct jointData
 {
   /// \brief Joint's names.
@@ -52,17 +61,14 @@ struct jointData
   /// \brief Joint's axis.
   sdf::JointAxis joint_axis;
 
-  /// \brief Current joint position
-  double joint_position;
+  /// \brief Current state and command joint position
+  InterfaceData position;
 
-  /// \brief Current joint velocity
-  double joint_velocity;
+  /// \brief Current state and command joint velocity
+  InterfaceData velocity;
 
-  /// \brief Current joint effort
-  double joint_effort;
-
-  /// \brief Current cmd joint velocity
-  double joint_velocity_cmd;
+  /// \brief Current state and command joint effort
+  InterfaceData effort;
 
   /// \brief handles to the joints from within Gazebo
   sim::Entity sim_joint;
@@ -87,10 +93,10 @@ public:
   std::vector<struct jointData> joints_;
 
   /// \brief state interfaces that will be exported to the Resource Manager
-  std::vector<hardware_interface::StateInterface> state_interfaces_;
+  std::vector<hardware_interface::StateInterface::SharedPtr> state_interfaces_;
 
   /// \brief command interfaces that will be exported to the Resource Manager
-  std::vector<hardware_interface::CommandInterface> command_interfaces_;
+  std::vector<hardware_interface::CommandInterface::SharedPtr> command_interfaces_;
 
   /// \brief Entity component manager, ECM shouldn't be accessed outside those
   /// methods, otherwise the app will crash
@@ -205,30 +211,33 @@ bool GazeboCustomSimSystem::initSim(
     for (unsigned int i = 0; i < joint_info.state_interfaces.size(); ++i) {
       if (joint_info.state_interfaces[i].name == "position") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t position");
-        this->dataPtr->state_interfaces_.emplace_back(
-          joint_name,
-          hardware_interface::HW_IF_POSITION,
-          &this->dataPtr->joints_[j].joint_position);
         initial_position = get_initial_value(joint_info.state_interfaces[i]);
-        this->dataPtr->joints_[j].joint_position = initial_position;
+        this->dataPtr->joints_[j].position.state =
+          std::make_shared<hardware_interface::StateInterface>(
+          joint_name,
+          hardware_interface::HW_IF_POSITION);
+        (void)this->dataPtr->joints_[j].position.state->set_value(initial_position, true);
+        this->dataPtr->state_interfaces_.push_back(this->dataPtr->joints_[j].position.state);
       }
       if (joint_info.state_interfaces[i].name == "velocity") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
-        this->dataPtr->state_interfaces_.emplace_back(
-          joint_name,
-          hardware_interface::HW_IF_VELOCITY,
-          &this->dataPtr->joints_[j].joint_velocity);
         initial_velocity = get_initial_value(joint_info.state_interfaces[i]);
-        this->dataPtr->joints_[j].joint_velocity = initial_velocity;
+        this->dataPtr->joints_[j].velocity.state =
+          std::make_shared<hardware_interface::StateInterface>(
+          joint_name,
+          hardware_interface::HW_IF_VELOCITY);
+        (void)this->dataPtr->joints_[j].velocity.state->set_value(initial_velocity, true);
+        this->dataPtr->state_interfaces_.push_back(this->dataPtr->joints_[j].velocity.state);
       }
       if (joint_info.state_interfaces[i].name == "effort") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t effort");
-        this->dataPtr->state_interfaces_.emplace_back(
-          joint_name,
-          hardware_interface::HW_IF_EFFORT,
-          &this->dataPtr->joints_[j].joint_effort);
         initial_effort = get_initial_value(joint_info.state_interfaces[i]);
-        this->dataPtr->joints_[j].joint_effort = initial_effort;
+        this->dataPtr->joints_[j].effort.state =
+          std::make_shared<hardware_interface::StateInterface>(
+          joint_name,
+          hardware_interface::HW_IF_EFFORT);
+        (void)this->dataPtr->joints_[j].effort.state->set_value(initial_effort, true);
+        this->dataPtr->state_interfaces_.push_back(this->dataPtr->joints_[j].effort.state);
       }
     }
 
@@ -238,13 +247,14 @@ bool GazeboCustomSimSystem::initSim(
     for (unsigned int i = 0; i < joint_info.command_interfaces.size(); ++i) {
       if (joint_info.command_interfaces[i].name == "velocity") {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t velocity");
-        this->dataPtr->command_interfaces_.emplace_back(
+        this->dataPtr->joints_[j].velocity.command =
+          std::make_shared<hardware_interface::CommandInterface>(
           joint_name,
-          hardware_interface::HW_IF_VELOCITY,
-          &this->dataPtr->joints_[j].joint_velocity_cmd);
-        if (!std::isnan(initial_velocity)) {
-          this->dataPtr->joints_[j].joint_velocity_cmd = initial_velocity;
+          hardware_interface::HW_IF_VELOCITY);
+        if (std::isfinite(initial_velocity)) {
+          (void)this->dataPtr->joints_[j].velocity.command->set_value(initial_velocity, true);
         }
+        this->dataPtr->command_interfaces_.push_back(this->dataPtr->joints_[j].velocity.command);
       }
       auto it = joint_info.command_interfaces[i].parameters.find("damping_frequency");
       if (it != joint_info.command_interfaces[i].parameters.end()) {
@@ -265,19 +275,17 @@ bool GazeboCustomSimSystem::initSim(
           update_rate, damping_frequency, damping_intensity);
         this->dataPtr->joints_[j].lpf->configure();
       }
-      // independently of existence of command interface set initial value if defined
-      if (!std::isnan(initial_position)) {
-        this->dataPtr->joints_[j].joint_position = initial_position;
-        this->dataPtr->ecm->CreateComponent(
-          this->dataPtr->joints_[j].sim_joint,
-          sim::components::JointPositionReset({initial_position}));
-      }
-      if (!std::isnan(initial_velocity)) {
-        this->dataPtr->joints_[j].joint_velocity = initial_velocity;
-        this->dataPtr->ecm->CreateComponent(
-          this->dataPtr->joints_[j].sim_joint,
-          sim::components::JointVelocityReset({initial_velocity}));
-      }
+    }
+    // independently of existence of command interface set initial value if defined
+    if (std::isfinite(initial_position)) {
+      this->dataPtr->ecm->CreateComponent(
+        this->dataPtr->joints_[j].sim_joint,
+        sim::components::JointPositionReset({initial_position}));
+    }
+    if (std::isfinite(initial_velocity)) {
+      this->dataPtr->ecm->CreateComponent(
+        this->dataPtr->joints_[j].sim_joint,
+        sim::components::JointVelocityReset({initial_velocity}));
     }
   }
 
@@ -304,16 +312,24 @@ CallbackReturn GazeboCustomSimSystem::on_configure(
   return CallbackReturn::SUCCESS;
 }
 
-std::vector<hardware_interface::StateInterface>
-GazeboCustomSimSystem::export_state_interfaces()
+std::vector<hardware_interface::StateInterface::ConstSharedPtr>
+GazeboCustomSimSystem::on_export_state_interfaces()
 {
-  return std::move(this->dataPtr->state_interfaces_);
+  std::vector<hardware_interface::StateInterface::ConstSharedPtr> state_interfaces;
+  for (auto & si : this->dataPtr->state_interfaces_) {
+    state_interfaces.push_back(si);
+  }
+  return state_interfaces;
 }
 
-std::vector<hardware_interface::CommandInterface>
-GazeboCustomSimSystem::export_command_interfaces()
+std::vector<hardware_interface::CommandInterface::SharedPtr>
+GazeboCustomSimSystem::on_export_command_interfaces()
 {
-  return std::move(this->dataPtr->command_interfaces_);
+  std::vector<hardware_interface::CommandInterface::SharedPtr> command_interfaces;
+  for (auto & ci : this->dataPtr->command_interfaces_) {
+    command_interfaces.push_back(ci);
+  }
+  return command_interfaces;
 }
 
 CallbackReturn GazeboCustomSimSystem::on_activate(const rclcpp_lifecycle::State & previous_state)
@@ -352,8 +368,8 @@ hardware_interface::return_type GazeboCustomSimSystem::read(
       this->dataPtr->ecm->Component<sim::components::JointPosition>(
       this->dataPtr->joints_[i].sim_joint);
 
-    this->dataPtr->joints_[i].joint_position = jointPositions->Data()[0];
-    this->dataPtr->joints_[i].joint_velocity = jointVelocity->Data()[0];
+    (void)this->dataPtr->joints_[i].position.state->set_value(jointPositions->Data()[0], true);
+    (void)this->dataPtr->joints_[i].velocity.state->set_value(jointVelocity->Data()[0], true);
     gz::physics::Vector3d force_or_torque;
     if (this->dataPtr->joints_[i].joint_type == sdf::JointType::PRISMATIC) {
       force_or_torque = {jointWrench->Data().force().x(),
@@ -363,10 +379,11 @@ hardware_interface::return_type GazeboCustomSimSystem::read(
         jointWrench->Data().torque().y(), jointWrench->Data().torque().z()};
     }
     // Calculate the scalar effort along the joint axis
-    this->dataPtr->joints_[i].joint_effort = force_or_torque.dot(
+    double effort = force_or_torque.dot(
       gz::physics::Vector3d{this->dataPtr->joints_[i].joint_axis.Xyz()[0],
         this->dataPtr->joints_[i].joint_axis.Xyz()[1],
         this->dataPtr->joints_[i].joint_axis.Xyz()[2]});
+    (void)this->dataPtr->joints_[i].effort.state->set_value(effort, true);
   }
 
   return hardware_interface::return_type::OK;
@@ -380,15 +397,20 @@ hardware_interface::return_type GazeboCustomSimSystem::write(
     if (this->dataPtr->joints_[i].sim_joint == sim::kNullEntity) {
       continue;
     }
-    double vel_cmd;
-    if (this->dataPtr->joints_[i].lpf && this->dataPtr->joints_[i].lpf->is_configured()) {
-      this->dataPtr->joints_[i].lpf->update(this->dataPtr->joints_[i].joint_velocity_cmd, vel_cmd);
-    } else {
-      vel_cmd = this->dataPtr->joints_[i].joint_velocity_cmd;
+    double velocity_cmd = 0.0;
+    if (this->dataPtr->joints_[i].velocity.command &&
+      this->dataPtr->joints_[i].velocity.command->get_value(velocity_cmd, true))
+    {
+      double vel_cmd;
+      if (this->dataPtr->joints_[i].lpf && this->dataPtr->joints_[i].lpf->is_configured()) {
+        this->dataPtr->joints_[i].lpf->update(velocity_cmd, vel_cmd);
+      } else {
+        vel_cmd = velocity_cmd;
+      }
+      this->dataPtr->ecm->SetComponentData<sim::components::JointVelocityCmd>(
+        this->dataPtr->joints_[i].sim_joint,
+        {vel_cmd});
     }
-    this->dataPtr->ecm->SetComponentData<sim::components::JointVelocityCmd>(
-      this->dataPtr->joints_[i].sim_joint,
-      {vel_cmd});
   }
 
   return hardware_interface::return_type::OK;

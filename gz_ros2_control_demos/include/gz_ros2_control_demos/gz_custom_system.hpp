@@ -45,10 +45,12 @@ public:
   CallbackReturn on_configure(const rclcpp_lifecycle::State & previous_state) override;
 
   // Documentation Inherited
-  std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
+  std::vector<hardware_interface::StateInterface::ConstSharedPtr> on_export_state_interfaces()
+  override;
 
   // Documentation Inherited
-  std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
+  std::vector<hardware_interface::CommandInterface::SharedPtr> on_export_command_interfaces()
+  override;
 
   // Documentation Inherited
   CallbackReturn on_activate(const rclcpp_lifecycle::State & previous_state) override;
