@@ -687,10 +687,10 @@ hardware_interface::return_type GazeboSimSystem::read(
       this->dataPtr->ecm->Component<sim::components::JointPosition>(
       this->dataPtr->joints_[i].sim_joint);
 
-    if(this->dataPtr->joints_[i].position.state) {
+    if (this->dataPtr->joints_[i].position.state) {
       (void)this->dataPtr->joints_[i].position.state->set_value(jointPositions->Data()[0], true);
     }
-    if(this->dataPtr->joints_[i].velocity.state) {
+    if (this->dataPtr->joints_[i].velocity.state) {
       (void)this->dataPtr->joints_[i].velocity.state->set_value(jointVelocity->Data()[0], true);
     }
     gz::physics::Vector3d force_or_torque;
@@ -706,7 +706,7 @@ hardware_interface::return_type GazeboSimSystem::read(
       gz::physics::Vector3d{this->dataPtr->joints_[i].joint_axis.Xyz()[0],
         this->dataPtr->joints_[i].joint_axis.Xyz()[1],
         this->dataPtr->joints_[i].joint_axis.Xyz()[2]});
-    if(this->dataPtr->joints_[i].effort.state) {
+    if (this->dataPtr->joints_[i].effort.state) {
       (void)this->dataPtr->joints_[i].effort.state->set_value(effort, true);
     }
   }
