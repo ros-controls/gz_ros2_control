@@ -117,8 +117,8 @@ class TestFixture(unittest.TestCase):
             ],
         )
 
-    def test_initial_position(self):
-        # Test initial_value before motion
+    def test_slider_position(self):
+        """Test initial_value before motion."""
         from sensor_msgs.msg import JointState
         msg = None
 
@@ -139,20 +139,35 @@ class TestFixture(unittest.TestCase):
 
         self.node.destroy_subscription(sub)
 
-        self.assertIsNotNone(msg)
-        self.assertIn('slider_to_cart', msg.name)
+        # Verify the message exists
+        self.assertIsNotNone(msg, "No joint_state message received")
+        self.assertIn('slider_to_cart', msg.name, "Joint 'slider_to_cart' not found in message")
+
+        # Verify initial value
+        joint_idx = msg.name.index('slider_to_cart')
+
+        expected_initial_value = 1.0
+        actual_value = msg.position[joint_idx]
+
+        self.assertAlmostEqual(
+            actual_value,
+            expected_initial_value,
+            places=2,
+            msg=f"Initial position mismatch: expected {expected_initial_value}, got {actual_value}"
+        )
+
+        print(f"Initial value verified: {actual_value} ≈ {expected_initial_value}")
 
     def test_arm(self, launch_service, proc_info, proc_output):
 
         # Check if the controllers are running
         cnames = [
-                  'joint_trajectory_controller',
-                  'joint_state_broadcaster',
-                  'imu_sensor_broadcaster'
+                'joint_trajectory_controller',
+                'joint_state_broadcaster',
+                'imu_sensor_broadcaster'
                 ]
-        for cname in cnames:
-            wait_for_controller(self.node, cname, timeout_sec=10.0)
         check_controllers_running(self.node, cnames)
+
         proc_action = Node(
             package='gz_ros2_control_demos',
             executable='example_velocity',
@@ -163,5 +178,8 @@ class TestFixture(unittest.TestCase):
             launch_service, proc_action, proc_info, proc_output
         ):
             proc_info.assertWaitForShutdown(process=proc_action, timeout=300)
-            launch_testing.asserts.assertExitCodes(proc_info, process=proc_action,
-                                                   allowable_exit_codes=[0])
+            launch_testing.asserts.assertExitCodes(
+                proc_info,
+                process=proc_action,
+                allowable_exit_codes=[0]
+            )
