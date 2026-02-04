@@ -859,6 +859,15 @@ hardware_interface::return_type GazeboSimSystem::write(
         }
       }
     } else if (this->dataPtr->joints_[i].is_actuated && this->dataPtr->hold_joints_) {
+      // Remove existing effort component to ensure that no effort commands are set to
+      // the joints, which is necessary for holding the joint positions after
+      // deactivating an effort controller.
+      if (this->dataPtr->ecm->Component<sim::components::JointForceCmd>(
+              this->dataPtr->joints_[i].sim_joint)) {
+        this->dataPtr->ecm->RemoveComponent<sim::components::JointForceCmd>(
+            this->dataPtr->joints_[i].sim_joint);
+      }
+
       // Fallback case is a velocity command of zero (only for actuated joints)
       double target_vel = 0.0;
       auto vel =
