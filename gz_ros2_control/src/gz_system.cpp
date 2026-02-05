@@ -784,10 +784,10 @@ GazeboSimSystem::perform_command_mode_switch(
         // the joints, which is necessary for holding the joint positions after
         // deactivating an effort controller.
         if (this->dataPtr->ecm->Component<sim::components::JointForceCmd>(
-                this->dataPtr->joints_[j].sim_joint))
+            this->dataPtr->joints_[j].sim_joint))
         {
           this->dataPtr->ecm->RemoveComponent<sim::components::JointForceCmd>(
-              this->dataPtr->joints_[j].sim_joint);
+            this->dataPtr->joints_[j].sim_joint);
         }
       }
     }
