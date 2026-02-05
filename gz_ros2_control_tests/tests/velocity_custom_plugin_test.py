@@ -118,7 +118,7 @@ class TestFixture(unittest.TestCase):
         self.node.destroy_subscription(sub)
 
         # Verify the message exists
-        self.assertIsNotNone(msg, "No joint_state message received")
+        self.assertIsNotNone(msg, 'No joint_state message received')
         self.assertIn('slider_to_cart', msg.name, "Joint 'slider_to_cart' not found in message")
 
         # Verify initial value
@@ -131,10 +131,10 @@ class TestFixture(unittest.TestCase):
             actual_value,
             expected_initial_value,
             places=2,
-            msg=f"Initial position mismatch: expected {expected_initial_value}, got {actual_value}"
+            msg=f'Initial position mismatch: expected {expected_initial_value}, got {actual_value}'
         )
 
-        print(f"Initial value verified: {actual_value} ≈ {expected_initial_value}")
+        print(f'Initial value verified: {actual_value} ≈ {expected_initial_value}')
 
     def test_arm(self, launch_service, proc_info, proc_output):
 
