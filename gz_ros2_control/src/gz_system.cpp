@@ -57,6 +57,9 @@ struct InterfaceData
   /// \brief State interface shared pointer
   hardware_interface::StateInterface::SharedPtr state;
 
+  /// \brief Value of the state to be able to use even when the interface is not defined
+  double state_value{std::numeric_limits<double>::quiet_NaN()};
+
   /// \brief Command interface shared pointer
   hardware_interface::CommandInterface::SharedPtr command;
 };
@@ -413,6 +416,7 @@ bool GazeboSimSystem::initSim(
           joint_name,
           hardware_interface::HW_IF_POSITION);
         (void)this->dataPtr->joints_[j].position.state->set_value(initial_position, true);
+        this->dataPtr->joints_[j].position.state_value = initial_position;
         this->dataPtr->state_interfaces_.push_back(this->dataPtr->joints_[j].position.state);
       }
       if (joint_info.state_interfaces[i].name == "velocity") {
@@ -423,6 +427,7 @@ bool GazeboSimSystem::initSim(
           joint_name,
           hardware_interface::HW_IF_VELOCITY);
         (void)this->dataPtr->joints_[j].velocity.state->set_value(initial_velocity, true);
+        this->dataPtr->joints_[j].velocity.state_value = initial_velocity;
         this->dataPtr->state_interfaces_.push_back(this->dataPtr->joints_[j].velocity.state);
       }
       if (joint_info.state_interfaces[i].name == "effort") {
@@ -433,6 +438,7 @@ bool GazeboSimSystem::initSim(
           joint_name,
           hardware_interface::HW_IF_EFFORT);
         (void)this->dataPtr->joints_[j].effort.state->set_value(initial_effort, true);
+        this->dataPtr->joints_[j].effort.state_value = initial_effort;
         this->dataPtr->state_interfaces_.push_back(this->dataPtr->joints_[j].effort.state);
       }
     }
@@ -687,8 +693,14 @@ hardware_interface::return_type GazeboSimSystem::read(
       this->dataPtr->ecm->Component<sim::components::JointPosition>(
       this->dataPtr->joints_[i].sim_joint);
 
-    (void)this->dataPtr->joints_[i].position.state->set_value(jointPositions->Data()[0], true);
-    (void)this->dataPtr->joints_[i].velocity.state->set_value(jointVelocity->Data()[0], true);
+    this->dataPtr->joints_[i].position.state_value = jointPositions->Data()[0];
+    this->dataPtr->joints_[i].velocity.state_value = jointVelocity->Data()[0];
+    if (this->dataPtr->joints_[i].position.state) {
+      (void)this->dataPtr->joints_[i].position.state->set_value(jointPositions->Data()[0], true);
+    }
+    if (this->dataPtr->joints_[i].velocity.state) {
+      (void)this->dataPtr->joints_[i].velocity.state->set_value(jointVelocity->Data()[0], true);
+    }
     gz::physics::Vector3d force_or_torque;
     if (this->dataPtr->joints_[i].joint_type == sdf::JointType::PRISMATIC) {
       force_or_torque = {jointWrench->Data().force().x(),
@@ -702,7 +714,10 @@ hardware_interface::return_type GazeboSimSystem::read(
       gz::physics::Vector3d{this->dataPtr->joints_[i].joint_axis.Xyz()[0],
         this->dataPtr->joints_[i].joint_axis.Xyz()[1],
         this->dataPtr->joints_[i].joint_axis.Xyz()[2]});
-    (void)this->dataPtr->joints_[i].effort.state->set_value(effort, true);
+    this->dataPtr->joints_[i].effort.state_value = effort;
+    if (this->dataPtr->joints_[i].effort.state) {
+      (void)this->dataPtr->joints_[i].effort.state->set_value(effort, true);
+    }
   }
 
   for (unsigned int i = 0; i < this->dataPtr->imus_.size(); ++i) {
@@ -807,12 +822,10 @@ hardware_interface::return_type GazeboSimSystem::write(
       }
     } else if (this->dataPtr->joints_[i].joint_control_method & POSITION) {
       // Get error in position
-      double position_state = 0.0;
       double position_cmd = 0.0;
-      if (this->dataPtr->joints_[i].position.state->get_value(position_state, true) &&
-        this->dataPtr->joints_[i].position.command->get_value(position_cmd, true))
-      {
-        double error = (position_state - position_cmd) * this->dataPtr->update_rate;
+      if (this->dataPtr->joints_[i].position.command->get_value(position_cmd, true)) {
+        double error = (this->dataPtr->joints_[i].position.state_value - position_cmd) *
+          this->dataPtr->update_rate;
 
         // Calculate target velcity
         double target_vel = -this->dataPtr->position_proportional_gain_ * error;
