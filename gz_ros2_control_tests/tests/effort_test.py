@@ -36,8 +36,10 @@ import rclpy
 from rosgraph_msgs.msg import Clock
 
 
+# This function specifies the processes to be run for our test
 @pytest.mark.rostest
 def generate_test_description():
+    # This is necessary to get unbuffered output from the process under test
     proc_env = os.environ.copy()
     proc_env['PYTHONUNBUFFERED'] = '1'
     launch_include = IncludeLaunchDescription(
@@ -62,9 +64,12 @@ class TestFixture(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         for proc in psutil.process_iter():
+            # check whether the process name matches
             if proc.name() == 'ruby' or 'gz sim' in proc.name():
+                # up to version 9 of gz-sim
                 proc.kill()
             if 'gz-sim' in proc.name():
+                # from version 10 of gz-sim
                 proc.kill()
         rclpy.shutdown()
 
