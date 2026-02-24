@@ -375,7 +375,7 @@ hardware_interface::return_type GazeboCustomSimSystem::read(
 
     this->dataPtr->joints_[i].joint_position = jointPositions->Data()[0];
     this->dataPtr->joints_[i].joint_velocity = jointVelocity->Data()[0];
-    GZ_PHYSICS_NAMESPACE  Vector3d force_or_torque;
+    GZ_PHYSICS_NAMESPACE Vector3d force_or_torque;
     if (this->dataPtr->joints_[i].joint_type == sdf::JointType::PRISMATIC) {
       force_or_torque = {jointWrench->Data().force().x(),
         jointWrench->Data().force().y(), jointWrench->Data().force().z()};
