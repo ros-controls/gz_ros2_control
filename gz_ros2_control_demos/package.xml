@@ -47,7 +47,6 @@
   <depend>control_toolbox</depend>
   <depend>gz_ros2_control</depend>
   <depend>hardware_interface</depend>
-  <depend>ros2_control_cmake</depend>
   <exec_depend>ackermann_steering_controller</exec_depend>
   <exec_depend>diff_drive_controller</exec_depend>
   <exec_depend>effort_controllers</exec_depend>
