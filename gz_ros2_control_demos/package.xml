@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>gz_ros2_control_demos</name>
   <version>0.7.18</version>
   <description>gz_ros2_control_demos</description>
