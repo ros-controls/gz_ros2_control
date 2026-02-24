@@ -23,6 +23,8 @@
 #include <utility>
 #include <vector>
 
+#ifdef GZ_HEADERS
+
 #include <gz/physics/Geometry.hh>
 #include <gz/sim/components/AngularVelocity.hh>
 #include <gz/sim/components/JointAxis.hh>
@@ -35,6 +37,26 @@
 #include <gz/sim/components/JointVelocityReset.hh>
 #include <gz/sim/components/Name.hh>
 #include <gz/sim/components/ParentEntity.hh>
+#define GZ_PHYSICS_NAMESPACE gz::physics::
+#define GZ_VECTOR_DOT dot
+
+#else
+
+#include <ignition/math/Vector3.hh>
+#include <ignition/gazebo/components/AngularVelocity.hh>
+#include <ignition/gazebo/components/JointAxis.hh>
+#include <ignition/gazebo/components/JointPosition.hh>
+#include <ignition/gazebo/components/JointPositionReset.hh>
+#include <ignition/gazebo/components/JointTransmittedWrench.hh>
+#include <ignition/gazebo/components/JointType.hh>
+#include <ignition/gazebo/components/JointVelocityCmd.hh>
+#include <ignition/gazebo/components/JointVelocity.hh>
+#include <ignition/gazebo/components/JointVelocityReset.hh>
+#include <ignition/gazebo/components/Name.hh>
+#include <ignition/gazebo/components/ParentEntity.hh>
+#define GZ_PHYSICS_NAMESPACE ignition::math::
+#define GZ_VECTOR_DOT Dot
+#endif
 
 #include "control_toolbox/low_pass_filter.hpp"
 #include "hardware_interface/hardware_info.hpp"
@@ -108,7 +130,7 @@ bool GazeboCustomSimSystem::initSim(
   std::map<std::string, sim::Entity> & enableJoints,
   const hardware_interface::HardwareInfo & hardware_info,
   sim::EntityComponentManager & _ecm,
-  unsigned int update_rate)
+  int & update_rate)
 {
   this->dataPtr = std::make_unique<GazeboSimSystemPrivate>();
   this->dataPtr->last_update_sim_time_ros_ = rclcpp::Time();
@@ -246,15 +268,15 @@ bool GazeboCustomSimSystem::initSim(
           this->dataPtr->joints_[j].joint_velocity_cmd = initial_velocity;
         }
       }
-      auto it = joint_info.command_interfaces[i].parameters.find("damping_frequency");
-      if (it != joint_info.command_interfaces[i].parameters.end()) {
+      auto it = joint_info.parameters.find("damping_frequency");
+      if (it != joint_info.parameters.end()) {
         double damping_frequency = stod(it->second);
         RCLCPP_INFO(
           this->nh_->get_logger(), "\t\t\t with damping_frequency %.2fs.",
           damping_frequency);
         double damping_intensity = 1.0;
-        auto it2 = joint_info.command_interfaces[i].parameters.find("damping_intensity");
-        if (it2 != joint_info.command_interfaces[i].parameters.end()) {
+        auto it2 = joint_info.parameters.find("damping_intensity");
+        if (it2 != joint_info.parameters.end()) {
           damping_intensity = stod(it2->second);
         }
         RCLCPP_INFO(
@@ -284,12 +306,11 @@ bool GazeboCustomSimSystem::initSim(
   return true;
 }
 
+
 CallbackReturn
-GazeboCustomSimSystem::on_init(const hardware_interface::HardwareComponentInterfaceParams & params)
+GazeboCustomSimSystem::on_init(const hardware_interface::HardwareInfo & system_info)
 {
-  if (hardware_interface::SystemInterface::on_init(params) !=
-    CallbackReturn::SUCCESS)
-  {
+  if (hardware_interface::SystemInterface::on_init(system_info) != CallbackReturn::SUCCESS) {
     return CallbackReturn::ERROR;
   }
   return CallbackReturn::SUCCESS;
@@ -354,7 +375,7 @@ hardware_interface::return_type GazeboCustomSimSystem::read(
 
     this->dataPtr->joints_[i].joint_position = jointPositions->Data()[0];
     this->dataPtr->joints_[i].joint_velocity = jointVelocity->Data()[0];
-    gz::physics::Vector3d force_or_torque;
+    GZ_PHYSICS_NAMESPACE  Vector3d force_or_torque;
     if (this->dataPtr->joints_[i].joint_type == sdf::JointType::PRISMATIC) {
       force_or_torque = {jointWrench->Data().force().x(),
         jointWrench->Data().force().y(), jointWrench->Data().force().z()};
@@ -363,8 +384,8 @@ hardware_interface::return_type GazeboCustomSimSystem::read(
         jointWrench->Data().torque().y(), jointWrench->Data().torque().z()};
     }
     // Calculate the scalar effort along the joint axis
-    this->dataPtr->joints_[i].joint_effort = force_or_torque.dot(
-      gz::physics::Vector3d{this->dataPtr->joints_[i].joint_axis.Xyz()[0],
+    this->dataPtr->joints_[i].joint_effort = force_or_torque.GZ_VECTOR_DOT(
+      GZ_PHYSICS_NAMESPACE Vector3d{this->dataPtr->joints_[i].joint_axis.Xyz()[0],
         this->dataPtr->joints_[i].joint_axis.Xyz()[1],
         this->dataPtr->joints_[i].joint_axis.Xyz()[2]});
   }

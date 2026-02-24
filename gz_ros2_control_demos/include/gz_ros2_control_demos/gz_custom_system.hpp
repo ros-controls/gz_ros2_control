@@ -39,7 +39,7 @@ class GazeboCustomSimSystem : public gz_ros2_control::GazeboSimSystemInterface
 {
 public:
   // Documentation Inherited
-  CallbackReturn on_init(const hardware_interface::HardwareComponentInterfaceParams & params)
+  CallbackReturn on_init(const hardware_interface::HardwareInfo & system_info)
   override;
 
   CallbackReturn on_configure(const rclcpp_lifecycle::State & previous_state) override;
@@ -72,7 +72,7 @@ public:
     std::map<std::string, sim::Entity> & joints,
     const hardware_interface::HardwareInfo & hardware_info,
     sim::EntityComponentManager & _ecm,
-    unsigned int update_rate) override;
+    int & update_rate) override;
 
 private:
   /// \brief Private data class

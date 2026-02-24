@@ -17,6 +17,11 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <!-- Harmonic -->
+  <depend condition="$GZ_VERSION == harmonic">gz-sim8</depend>
+  <!-- Fortress (default) -->
+  <depend condition="$GZ_VERSION == '' or $GZ_VERSION == fortress">ignition-gazebo6</depend>
+
   <build_depend>geometry_msgs</build_depend>
   <build_depend>pluginlib</build_depend>
   <build_depend>rclcpp</build_depend>
