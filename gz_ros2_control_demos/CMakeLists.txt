@@ -16,11 +16,32 @@ if(NOT WIN32)
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(control_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(geometry_msgs REQUIRED)
+
+find_package(control_msgs REQUIRED)
+find_package(control_toolbox REQUIRED)
+find_package(gz_ros2_control REQUIRED)
+find_package(hardware_interface REQUIRED)
+
+set(GZ_SIM)
+
+if("$ENV{GZ_VERSION}" STREQUAL "harmonic")
+  find_package(gz-sim8 REQUIRED)
+  set(GZ_SIM_VER ${gz-sim8_VERSION_MAJOR})
+  message(STATUS "Compiling against Gazebo harmonic")
+  set(GZ_SIM gz-sim${GZ_SIM_VER}::core)
+  add_definitions(-DGZ_HEADERS)
+else()
+  find_package(ignition-gazebo6 REQUIRED)
+  set(GZ_SIM_VER ${ignition-gazebo6_VERSION_MAJOR})
+  message(STATUS "Compiling against Gazebo fortress")
+  set(GZ_SIM ignition-gazebo${GZ_SIM_VER}::core)
+endif()
 
 install(DIRECTORY
   launch
@@ -77,6 +98,28 @@ ament_target_dependencies(example_gripper
   std_msgs
 )
 
+#########
+
+add_library(gz_custom_hardware_plugins SHARED
+  src/gz_custom_system.cpp
+)
+target_include_directories(gz_custom_hardware_plugins PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include/gz_custom_hardware_plugins>
+)
+target_link_libraries(gz_custom_hardware_plugins
+  ${GZ_SIM}
+)
+ament_target_dependencies(gz_custom_hardware_plugins
+  control_toolbox
+  hardware_interface
+  gz_ros2_control
+  rclcpp
+  rclcpp_lifecycle
+)
+
+#########
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
 
@@ -96,5 +139,16 @@ install(
   DESTINATION
     lib/${PROJECT_NAME}
 )
+
+install(TARGETS
+  gz_custom_hardware_plugins
+  EXPORT export_gz_custom_hardware_plugins
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+ament_export_targets(export_gz_custom_hardware_plugins HAS_LIBRARY_TARGET)
+pluginlib_export_plugin_description_file(gz_ros2_control gz_custom_hardware_plugins.xml)
 
 ament_package()
