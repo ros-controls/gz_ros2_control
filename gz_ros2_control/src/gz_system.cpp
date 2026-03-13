@@ -45,8 +45,6 @@
 #include <gz/sim/components/Pose.hh>
 #include <gz/sim/components/Sensor.hh>
 #include <gz/transport/Node.hh>
-#define GZ_TRANSPORT_NAMESPACE gz::transport::
-#define GZ_MSGS_NAMESPACE gz::msgs::
 
 #include <hardware_interface/hardware_info.hpp>
 #include <hardware_interface/lexical_casts.hpp>
@@ -110,10 +108,10 @@ public:
   std::array<hardware_interface::StateInterface::SharedPtr, 6> state_interfaces_;
 
   /// \brief callback to get the Force Torque topic values
-  void OnForceTorque(const GZ_MSGS_NAMESPACE Wrench & _msg);
+  void OnForceTorque(const gz::msgs::Wrench & _msg);
 };
 
-void ForceTorqueData::OnForceTorque(const GZ_MSGS_NAMESPACE Wrench & _msg)
+void ForceTorqueData::OnForceTorque(const gz::msgs::Wrench & _msg)
 {
   if (state_interfaces_[0]) {
     (void)state_interfaces_[0]->set_value(_msg.force().x(), true);
@@ -152,10 +150,10 @@ public:
   std::array<hardware_interface::StateInterface::SharedPtr, 10> state_interfaces_;
 
   /// \brief callback to get the IMU topic values
-  void OnIMU(const GZ_MSGS_NAMESPACE IMU & _msg);
+  void OnIMU(const gz::msgs::IMU & _msg);
 };
 
-void ImuData::OnIMU(const GZ_MSGS_NAMESPACE IMU & _msg)
+void ImuData::OnIMU(const gz::msgs::IMU & _msg)
 {
   if (state_interfaces_[0]) {
     (void)state_interfaces_[0]->set_value(_msg.orientation().x(), true);
@@ -195,8 +193,6 @@ public:
   GazeboSimSystemPrivate() = default;
 
   ~GazeboSimSystemPrivate() = default;
-  /// \brief Degrees od freedom.
-  size_t n_dof_;
 
   /// \brief last time the write method was called.
   rclcpp::Time last_update_sim_time_ros_;
@@ -224,7 +220,7 @@ public:
   unsigned int update_rate;
 
   /// \brief Gazebo communication node.
-  GZ_TRANSPORT_NAMESPACE Node node;
+  gz::transport::Node node;
 
   /// \brief Gain which converts position error to a velocity command
   double position_proportional_gain_;
@@ -248,7 +244,6 @@ bool GazeboSimSystem::initSim(
 
   this->nh_ = model_nh;
   this->dataPtr->ecm = &_ecm;
-  this->dataPtr->n_dof_ = hardware_info.joints.size();
 
   this->dataPtr->update_rate = update_rate;
 
@@ -277,9 +272,7 @@ bool GazeboSimSystem::initSim(
     this->nh_->get_logger(), "hold_joints (system): " << this->dataPtr->hold_joints_ << std::endl);
 
 
-  RCLCPP_DEBUG(this->nh_->get_logger(), "n_dof_ %lu", this->dataPtr->n_dof_);
-
-  this->dataPtr->joints_.resize(this->dataPtr->n_dof_);
+  this->dataPtr->joints_.resize(hardware_info.joints.size());
 
   try {
     this->dataPtr->position_proportional_gain_ =
@@ -312,12 +305,12 @@ bool GazeboSimSystem::initSim(
     "The position_proportional_gain has been set to: " <<
       this->dataPtr->position_proportional_gain_);
 
-  if (this->dataPtr->n_dof_ == 0) {
+  if (this->dataPtr->joints_.empty()) {
     RCLCPP_ERROR_STREAM(this->nh_->get_logger(), "There is no joint available");
     return false;
   }
 
-  for (unsigned int j = 0; j < this->dataPtr->n_dof_; j++) {
+  for (unsigned int j = 0; j < this->dataPtr->joints_.size(); j++) {
     auto & joint_info = hardware_info.joints[j];
     std::string joint_name = this->dataPtr->joints_[j].name = joint_info.name;
 
