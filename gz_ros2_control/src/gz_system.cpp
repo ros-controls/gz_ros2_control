@@ -862,8 +862,6 @@ hardware_interface::return_type GazeboSimSystem::write(
           sim::components::JointVelocityCmd({target_vel}));
       } else if (!vel->Data().empty()) {
         vel->Data()[0] = target_vel;
-      } else if (!vel->Data().empty()) {
-        vel->Data()[0] = target_vel;
       }
     }
   }
