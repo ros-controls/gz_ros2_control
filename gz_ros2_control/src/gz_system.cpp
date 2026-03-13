@@ -108,10 +108,10 @@ public:
   std::array<hardware_interface::StateInterface::SharedPtr, 6> state_interfaces_;
 
   /// \brief callback to get the Force Torque topic values
-  void OnForceTorque(const gz::msgs:: Wrench & _msg);
+  void OnForceTorque(const gz::msgs::Wrench & _msg);
 };
 
-void ForceTorqueData::OnForceTorque(const gz::msgs:: Wrench & _msg)
+void ForceTorqueData::OnForceTorque(const gz::msgs::Wrench & _msg)
 {
   if (state_interfaces_[0]) {
     (void)state_interfaces_[0]->set_value(_msg.force().x(), true);
@@ -150,10 +150,10 @@ public:
   std::array<hardware_interface::StateInterface::SharedPtr, 10> state_interfaces_;
 
   /// \brief callback to get the IMU topic values
-  void OnIMU(const gz::msgs:: IMU & _msg);
+  void OnIMU(const gz::msgs::IMU & _msg);
 };
 
-void ImuData::OnIMU(const gz::msgs:: IMU & _msg)
+void ImuData::OnIMU(const gz::msgs::IMU & _msg)
 {
   if (state_interfaces_[0]) {
     (void)state_interfaces_[0]->set_value(_msg.orientation().x(), true);
@@ -220,7 +220,7 @@ public:
   unsigned int update_rate;
 
   /// \brief Gazebo communication node.
-  gz::transport:: Node node;
+  gz::transport::Node node;
 
   /// \brief Gain which converts position error to a velocity command
   double position_proportional_gain_;
