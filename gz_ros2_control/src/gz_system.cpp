@@ -659,13 +659,11 @@ GazeboSimSystem::export_command_interfaces()
 
 CallbackReturn GazeboSimSystem::on_activate(const rclcpp_lifecycle::State & previous_state)
 {
-  return CallbackReturn::SUCCESS;
   return hardware_interface::SystemInterface::on_activate(previous_state);
 }
 
 CallbackReturn GazeboSimSystem::on_deactivate(const rclcpp_lifecycle::State & previous_state)
 {
-  return CallbackReturn::SUCCESS;
   return hardware_interface::SystemInterface::on_deactivate(previous_state);
 }
 
