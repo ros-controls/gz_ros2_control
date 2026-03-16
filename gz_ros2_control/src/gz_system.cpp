@@ -649,23 +649,12 @@ hardware_interface::return_type GazeboSimSystem::read(
       this->dataPtr->ecm->Component<sim::components::JointPosition>(
       this->dataPtr->joints_[i].sim_joint);
 
-<<<<<<< HEAD
-    this->dataPtr->joints_[i].joint_position = jointPositions->Data()[0];
-    this->dataPtr->joints_[i].joint_velocity = jointVelocity->Data()[0];
-=======
     if (!jointPositions || !jointVelocity || !jointWrench) {
       continue;
     }
 
-    this->dataPtr->joints_[i].position.state_value = jointPositions->Data()[0];
-    this->dataPtr->joints_[i].velocity.state_value = jointVelocity->Data()[0];
-    if (this->dataPtr->joints_[i].position.state) {
-      (void)this->dataPtr->joints_[i].position.state->set_value(jointPositions->Data()[0], true);
-    }
-    if (this->dataPtr->joints_[i].velocity.state) {
-      (void)this->dataPtr->joints_[i].velocity.state->set_value(jointVelocity->Data()[0], true);
-    }
->>>>>>> 689117e (Minor improvements (#800))
+    this->dataPtr->joints_[i].joint_position = jointPositions->Data()[0];
+    this->dataPtr->joints_[i].joint_velocity = jointVelocity->Data()[0];
     gz::physics::Vector3d force_or_torque;
     if (this->dataPtr->joints_[i].joint_type == sdf::JointType::PRISMATIC) {
       force_or_torque = {jointWrench->Data().force().x(),
