@@ -288,7 +288,7 @@ bool GazeboSimSystem::initSim(
       continue;
     }
 
-    sim::Entity simjoint = it_joint->second;
+    sim::Entity simjoint = it->second;
     this->dataPtr->joints_[j].sim_joint = simjoint;
     this->dataPtr->joints_[j].joint_type = _ecm.Component<sim::components::JointType>(
       simjoint)->Data();
