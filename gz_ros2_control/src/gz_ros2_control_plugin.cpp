@@ -176,6 +176,9 @@ public:
 
   /// \brief controller update rate
   int update_rate;
+
+  /// \brief Whether the control/sim period mismatch warning has been emitted
+  bool period_mismatch_warned_{false};
 };
 
 //////////////////////////////////////////////////
@@ -476,8 +479,7 @@ void GazeboSimROS2ControlPlugin::PreUpdate(
   if (!this->dataPtr->controller_manager_) {
     return;
   }
-  static bool warned{false};
-  if (!warned) {
+  if (!this->dataPtr->period_mismatch_warned_) {
     rclcpp::Duration gazebo_period(_info.dt);
 
     // Check the period against the simulation period
@@ -494,7 +496,7 @@ void GazeboSimROS2ControlPlugin::PreUpdate(
           " s) is slower than the gazebo simulation period (" <<
           gazebo_period.seconds() << " s).");
     }
-    warned = true;
+    this->dataPtr->period_mismatch_warned_ = true;
   }
 
   rclcpp::Time sim_time_ros(std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -520,9 +522,6 @@ void GazeboSimROS2ControlPlugin::PostUpdate(
 
   if (sim_period >= this->dataPtr->control_period_) {
     this->dataPtr->last_update_sim_time_ros_ = sim_time_ros;
-    auto gz_controller_manager =
-      std::dynamic_pointer_cast<gz_ros2_control::GazeboSimSystemInterface>(
-      this->dataPtr->controller_manager_);
     this->dataPtr->controller_manager_->read(sim_time_ros, sim_period);
     this->dataPtr->controller_manager_->update(sim_time_ros, sim_period);
   }

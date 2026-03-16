@@ -329,7 +329,7 @@ bool GazeboSimSystem::initSim(
       continue;
     }
 
-    sim::Entity simjoint = enableJoints[joint_name];
+    sim::Entity simjoint = it_joint->second;
     this->dataPtr->joints_[j].sim_joint = simjoint;
     this->dataPtr->joints_[j].joint_type = _ecm.Component<sim::components::JointType>(
       simjoint)->Data();
@@ -706,6 +706,10 @@ hardware_interface::return_type GazeboSimSystem::read(
       this->dataPtr->ecm->Component<sim::components::JointPosition>(
       this->dataPtr->joints_[i].sim_joint);
 
+    if (!jointPositions || !jointVelocity || !jointWrench) {
+      continue;
+    }
+
     this->dataPtr->joints_[i].position.state_value = jointPositions->Data()[0];
     this->dataPtr->joints_[i].velocity.state_value = jointVelocity->Data()[0];
     if (this->dataPtr->joints_[i].position.state) {
@@ -870,8 +874,6 @@ hardware_interface::return_type GazeboSimSystem::write(
         this->dataPtr->ecm->CreateComponent(
           this->dataPtr->joints_[i].sim_joint,
           sim::components::JointVelocityCmd({target_vel}));
-      } else if (!vel->Data().empty()) {
-        vel->Data()[0] = target_vel;
       } else if (!vel->Data().empty()) {
         vel->Data()[0] = target_vel;
       }
