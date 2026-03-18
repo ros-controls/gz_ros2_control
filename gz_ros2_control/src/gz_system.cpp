@@ -329,9 +329,8 @@ bool GazeboSimSystem::initSim(
     // Accept this joint and continue configuration
     RCLCPP_INFO_STREAM(this->nh_->get_logger(), "Loading joint: " << joint_name);
 
-<<<<<<< HEAD
     std::string suffix = "";
-=======
+
     // Precompute interface names once to avoid allocations in perform_command_mode_switch
     this->dataPtr->joints_[j].if_name_position =
       joint_name + "/" + hardware_interface::HW_IF_POSITION;
@@ -339,15 +338,6 @@ bool GazeboSimSystem::initSim(
       joint_name + "/" + hardware_interface::HW_IF_VELOCITY;
     this->dataPtr->joints_[j].if_name_effort =
       joint_name + "/" + hardware_interface::HW_IF_EFFORT;
-
-    // check if joint is mimicked
-    auto it = std::find_if(
-      hardware_info.mimic_joints.begin(),
-      hardware_info.mimic_joints.end(),
-      [j](const hardware_interface::MimicJoint & mj) {
-        return mj.joint_index == j;
-      });
->>>>>>> 8f6caa0 (Precompute interface names (#789))
 
     // check if joint is mimicked
     if (joint_info.parameters.find("mimic") != joint_info.parameters.end()) {
