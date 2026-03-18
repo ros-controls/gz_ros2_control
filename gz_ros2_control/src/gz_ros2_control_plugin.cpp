@@ -214,8 +214,12 @@ GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
       case sdf::JointType::FIXED:
         {
           RCLCPP_INFO(
+<<<<<<< HEAD
             node_->get_logger(),
             "[gz_ros2_control] Fixed joint [%s] (Entity=%lu)] is skipped",
+=======
+            node_->get_logger(), "[gz_ros2_control] Fixed joint ['%s'] (Entity='%lu') is skipped.",
+>>>>>>> 8f6caa0 (Precompute interface names (#789))
             jointName.c_str(), jointEntity);
           continue;
         }
@@ -226,7 +230,11 @@ GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
         {
           RCLCPP_WARN(
             node_->get_logger(),
+<<<<<<< HEAD
             "[gz_ros2_control] Joint [%s] (Entity=%lu)] is of unsupported type."
+=======
+            "[gz_ros2_control] Joint ['%s'] (Entity='%lu') is of unsupported type."
+>>>>>>> 8f6caa0 (Precompute interface names (#789))
             " Only joints with a single axis are supported.",
             jointName.c_str(), jointEntity);
           continue;
@@ -465,7 +473,7 @@ void GazeboSimROS2ControlPlugin::Configure(
     RCLCPP_WARN(
       this->dataPtr->node_->get_logger(),
       "Waiting RM to load and initialize hardware...");
-    std::this_thread::sleep_for(std::chrono::microseconds(2000000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
   }
 
   this->dataPtr->entity_ = _entity;
