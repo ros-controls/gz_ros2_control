@@ -460,7 +460,7 @@ void GazeboSimROS2ControlPlugin::Configure(
     RCLCPP_WARN(
       this->dataPtr->node_->get_logger(),
       "Waiting RM to load and initialize hardware...");
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
   }
 
   this->dataPtr->entity_ = _entity;
