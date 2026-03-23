@@ -518,9 +518,19 @@ void GazeboSimROS2ControlPlugin::Configure(
     std::chrono::duration_cast<std::chrono::nanoseconds>(
       std::chrono::duration<double>(1.0 / static_cast<double>(this->dataPtr->update_rate))));
 
+<<<<<<< HEAD
   // Force setting of use_sim_time parameter
   this->dataPtr->controller_manager_->set_parameter(
     rclcpp::Parameter("use_sim_time", rclcpp::ParameterValue(true)));
+=======
+  // Wait for CM to receive robot description from the topic and then initialize Resource Manager
+  while (!this->dataPtr->controller_manager_->is_resource_manager_initialized()) {
+    RCLCPP_WARN(
+      this->dataPtr->node_->get_logger(),
+      "Waiting RM to load and initialize hardware...");
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+  }
+>>>>>>> b7e31d4 (Fix race condition in RM initialization (restore 2000 ms wait) (#809))
 
   this->dataPtr->entity_ = _entity;
 }
