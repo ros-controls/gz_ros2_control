@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <unistd.h>
-
 #include <chrono>
 #include <map>
 #include <memory>
@@ -173,6 +171,9 @@ public:
 
   /// \brief controller update rate
   int update_rate;
+
+  /// \brief Whether the control/sim period mismatch warning has been emitted
+  bool period_mismatch_warned_{false};
 };
 
 //////////////////////////////////////////////////
@@ -209,7 +210,7 @@ GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
         {
           RCLCPP_INFO(
             node_->get_logger(),
-            "[gz_ros2_control] Fixed joint [%s] (Entity=%lu)] is skipped",
+            "[gz_ros2_control] Fixed joint ['%s'] (Entity='%lu') is skipped.",
             jointName.c_str(), jointEntity);
           continue;
         }
@@ -220,7 +221,7 @@ GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
         {
           RCLCPP_WARN(
             node_->get_logger(),
-            "[gz_ros2_control] Joint [%s] (Entity=%lu)] is of unsupported type."
+            "[gz_ros2_control] Joint ['%s'] (Entity='%lu') is of unsupported type."
             " Only joints with a single axis are supported.",
             jointName.c_str(), jointEntity);
           continue;
@@ -459,7 +460,7 @@ void GazeboSimROS2ControlPlugin::Configure(
     RCLCPP_WARN(
       this->dataPtr->node_->get_logger(),
       "Waiting RM to load and initialize hardware...");
-    std::this_thread::sleep_for(std::chrono::microseconds(2000000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
   }
 
   this->dataPtr->entity_ = _entity;
@@ -473,8 +474,7 @@ void GazeboSimROS2ControlPlugin::PreUpdate(
   if (!this->dataPtr->controller_manager_) {
     return;
   }
-  static bool warned{false};
-  if (!warned) {
+  if (!this->dataPtr->period_mismatch_warned_) {
     rclcpp::Duration gazebo_period(_info.dt);
 
     // Check the period against the simulation period
@@ -491,7 +491,7 @@ void GazeboSimROS2ControlPlugin::PreUpdate(
           " s) is slower than the gazebo simulation period (" <<
           gazebo_period.seconds() << " s).");
     }
-    warned = true;
+    this->dataPtr->period_mismatch_warned_ = true;
   }
 
   rclcpp::Time sim_time_ros(std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -517,9 +517,6 @@ void GazeboSimROS2ControlPlugin::PostUpdate(
 
   if (sim_period >= this->dataPtr->control_period_) {
     this->dataPtr->last_update_sim_time_ros_ = sim_time_ros;
-    auto gz_controller_manager =
-      std::dynamic_pointer_cast<gz_ros2_control::GazeboSimSystemInterface>(
-      this->dataPtr->controller_manager_);
     this->dataPtr->controller_manager_->read(sim_time_ros, sim_period);
     this->dataPtr->controller_manager_->update(sim_time_ros, sim_period);
   }
