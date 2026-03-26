@@ -32,7 +32,6 @@ def generate_launch_description():
     # Launch Arguments
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
     gz_args = LaunchConfiguration('gz_args', default='')
-
     # Get URDF via xacro
     robot_description_content = Command(
         [

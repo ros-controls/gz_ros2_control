@@ -25,3 +25,15 @@ add_launch_test(ft_sensor_test.py
 add_launch_test(pendulum_effort_test.py
   TIMEOUT 50
 )
+
+add_launch_test(pendulum_position_test.py
+  TIMEOUT 50
+)
+
+add_launch_test(gripper_mimic_joint_position_test.py
+  TIMEOUT 50
+)
+
+add_launch_test(gripper_mimic_joint_effort_test.py
+  TIMEOUT 50
+)
