@@ -156,7 +156,7 @@ class TestFixture(unittest.TestCase):
         # 4) Launch the node that moves the joint
         proc_action = Node(
             package='gz_ros2_control_demos',
-            executable='example_velocity',
+            executable='example_effort',
             output='screen',
         )
 
