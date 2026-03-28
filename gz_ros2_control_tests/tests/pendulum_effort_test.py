@@ -105,7 +105,7 @@ class TestFixture(unittest.TestCase):
     # ---------------------------------------------------------
     # Helper: ensure joint_states is publishing and pendulum joint exists
     #
-    # Note: # In ROS 2 Jazzy, the initial_value of the pendulum joint is applied
+    # Note: # In ROS 2 Humble, the initial_value of the pendulum joint is applied
     # to the Gazebo simulation, but is not immediately  reflected in the
     # ros2-control state interface. As a result the initial position cannot be
     # validated reliably through /joint_states at startup.
