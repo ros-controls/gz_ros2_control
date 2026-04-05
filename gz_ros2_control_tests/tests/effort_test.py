@@ -155,6 +155,10 @@ class TestFixture(unittest.TestCase):
             output='screen',
         )
 
+        #todo(johntgz) 4) Deactivate controller
+
+        #todo(johntgz) 5) Check if the joints of the cart still holds it's position
+
         with launch_testing.tools.launch_process(
             launch_service, proc_action, proc_info, proc_output
         ):
