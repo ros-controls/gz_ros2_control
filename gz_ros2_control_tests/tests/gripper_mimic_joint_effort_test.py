@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2025 ros2_control Maintainers
+# Copyright 2023 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ def generate_test_description():
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory('gz_ros2_control_demos'),
-                'launch/cart_example_effort.launch.py',
+                'launch/gripper_mimic_joint_example_effort.launch.py',
             )
         ),
         launch_arguments={'gz_args': '--headless-rendering -s'}.items(),
@@ -90,13 +90,13 @@ class TestFixture(unittest.TestCase):
     def test_check_if_msgs_published(self):
         check_if_js_published(
             '/joint_states',
-            ['slider_to_cart'],
+            ['right_finger_joint', 'left_finger_joint'],
         )
 
-    # -------------------------------
-    # Helper: check initial position
-    # -------------------------------
-    def _check_initial_slider_position(self):
+    # ---------------------------------------------------------
+    # Helper: check initial gripper position BEFORE any motion
+    # ---------------------------------------------------------
+    def _check_initial_gripper_position(self):
         from sensor_msgs.msg import JointState
         msg = None
 
@@ -118,10 +118,10 @@ class TestFixture(unittest.TestCase):
         self.node.destroy_subscription(sub)
 
         self.assertIsNotNone(msg, 'No joint_state message received')
-        self.assertIn('slider_to_cart', msg.name)
+        self.assertIn('right_finger_joint', msg.name)
 
-        joint_idx = msg.name.index('slider_to_cart')
-        expected_initial_value = 1.0
+        joint_idx = msg.name.index('right_finger_joint')
+        expected_initial_value = 0.15
         actual_value = msg.position[joint_idx]
 
         self.assertAlmostEqual(
@@ -133,17 +133,17 @@ class TestFixture(unittest.TestCase):
 
         print(f'Initial value verified: {actual_value} ≈ {expected_initial_value}')
 
-    # -------------------------------
+    # ---------------------------------------------------------
     # Main test
-    # -------------------------------
+    # ---------------------------------------------------------
     def test_arm(self, launch_service, proc_info, proc_output):
 
         # 1) Check initial position BEFORE any motion
-        self._check_initial_slider_position()
+        self._check_initial_gripper_position()
 
         # 2) Check controllers
         cnames = [
-            'joint_trajectory_controller',
+            'gripper_controller',
             'joint_state_broadcaster',
         ]
         check_controllers_running(self.node, cnames)
@@ -151,7 +151,7 @@ class TestFixture(unittest.TestCase):
         # 3) Launch the node that moves the joint
         proc_action = Node(
             package='gz_ros2_control_demos',
-            executable='example_effort',
+            executable='example_gripper',
             output='screen',
         )
 

@@ -51,14 +51,14 @@
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
 
-  <ros2_control name="GazeboSimSystem" type="system">
+  <ros2_control name="GazeboCustomSimSystem" type="system">
     <hardware>
-      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      <plugin>gz_ros2_control_demos/GazeboCustomSimSystem</plugin>
     </hardware>
     <joint name="slider_to_cart">
-      <command_interface name="position">
-        <param name="min">-15</param>
-        <param name="max">15</param>
+      <command_interface name="velocity">
+        <param name="damping_frequency">0.5</param>
+        <param name="damping_intensity">1.0</param>
       </command_interface>
       <state_interface name="position">
         <param name="initial_value">1.0</param>
@@ -90,7 +90,7 @@
 
   <gazebo>
     <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-      <parameters>$(find gz_ros2_control_demos)/config/cart_controller_position.yaml</parameters>
+      <parameters>$(find gz_ros2_control_demos)/config/cart_controller_velocity.yaml</parameters>
     </plugin>
   </gazebo>
 </robot>

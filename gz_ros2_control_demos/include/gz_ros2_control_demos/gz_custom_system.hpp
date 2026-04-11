@@ -1,4 +1,4 @@
-// Copyright 2021 Open Source Robotics Foundation, Inc.
+// Copyright 2025 AIT Austrian Institute of Technology GmbH
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
 // limitations under the License.
 
 
-#ifndef GZ_ROS2_CONTROL__GZ_SYSTEM_HPP_
-#define GZ_ROS2_CONTROL__GZ_SYSTEM_HPP_
+#ifndef GZ_ROS2_CONTROL_DEMOS__GZ_CUSTOM_SYSTEM_HPP_
+#define GZ_ROS2_CONTROL_DEMOS__GZ_CUSTOM_SYSTEM_HPP_
 
 #include <map>
 #include <memory>
@@ -25,7 +25,7 @@
 #include "rclcpp_lifecycle/state.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 
-namespace gz_ros2_control
+namespace gz_ros2_control_demos
 {
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
@@ -35,7 +35,7 @@ class GazeboSimSystemPrivate;
 // These class must inherit `gz_ros2_control::GazeboSimSystemInterface` which implements a
 // simulated `ros2_control` `hardware_interface::SystemInterface`.
 
-class GazeboSimSystem : public GazeboSimSystemInterface
+class GazeboCustomSimSystem : public gz_ros2_control::GazeboSimSystemInterface
 {
 public:
   // Documentation Inherited
@@ -45,23 +45,18 @@ public:
   CallbackReturn on_configure(const rclcpp_lifecycle::State & previous_state) override;
 
   // Documentation Inherited
-  std::vector<hardware_interface::StateInterface::ConstSharedPtr>
-  on_export_state_interfaces() override;
+  std::vector<hardware_interface::StateInterface::ConstSharedPtr> on_export_state_interfaces()
+  override;
 
   // Documentation Inherited
-  std::vector<hardware_interface::CommandInterface::SharedPtr>
-  on_export_command_interfaces() override;
+  std::vector<hardware_interface::CommandInterface::SharedPtr> on_export_command_interfaces()
+  override;
 
   // Documentation Inherited
   CallbackReturn on_activate(const rclcpp_lifecycle::State & previous_state) override;
 
   // Documentation Inherited
   CallbackReturn on_deactivate(const rclcpp_lifecycle::State & previous_state) override;
-
-  // Documentation Inherited
-  hardware_interface::return_type perform_command_mode_switch(
-    const std::vector<std::string> & start_interfaces,
-    const std::vector<std::string> & stop_interfaces) override;
 
   // Documentation Inherited
   hardware_interface::return_type read(
@@ -82,16 +77,10 @@ public:
     unsigned int update_rate) override;
 
 private:
-  // Register a sensor (for now just IMUs)
-  // \param[in] hardware_info hardware information where the data of
-  // the sensors is extract.
-  void registerSensors(
-    const hardware_interface::HardwareInfo & hardware_info);
-
   /// \brief Private data class
   std::unique_ptr<GazeboSimSystemPrivate> dataPtr;
 };
 
-}  // namespace gz_ros2_control
+}  // namespace gz_ros2_control_demos
 
-#endif  // GZ_ROS2_CONTROL__GZ_SYSTEM_HPP_
+#endif  // GZ_ROS2_CONTROL_DEMOS__GZ_CUSTOM_SYSTEM_HPP_

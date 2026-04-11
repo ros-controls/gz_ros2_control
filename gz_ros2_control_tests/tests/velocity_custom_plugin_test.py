@@ -46,7 +46,7 @@ def generate_test_description():
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory('gz_ros2_control_demos'),
-                'launch/cart_example_effort.launch.py',
+                'launch', 'cart_example_velocity_custom_plugin.launch.py',
             )
         ),
         launch_arguments={'gz_args': '--headless-rendering -s'}.items(),
@@ -93,9 +93,9 @@ class TestFixture(unittest.TestCase):
             ['slider_to_cart'],
         )
 
-    # -------------------------------
-    # Helper: check initial position
-    # -------------------------------
+    # ---------------------------------------------------------
+    # Helper: check initial slider position BEFORE any motion
+    # ---------------------------------------------------------
     def _check_initial_slider_position(self):
         from sensor_msgs.msg import JointState
         msg = None
@@ -133,9 +133,9 @@ class TestFixture(unittest.TestCase):
 
         print(f'Initial value verified: {actual_value} ≈ {expected_initial_value}')
 
-    # -------------------------------
+    # ---------------------------------------------------------
     # Main test
-    # -------------------------------
+    # ---------------------------------------------------------
     def test_arm(self, launch_service, proc_info, proc_output):
 
         # 1) Check initial position BEFORE any motion
@@ -144,14 +144,14 @@ class TestFixture(unittest.TestCase):
         # 2) Check controllers
         cnames = [
             'joint_trajectory_controller',
-            'joint_state_broadcaster',
+            'joint_state_broadcaster'
         ]
         check_controllers_running(self.node, cnames)
 
         # 3) Launch the node that moves the joint
         proc_action = Node(
             package='gz_ros2_control_demos',
-            executable='example_effort',
+            executable='example_velocity',
             output='screen',
         )
 

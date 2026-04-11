@@ -2,6 +2,18 @@
 Changelog for package gz_ros2_control_tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.6 (2026-01-08)
+------------------
+
+3.0.5 (2025-10-16)
+------------------
+
+3.0.4 (2025-09-29)
+------------------
+* Add a custom plugin for simulating actuator dynamics to the demos (`#693 <https://github.com/ros-controls/gz_ros2_control/issues/693>`_)
+* Ensure shutdown of gz jetty (`#682 <https://github.com/ros-controls/gz_ros2_control/issues/682>`_)
+* Contributors: Christoph Fröhlich
+
 3.0.3 (2025-08-18)
 ------------------
 

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <unistd.h>
-
 #include <chrono>
 #include <map>
 #include <memory>
@@ -171,13 +169,16 @@ public:
 
   /// \brief Last time the update method was called
   rclcpp::Time last_update_sim_time_ros_ =
-    rclcpp::Time((int64_t)0, RCL_ROS_TIME);
+    rclcpp::Time(static_cast<int64_t>(0), RCL_ROS_TIME);
 
   /// \brief ECM pointer
   sim::EntityComponentManager * ecm{nullptr};
 
   /// \brief controller update rate
   int update_rate;
+
+  /// \brief Whether the control/sim period mismatch warning has been emitted
+  bool period_mismatch_warned_{false};
 };
 
 //////////////////////////////////////////////////
@@ -213,8 +214,7 @@ GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
       case sdf::JointType::FIXED:
         {
           RCLCPP_INFO(
-            node_->get_logger(),
-            "[gz_ros2_control] Fixed joint [%s] (Entity=%lu)] is skipped",
+            node_->get_logger(), "[gz_ros2_control] Fixed joint ['%s'] (Entity='%lu') is skipped.",
             jointName.c_str(), jointEntity);
           continue;
         }
@@ -225,18 +225,18 @@ GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
         {
           RCLCPP_WARN(
             node_->get_logger(),
-            "[gz_ros2_control] Joint [%s] (Entity=%lu)] is of unsupported type."
+            "[gz_ros2_control] Joint ['%s'] (Entity='%lu') is of unsupported type."
             " Only joints with a single axis are supported.",
             jointName.c_str(), jointEntity);
           continue;
         }
       default:
         {
-          RCLCPP_WARN(
+          RCLCPP_WARN_STREAM(
             node_->get_logger(),
-            "[gz_ros2_control] Joint [%s] (Entity=%lu)] is of unknown type",
-            jointName.c_str(), jointEntity);
-          continue;
+            "[gz_ros2_control] Joint [" << jointName << "] (Entity=" << jointEntity
+                                        << ") is of unknown type."
+          );
         }
     }
     output[jointName] = jointEntity;
@@ -254,11 +254,6 @@ GazeboSimROS2ControlPlugin::GazeboSimROS2ControlPlugin()
 //////////////////////////////////////////////////
 GazeboSimROS2ControlPlugin::~GazeboSimROS2ControlPlugin()
 {
-  // Stop controller manager thread
-  if (!this->dataPtr->controller_manager_) {
-    return;
-  }
-  this->dataPtr->executor_->remove_node(this->dataPtr->controller_manager_);
   this->dataPtr->executor_->cancel();
   this->dataPtr->thread_executor_spin_.join();
 }
@@ -274,11 +269,12 @@ void GazeboSimROS2ControlPlugin::Configure(
   // Make sure the controller is attached to a valid model
   const auto model = sim::Model(_entity);
   if (!model.Valid(_ecm)) {
-    RCLCPP_ERROR(
+    RCLCPP_ERROR_STREAM(
       logger,
-      "[Gazebo ROS 2 Control] Failed to initialize because [%s] (Entity=%lu)] is not a model."
-      "Please make sure that Gazebo ROS 2 Control is attached to a valid model.",
-      model.Name(_ecm).c_str(), _entity);
+      "[Gazebo ROS 2 Control] Failed to initialize because ["
+        << model.Name(_ecm) << "] (Entity=" << _entity << ") is not a model. "
+        << "Please make sure that Gazebo ROS 2 Control is attached to a valid model."
+    );
     return;
   }
 
@@ -458,7 +454,8 @@ void GazeboSimROS2ControlPlugin::Configure(
       this->dataPtr->node_->get_namespace(), options));
   this->dataPtr->executor_->add_node(this->dataPtr->controller_manager_);
 
-  this->dataPtr->update_rate = this->dataPtr->controller_manager_->get_update_rate();
+  this->dataPtr->update_rate =
+    static_cast<int>(this->dataPtr->controller_manager_->get_update_rate());
   this->dataPtr->control_period_ = rclcpp::Duration(
     std::chrono::duration_cast<std::chrono::nanoseconds>(
       std::chrono::duration<double>(1.0 / static_cast<double>(this->dataPtr->update_rate))));
@@ -468,7 +465,7 @@ void GazeboSimROS2ControlPlugin::Configure(
     RCLCPP_WARN(
       this->dataPtr->node_->get_logger(),
       "Waiting RM to load and initialize hardware...");
-    std::this_thread::sleep_for(std::chrono::microseconds(2000000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
   }
 
   this->dataPtr->entity_ = _entity;
@@ -482,12 +479,11 @@ void GazeboSimROS2ControlPlugin::PreUpdate(
   if (!this->dataPtr->controller_manager_) {
     return;
   }
-  static bool warned{false};
-  if (!warned) {
+  if (!this->dataPtr->period_mismatch_warned_) {
     rclcpp::Duration gazebo_period(_info.dt);
 
     // Check the period against the simulation period
-    if (this->dataPtr->control_period_ < _info.dt) {
+    if (this->dataPtr->control_period_ < gazebo_period) {
       RCLCPP_ERROR_STREAM(
         this->dataPtr->node_->get_logger(),
         "Desired controller update period (" << this->dataPtr->control_period_.seconds() <<
@@ -500,7 +496,7 @@ void GazeboSimROS2ControlPlugin::PreUpdate(
           " s) is slower than the gazebo simulation period (" <<
           gazebo_period.seconds() << " s).");
     }
-    warned = true;
+    this->dataPtr->period_mismatch_warned_ = true;
   }
 
   rclcpp::Time sim_time_ros(std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -526,9 +522,6 @@ void GazeboSimROS2ControlPlugin::PostUpdate(
 
   if (sim_period >= this->dataPtr->control_period_) {
     this->dataPtr->last_update_sim_time_ros_ = sim_time_ros;
-    auto gz_controller_manager =
-      std::dynamic_pointer_cast<gz_ros2_control::GazeboSimSystemInterface>(
-      this->dataPtr->controller_manager_);
     this->dataPtr->controller_manager_->read(sim_time_ros, sim_period);
     this->dataPtr->controller_manager_->update(sim_time_ros, sim_period);
   }

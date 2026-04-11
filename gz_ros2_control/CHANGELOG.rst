@@ -2,6 +2,28 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.6 (2026-01-08)
+------------------
+* Removed unused ament_index_cpp (`#760 <https://github.com/ros-controls/gz_ros2_control/issues/760>`_)
+* fix failing pre-commit (`#741 <https://github.com/ros-controls/gz_ros2_control/issues/741>`_)
+* Fix platform-independent logging in `gz_ros2_control` plugin (`#740 <https://github.com/ros-controls/gz_ros2_control/issues/740>`_)
+* Minor code consistency fix (`#732 <https://github.com/ros-controls/gz_ros2_control/issues/732>`_)
+* Contributors: Alejandro Hernández Cordero, Dhruv Patel, Patrick Roncagliolo, Sai Kishor Kothakota
+
+3.0.5 (2025-10-16)
+------------------
+* Remove deprecated on_init (`#699 <https://github.com/ros-controls/gz_ros2_control/issues/699>`_)
+* Contributors: Christoph Fröhlich
+
+3.0.4 (2025-09-29)
+------------------
+* Modernize CMakeLists (`#688 <https://github.com/ros-controls/gz_ros2_control/issues/688>`_)
+* Remove outdated comment (`#687 <https://github.com/ros-controls/gz_ros2_control/issues/687>`_)
+* Don't remove the node at destruction (`#683 <https://github.com/ros-controls/gz_ros2_control/issues/683>`_)
+* Suppress warning (`#679 <https://github.com/ros-controls/gz_ros2_control/issues/679>`_)
+* Fix compiler warnings (`#674 <https://github.com/ros-controls/gz_ros2_control/issues/674>`_)
+* Contributors: Alejandro Hernández Cordero, Christoph Fröhlich
+
 3.0.3 (2025-08-18)
 ------------------
 
