@@ -2,6 +2,13 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.7 (2026-04-15)
+------------------
+* Add missing tests for pendulum and gripper (position and effort) (`#814 <https://github.com/ros-controls/gz_ros2_control/issues/814>`_)
+* Add initial_value checks to state interface tests  (`#765 <https://github.com/ros-controls/gz_ros2_control/issues/765>`_)
+* Migrate to the new Handles API with variants in the Hardware Components (`#763 <https://github.com/ros-controls/gz_ros2_control/issues/763>`_)
+* Contributors: José Luis Pérez Martín, Sai Kishor Kothakota
+
 3.0.6 (2026-01-08)
 ------------------
 

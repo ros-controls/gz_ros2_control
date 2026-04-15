@@ -2,6 +2,13 @@
 Changelog for package gz_ros2_control_tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.7 (2026-04-15)
+------------------
+* Add missing tests for pendulum and gripper (position and effort) (`#814 <https://github.com/ros-controls/gz_ros2_control/issues/814>`_)
+* test(pendulum): use example_effort to match effort controller (`#813 <https://github.com/ros-controls/gz_ros2_control/issues/813>`_)
+* Add initial_value checks to state interface tests  (`#765 <https://github.com/ros-controls/gz_ros2_control/issues/765>`_)
+* Contributors: José Luis Pérez Martín
+
 3.0.6 (2026-01-08)
 ------------------
 

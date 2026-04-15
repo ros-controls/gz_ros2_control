@@ -2,6 +2,18 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.7 (2026-04-15)
+------------------
+* Fix race condition in RM initialization (restore 2000 ms wait) (`#809 <https://github.com/ros-controls/gz_ros2_control/issues/809>`_)
+* Precompute interface names (`#789 <https://github.com/ros-controls/gz_ros2_control/issues/789>`_)
+* Minor improvements (`#800 <https://github.com/ros-controls/gz_ros2_control/issues/800>`_)
+* Removed dead code (`#791 <https://github.com/ros-controls/gz_ros2_control/issues/791>`_)
+* Fix return on_activate and on_deactivate (`#790 <https://github.com/ros-controls/gz_ros2_control/issues/790>`_)
+* Removed unnecesary defines and removed ndof attribute (`#788 <https://github.com/ros-controls/gz_ros2_control/issues/788>`_)
+* Only set_value if the interface is valid (`#771 <https://github.com/ros-controls/gz_ros2_control/issues/771>`_)
+* Migrate to the new Handles API with variants in the Hardware Components (`#763 <https://github.com/ros-controls/gz_ros2_control/issues/763>`_)
+* Contributors: Alejandro Hernández Cordero, José Luis Pérez Martín, Sai Kishor Kothakota
+
 3.0.6 (2026-01-08)
 ------------------
 * Removed unused ament_index_cpp (`#760 <https://github.com/ros-controls/gz_ros2_control/issues/760>`_)
