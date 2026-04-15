@@ -2,6 +2,14 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.19 (2026-04-15)
+-------------------
+* Precompute interface names (backport `#789 <https://github.com/ros-controls/gz_ros2_control/issues/789>`_) (`#807 <https://github.com/ros-controls/gz_ros2_control/issues/807>`_)
+* Minor improvements (backport `#800 <https://github.com/ros-controls/gz_ros2_control/issues/800>`_) (`#804 <https://github.com/ros-controls/gz_ros2_control/issues/804>`_)
+* Removed dead code (`#791 <https://github.com/ros-controls/gz_ros2_control/issues/791>`_) (`#799 <https://github.com/ros-controls/gz_ros2_control/issues/799>`_)
+* Fix return on_activate and on_deactivate (`#790 <https://github.com/ros-controls/gz_ros2_control/issues/790>`_) (`#792 <https://github.com/ros-controls/gz_ros2_control/issues/792>`_)
+* Contributors: mergify[bot]
+
 0.7.18 (2026-01-08)
 -------------------
 * Minor code consistency fix (`#732 <https://github.com/ros-controls/gz_ros2_control/issues/732>`_) (`#735 <https://github.com/ros-controls/gz_ros2_control/issues/735>`_)

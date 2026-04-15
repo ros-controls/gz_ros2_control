@@ -2,6 +2,12 @@
 Changelog for package gz_ros2_control_tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.19 (2026-04-15)
+-------------------
+* Add initial_value checks to state interface tests (backport `#765 <https://github.com/ros-controls/gz_ros2_control/issues/765>`_ to Humble) (`#822 <https://github.com/ros-controls/gz_ros2_control/issues/822>`_)
+* Add a custom plugin for simulating actuator dynamics to the demos (backport `#693 <https://github.com/ros-controls/gz_ros2_control/issues/693>`_) (`#780 <https://github.com/ros-controls/gz_ros2_control/issues/780>`_)
+* Contributors: José Luis Pérez Martín, mergify[bot]
+
 0.7.18 (2026-01-08)
 -------------------
 
