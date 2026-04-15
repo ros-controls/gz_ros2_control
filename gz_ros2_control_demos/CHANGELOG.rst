@@ -2,6 +2,13 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.18 (2026-04-15)
+-------------------
+* Comment out initial_value in test_pendulum_effort.xacro.urdf (`#832 <https://github.com/ros-controls/gz_ros2_control/issues/832>`_)
+* Add initial_value checks to state interface tests (backport `#765 <https://github.com/ros-controls/gz_ros2_control/issues/765>`_) (`#781 <https://github.com/ros-controls/gz_ros2_control/issues/781>`_)
+* Add a custom plugin for simulating actuator dynamics to the demos (`#693 <https://github.com/ros-controls/gz_ros2_control/issues/693>`_) (`#779 <https://github.com/ros-controls/gz_ros2_control/issues/779>`_)
+* Contributors: José Luis Pérez Martín, mergify[bot]
+
 1.2.17 (2026-01-08)
 -------------------
 
