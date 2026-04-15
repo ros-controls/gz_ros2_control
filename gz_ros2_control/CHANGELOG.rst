@@ -2,6 +2,16 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.15 (2026-04-15)
+-------------------
+* Fix race condition in RM initialization (restore 2000 ms wait) (`#809 <https://github.com/ros-controls/gz_ros2_control/issues/809>`_) (`#810 <https://github.com/ros-controls/gz_ros2_control/issues/810>`_)
+* Precompute interface names (backport `#789 <https://github.com/ros-controls/gz_ros2_control/issues/789>`_) (`#805 <https://github.com/ros-controls/gz_ros2_control/issues/805>`_)
+* Minor improvements (backport `#800 <https://github.com/ros-controls/gz_ros2_control/issues/800>`_) (`#802 <https://github.com/ros-controls/gz_ros2_control/issues/802>`_)
+* Removed dead code (`#791 <https://github.com/ros-controls/gz_ros2_control/issues/791>`_) (`#797 <https://github.com/ros-controls/gz_ros2_control/issues/797>`_)
+* Removed unnecesary defines and removed ndof attribute (`#788 <https://github.com/ros-controls/gz_ros2_control/issues/788>`_) (`#796 <https://github.com/ros-controls/gz_ros2_control/issues/796>`_)
+* Fix return on_activate and on_deactivate (`#790 <https://github.com/ros-controls/gz_ros2_control/issues/790>`_) (`#794 <https://github.com/ros-controls/gz_ros2_control/issues/794>`_)
+* Contributors: mergify[bot]
+
 2.0.14 (2026-01-08)
 -------------------
 * Removed unused ament_index_cpp (`#760 <https://github.com/ros-controls/gz_ros2_control/issues/760>`_) (`#761 <https://github.com/ros-controls/gz_ros2_control/issues/761>`_)
