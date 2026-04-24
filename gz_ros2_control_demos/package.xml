@@ -56,12 +56,7 @@
   <exec_depend>joint_trajectory_controller</exec_depend>
   <exec_depend>mecanum_drive_controller</exec_depend>
   <exec_depend>ros2controlcli</exec_depend>
-<<<<<<< HEAD
   <exec_depend>tricycle_controller</exec_depend>
-  <exec_depend>velocity_controllers</exec_depend>
-=======
-  <exec_depend>tricycle_steering_controller</exec_depend>
->>>>>>> 54addf2 (Fix controller dependencies (#837))
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
