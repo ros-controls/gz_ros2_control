@@ -1,4 +1,4 @@
-# Copyright 2024 Open Source Robotics Foundation, Inc.
+# Copyright 2022 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name='xacro')]),
             ' ',
             PathJoinSubstitution(
-                [FindPackageShare("gz_ros2_control_demos"),
-                 "urdf", "test_gripper_mimic_joint_effort.xacro.urdf"]
+                [FindPackageShare('gz_ros2_control_demos'),
+                 'urdf', 'test_gripper_mimic_joint_effort.xacro.urdf']
             ),
         ]
     )
@@ -46,7 +46,7 @@ def generate_launch_description():
         [
             FindPackageShare('gz_ros2_control_demos'),
             'config',
-            'gripper_controller.yaml',
+            'gripper_controller_effort.yaml',
         ]
     )
 

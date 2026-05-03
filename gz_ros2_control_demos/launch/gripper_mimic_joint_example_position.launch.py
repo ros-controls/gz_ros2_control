@@ -16,7 +16,7 @@
 #
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -29,19 +29,26 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     # Launch Arguments
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
-
+    gz_args = LaunchConfiguration('gz_args', default='')
     # Get URDF via xacro
     robot_description_content = Command(
         [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
+            PathJoinSubstitution([FindExecutable(name='xacro')]),
+            ' ',
             PathJoinSubstitution(
-                [FindPackageShare("gz_ros2_control_demos"),
-                 "urdf", "test_gripper_mimic_joint_position.xacro.urdf"]
+                [FindPackageShare('gz_ros2_control_demos'),
+                 'urdf', 'test_gripper_mimic_joint_position.xacro.urdf']
             ),
         ]
     )
-    robot_description = {"robot_description": robot_description_content}
+    robot_description = {'robot_description': robot_description_content}
+    robot_controllers = PathJoinSubstitution(
+        [
+            FindPackageShare('gz_ros2_control_demos'),
+            'config',
+            'gripper_controller_position.yaml',
+        ]
+    )
 
     node_robot_state_publisher = Node(
         package='robot_state_publisher',
@@ -54,19 +61,30 @@ def generate_launch_description():
         package='ros_gz_sim',
         executable='create',
         output='screen',
-        arguments=["-topic", "robot_description", "-name",
-                   "gripper", "-allow_renaming", "true"],
+        arguments=['-topic', 'robot_description', '-name',
+                   'gripper', '-allow_renaming', 'true'],
     )
 
-    load_joint_state_broadcaster = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-             'joint_state_broadcaster'],
-        output='screen'
+    joint_state_broadcaster_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['joint_state_broadcaster'],
+    )
+    gripper_controller_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=[
+            'gripper_controller',
+            '--param-file',
+            robot_controllers,
+            ],
     )
 
-    load_gripper_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-             'gripper_controller'],
+    # Bridge
+    bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
         output='screen'
     )
 
@@ -77,19 +95,20 @@ def generate_launch_description():
                 [PathJoinSubstitution([FindPackageShare('ros_gz_sim'),
                                        'launch',
                                        'gz_sim.launch.py'])]),
-            launch_arguments=[('gz_args', [' -r -v 4 empty.sdf'])]),
+            launch_arguments=[('gz_args', [gz_args, ' -r -v 1 empty.sdf'])]),
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=gz_spawn_entity,
-                on_exit=[load_joint_state_broadcaster],
+                on_exit=[joint_state_broadcaster_spawner],
             )
         ),
         RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action=load_joint_state_broadcaster,
-                on_exit=[load_gripper_controller],
+                target_action=joint_state_broadcaster_spawner,
+                on_exit=[gripper_controller_spawner],
             )
         ),
+        bridge,
         node_robot_state_publisher,
         gz_spawn_entity,
         # Launch Arguments
