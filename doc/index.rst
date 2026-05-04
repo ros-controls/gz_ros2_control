@@ -141,15 +141,8 @@ We should include:
 
 .. code-block:: xml
 
-  <joint name="right_finger_joint" type="prismatic">
-    <axis xyz="0 1 0"/>
-    <origin xyz="0.0 -0.48 1" rpy="0.0 0.0 0.0"/>
-    <parent link="base"/>
-    <child link="finger_right"/>
-    <limit effort="1000.0" lower="0" upper="0.38" velocity="10"/>
-  </joint>
   <joint name="left_finger_joint" type="prismatic">
-    <mimic joint="right_finger_joint" multiplier="1" offset="0"/>
+    <mimic joint="right_finger_joint"/>
     <axis xyz="0 1 0"/>
     <origin xyz="0.0 0.48 1" rpy="0.0 0.0 3.1415926535"/>
     <parent link="base"/>
@@ -157,7 +150,16 @@ We should include:
     <limit effort="1000.0" lower="0" upper="0.38" velocity="10"/>
   </joint>
 
-The mimic joint must not have command interfaces configured in the ``<ros2_control>`` tag, but state interfaces can be configured.
+.. code-block:: xml
+
+  <joint name="left_finger_joint">
+    <param name="mimic">right_finger_joint</param>
+    <param name="multiplier">1</param>
+    <command_interface name="position"/>
+    <state_interface name="position"/>
+    <state_interface name="velocity"/>
+    <state_interface name="effort"/>
+  </joint>
 
 
 Using force-torque sensors in simulation
@@ -370,19 +372,8 @@ The following example shows a parallel gripper with a mimic joint:
 
 .. code-block:: shell
 
-  ros2 launch gz_ros2_control_demos gripper_mimic_joint_example_position.launch.py
+  ros2 launch gz_ros2_control_demos gripper_mimic_joint_example.launch.py
 
-.. image:: img/gz_gripper.gif
-  :alt: Gripper
-
-To demonstrate the setup of the initial position and a position-mimicked joint in
-case of an effort command interface of the joint to be mimicked, run
-
-.. code-block:: shell
-
-  ros2 launch gz_ros2_control_demos gripper_mimic_joint_example_effort.launch.py
-
-instead.
 
 Send example commands:
 
