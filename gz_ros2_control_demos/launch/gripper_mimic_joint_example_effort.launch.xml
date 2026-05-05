@@ -1,0 +1,64 @@
+<!--
+Copyright (c) 2024, Stogl Robotics Consulting UG (haftungsbeschränkt)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+Source of this file are templates in [RosTeamWorkspace](https://github.com/StoglRobotics/ros_team_workspace) repository.
+
+Author: Dr. Denis
+-->
+
+<launch>
+  <arg name="gui"
+       default="false"
+       description="Start RViz2 automatically with this launch file."/>
+
+  <!-- Load description and start controllers -->
+  <let name="robot_description_content" value="$(command '$(find-exec xacro) $(find-pkg-share gz_ros2_control_demos)/urdf/test_gripper_mimic_joint_effort.xacro.urdf')" />
+  <let name="robot_controllers" value="$(find-pkg-share gz_ros2_control_demos)/config/gripper_controller_effort.yaml"/>
+
+  <node pkg="robot_state_publisher" exec="robot_state_publisher" output="both">
+    <param name="robot_description" value="$(var robot_description_content)" />
+    <param name="use_sim_time" value="true" />
+  </node>
+
+  <!-- Start Gazebo -->
+  <include file="$(find-pkg-share ros_gz_sim)/launch/gz_sim.launch.py" >
+    <arg name="gz_args" value=" -r -v 1 empty.sdf"/>
+  </include>
+
+  <node pkg="ros_gz_bridge" exec="parameter_bridge" args="
+        /clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"
+        output="screen">
+  </node>
+
+  <!-- Create robot in Gazebo -->
+  <node pkg="ros_gz_sim" exec="create" output="screen" args="-topic /robot_description -name gripper -allow-renaming true"/>
+
+  <!-- Start Controllers -->
+  <!--joint_state_braodcaster_spawner-->
+  <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster">
+    <param name="use_sim_time" value="true" />
+  </node>
+  <!--Gripper Controller-->
+  <node pkg="controller_manager" exec="spawner" args="gripper_controller --param-file $(var robot_controllers)">
+    <param name="use_sim_time" value="true" />
+  </node>
+
+  <!-- Rviz -->
+  <node if="$(var gui)" pkg="rviz2" exec="rviz2" output="log" args="-d $(find-pkg-share $(var ros2_control_demo_description))/rrbot/rviz/rrbot.rviz">
+    <param name="use_sim_time" value="true" />
+  </node>
+
+</launch>

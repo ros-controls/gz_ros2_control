@@ -1,4 +1,4 @@
-# Copyright 2021 Open Source Robotics Foundation, Inc.
+# Copyright 2024 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# Author: Denis Stogl (Stogl Robotics Consulting)
+#
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
@@ -24,11 +27,6 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-
-    print('###########################################################################')
-    print('This launch file is deprecated. Please use the one in gz_ros2_control_demos')
-    print('###########################################################################')
-
     # Launch Arguments
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
     gz_args = LaunchConfiguration('gz_args', default='')
@@ -38,8 +36,8 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name='xacro')]),
             ' ',
             PathJoinSubstitution(
-                [FindPackageShare('ign_ros2_control_demos'),
-                 'urdf', 'test_cart_position.xacro.urdf']
+                [FindPackageShare('gz_ros2_control_demos'),
+                 'urdf', 'test_gripper_mimic_joint_position.xacro.urdf']
             ),
         ]
     )
@@ -48,7 +46,7 @@ def generate_launch_description():
         [
             FindPackageShare('gz_ros2_control_demos'),
             'config',
-            'cart_controller_position.yaml',
+            'gripper_controller_position.yaml',
         ]
     )
 
@@ -63,21 +61,20 @@ def generate_launch_description():
         package='ros_gz_sim',
         executable='create',
         output='screen',
-        arguments=['-topic', 'robot_description',
-                   '-name', 'cart', '-allow_renaming', 'true'],
+        arguments=['-topic', 'robot_description', '-name',
+                   'gripper', '-allow_renaming', 'true'],
     )
 
     joint_state_broadcaster_spawner = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['joint_state_broadcaster',
-                   ],
+        arguments=['joint_state_broadcaster'],
     )
-    joint_trajectory_controller_spawner = Node(
+    gripper_controller_spawner = Node(
         package='controller_manager',
         executable='spawner',
         arguments=[
-            'joint_trajectory_controller',
+            'gripper_controller',
             '--param-file',
             robot_controllers,
             ],
@@ -108,7 +105,7 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=joint_state_broadcaster_spawner,
-                on_exit=[joint_trajectory_controller_spawner],
+                on_exit=[gripper_controller_spawner],
             )
         ),
         bridge,
