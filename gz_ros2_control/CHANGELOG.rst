@@ -2,6 +2,9 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.19 (2026-05-13)
+-------------------
+
 1.2.18 (2026-04-15)
 -------------------
 * Fix race condition in RM initialization (restore 2000 ms wait) (`#809 <https://github.com/ros-controls/gz_ros2_control/issues/809>`_) (`#811 <https://github.com/ros-controls/gz_ros2_control/issues/811>`_)
