@@ -2,6 +2,12 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.16 (2026-05-14)
+-------------------
+* Add missing tests for pendulum and gripper (position and effort) (backport `#814 <https://github.com/ros-controls/gz_ros2_control/issues/814>`_) (`#844 <https://github.com/ros-controls/gz_ros2_control/issues/844>`_)
+* Fix controller dependencies (`#837 <https://github.com/ros-controls/gz_ros2_control/issues/837>`_) (`#838 <https://github.com/ros-controls/gz_ros2_control/issues/838>`_)
+* Contributors: José Luis Pérez Martín, mergify[bot]
+
 2.0.15 (2026-04-15)
 -------------------
 * Comment out initial_value in test_pendulum_effort.xacro.urdf (`#832 <https://github.com/ros-controls/gz_ros2_control/issues/832>`_) (`#834 <https://github.com/ros-controls/gz_ros2_control/issues/834>`_)
