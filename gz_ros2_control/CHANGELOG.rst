@@ -2,6 +2,9 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.20 (2026-05-13)
+-------------------
+
 0.7.19 (2026-04-15)
 -------------------
 * Precompute interface names (backport `#789 <https://github.com/ros-controls/gz_ros2_control/issues/789>`_) (`#807 <https://github.com/ros-controls/gz_ros2_control/issues/807>`_)
