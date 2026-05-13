@@ -2,6 +2,11 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+4.0.0 (2026-05-13)
+------------------
+* Fix controller dependencies (`#837 <https://github.com/ros-controls/gz_ros2_control/issues/837>`_)
+* Contributors: Christoph Fröhlich
+
 3.0.7 (2026-04-15)
 ------------------
 * Add missing tests for pendulum and gripper (position and effort) (`#814 <https://github.com/ros-controls/gz_ros2_control/issues/814>`_)
