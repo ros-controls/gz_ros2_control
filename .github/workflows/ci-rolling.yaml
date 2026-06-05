@@ -17,18 +17,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - ros-distro: "rolling"
+          - docker-image: "ubuntu:resolute"
+            ros-distro: "rolling"
             ros-repo-packages: "-testing"
             upstream-repos: "gz_ros2_control.rolling.repos"
-            docker-image: "ubuntu:resolute"
-          - ros-distro: "rolling"
+          - docker-image: "ubuntu:resolute"
+            ros-distro: "rolling"
             ros-repo-packages: "-testing"
             upstream-repos: ""
-            docker-image: "ubuntu:resolute"
-          - ros-distro: "rolling"
+          - docker-image: "ubuntu:resolute"
+            ros-distro: "rolling"
             ros-repo-packages: ""
             upstream-repos: ""
-            docker-image: "ubuntu:resolute"
     env:
       ROS_DISTRO: ${{ matrix.ros-distro }}
     container:
