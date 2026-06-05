@@ -2,6 +2,9 @@
 Changelog for package gz_ros2_control_tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+4.0.0 (2026-05-13)
+------------------
+
 3.0.7 (2026-04-15)
 ------------------
 * Add missing tests for pendulum and gripper (position and effort) (`#814 <https://github.com/ros-controls/gz_ros2_control/issues/814>`_)
