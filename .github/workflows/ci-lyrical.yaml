@@ -17,16 +17,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - docker-image: "ubuntu:resolute"
-            ros-distro: "lyrical"
+          - ros-distro: "lyrical"
             ros-repo-packages: "-testing"
             upstream-repos: "gz_ros2_control.lyrical.repos"
-          - docker-image: "ubuntu:resolute"
-            ros-distro: "lyrical"
+          - ros-distro: "lyrical"
             ros-repo-packages: "-testing"
             upstream-repos: ""
-          - docker-image: "ubuntu:resolute"
-            ros-distro: "lyrical"
+          - ros-distro: "lyrical"
             ros-repo-packages: ""
             upstream-repos: ""
     env:
