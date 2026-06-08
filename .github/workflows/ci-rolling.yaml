@@ -25,10 +25,7 @@ jobs:
             ros-distro: "rolling"
             ros-repo-packages: "-testing"
             upstream-repos: ""
-          - docker-image: "ubuntu:resolute"
-            ros-distro: "rolling"
-            ros-repo-packages: ""
-            upstream-repos: ""
+
     env:
       ROS_DISTRO: ${{ matrix.ros-distro }}
     container:
