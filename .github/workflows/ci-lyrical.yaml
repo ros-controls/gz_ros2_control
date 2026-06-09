@@ -1,11 +1,11 @@
-name: gz_ros2_control CI - Rolling
+name: gz_ros2_control CI - Lyrical
 
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ rolling ]
+    branches: [ lyrical ]
   push:
-    branches: [ rolling ]
+    branches: [ lyrical ]
   schedule:
     # Run every morning to detect flakiness and broken dependencies
     - cron: '03 5 * * MON-FRI'
@@ -17,17 +17,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - ros-distro: "rolling"
+          - ros-distro: "lyrical"
             ros-repo-packages: "-testing"
-            upstream-repos: "gz_ros2_control.rolling.repos"
-          - ros-distro: "rolling"
+            upstream-repos: "gz_ros2_control.lyrical.repos"
+          - ros-distro: "lyrical"
             ros-repo-packages: "-testing"
             upstream-repos: ""
-          # TODO(anyone): activate once the next ROS 2 rolling sync is out
-          # - ros-distro: "rolling"
-          #   ros-repo-packages: ""
-          #   upstream-repos: ""
-
+          - ros-distro: "lyrical"
+            ros-repo-packages: ""
+            upstream-repos: ""
     env:
       ROS_DISTRO: ${{ matrix.ros-distro }}
     container:
