@@ -35,16 +35,12 @@
 
     # Velocity and acceleration limits
     # Whenever a min_* is unspecified, default to -max_*
-    linear.x.has_velocity_limits: true
-    linear.x.has_acceleration_limits: true
     linear.x.max_velocity: 1.0
     linear.x.min_velocity: -1.0
     linear.x.max_acceleration: 1.0
     linear.x.max_jerk: .NAN
     linear.x.min_jerk: .NAN
 
-    angular.z.has_velocity_limits: true
-    angular.z.has_acceleration_limits: true
     angular.z.max_velocity: 1.0
     angular.z.min_velocity: -1.0
     angular.z.max_acceleration: 1.0
