@@ -398,13 +398,13 @@ When the Gazebo world is launched you can run the following command to move the 
 
 .. code-block:: shell
 
-  ros2 run gz_ros2_control_demos example_mobile_robots
+  ros2 run gz_ros2_control_demos example_mobile_robots --ros-args -p use_sim_time:=true
 
 You can also drive the robots from the keyboard using the following command:
 
 .. code-block:: shell
 
-  ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=true
+  ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=true -p use_sim_time:=true
 
 You can also manually publish on the ``/cmd_vel`` topic to drive the robots:
 
