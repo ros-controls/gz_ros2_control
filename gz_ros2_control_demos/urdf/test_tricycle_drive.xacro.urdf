@@ -121,6 +121,7 @@
     <parent link="chassis" />
     <child link="steering_link" />
     <axis xyz="0 0 1" />
+    <limit effort="100" velocity="1" lower="-1.57" upper="1.57" />
   </joint>
 
   <!-- traction wheel link -->
@@ -148,6 +149,7 @@
     <child link="wheel_front_link" />
     <origin xyz="0 0 0" rpy="-1.57 1.57 0" />
     <axis xyz="0 0 1" />
+    <limit effort="100" velocity="1"/>
   </joint>
 
   <ros2_control name="GazeboSystem" type="system">

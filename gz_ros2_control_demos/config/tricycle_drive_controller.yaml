@@ -17,6 +17,19 @@ tricycle_controller:
     traction_wheels_radius: 0.3 # Radius of front wheel
     wheelbase: 1.7 # Distance between center of back wheels and front wheel
 
+    # Rate Limiting
+    linear:
+      x:
+        max_acceleration: 5.0
+        max_deceleration: -8.0
+        max_jerk: 1000.0
+    angular:
+      z:
+        max_velocity: 1.0
+        max_acceleration: 5.0
+        max_deceleration: -8.0
+        max_jerk: 1000.0
+
     # Odometry
     odom_frame_id: odom
     base_frame_id: base_link
@@ -30,3 +43,6 @@ tricycle_controller:
 
     # cmd_vel input
     reference_timeout: 0.5 # In seconds. Timeout to stop if no cmd_vel is received
+
+    # debug
+    publish_limited_velocity: true
