@@ -33,7 +33,7 @@ jobs:
     container:
       image: ghcr.io/ros-controls/ros:${{ matrix.ros-distro }}-ubuntu${{ matrix.ros-repo-packages }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Checkout ros2_control framework for semi-binary builds
       if: ${{ matrix.upstream-repos != '' }}
       run: vcs import --input ${{ matrix.upstream-repos }}
