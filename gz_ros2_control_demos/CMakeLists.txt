@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.20)
 project(gz_ros2_control_demos)
 
 find_package(ros2_control_cmake REQUIRED)

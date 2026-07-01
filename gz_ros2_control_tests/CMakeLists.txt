@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 project(gz_ros2_control_tests)
 
 find_package(ament_cmake REQUIRED)
