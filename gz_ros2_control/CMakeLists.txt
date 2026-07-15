@@ -130,5 +130,7 @@ install(TARGETS ign_ros2_control-system
 
 pluginlib_export_plugin_description_file(gz_ros2_control gz_hardware_plugins.xml)
 
+ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/hooks/${PROJECT_NAME}.dsv.in")
+
 # Setup the project
 ament_package()
