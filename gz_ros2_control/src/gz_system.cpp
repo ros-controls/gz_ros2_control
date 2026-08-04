@@ -51,25 +51,10 @@
 #include <hardware_interface/lexical_casts.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 
-<<<<<<< HEAD
-=======
 #ifdef ERROR
 #undef ERROR
 #endif
 
-struct InterfaceData
-{
-  /// \brief State interface shared pointer
-  hardware_interface::StateInterface::SharedPtr state;
-
-  /// \brief Value of the state to be able to use even when the interface is not defined
-  double state_value{std::numeric_limits<double>::quiet_NaN()};
-
-  /// \brief Command interface shared pointer
-  hardware_interface::CommandInterface::SharedPtr command;
-};
-
->>>>>>> 2d4f07d (Avoid Windows ERROR macro conflict in gz_system (#883))
 struct jointData
 {
   /// \brief Joint's names.
