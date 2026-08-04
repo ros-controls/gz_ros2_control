@@ -82,6 +82,10 @@
 
 #include <hardware_interface/hardware_info.hpp>
 
+#ifdef ERROR
+#undef ERROR
+#endif
+
 struct jointData
 {
   /// \brief Joint's names.
