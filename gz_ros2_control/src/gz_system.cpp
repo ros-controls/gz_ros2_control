@@ -788,13 +788,13 @@ GazeboSimSystem::perform_command_mode_switch(
       // Clear joint control method bits corresponding to stop interfaces
       if (interface_name == this->dataPtr->joints_[j].if_name_position) {
         this->dataPtr->joints_[j].joint_control_method &=
-          static_cast<ControlMethod_>(VELOCITY & EFFORT);
+          static_cast<ControlMethod_>(VELOCITY | EFFORT);
       } else if (interface_name == this->dataPtr->joints_[j].if_name_velocity) {
         this->dataPtr->joints_[j].joint_control_method &=
-          static_cast<ControlMethod_>(POSITION & EFFORT);
+          static_cast<ControlMethod_>(POSITION | EFFORT);
       } else if (interface_name == this->dataPtr->joints_[j].if_name_effort) {
         this->dataPtr->joints_[j].joint_control_method &=
-          static_cast<ControlMethod_>(POSITION & VELOCITY);
+          static_cast<ControlMethod_>(POSITION | VELOCITY);
       }
     }
 
