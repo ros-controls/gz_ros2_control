@@ -795,6 +795,15 @@ GazeboSimSystem::perform_command_mode_switch(
       } else if (interface_name == this->dataPtr->joints_[j].if_name_effort) {
         this->dataPtr->joints_[j].joint_control_method &=
           static_cast<ControlMethod_>(POSITION & VELOCITY);
+        // Remove existing effort component to ensure that no effort commands are set to
+        // the joints, which is necessary for holding the joint positions after
+        // deactivating an effort controller.
+        if (this->dataPtr->ecm->Component<sim::components::JointForceCmd>(
+            this->dataPtr->joints_[j].sim_joint))
+        {
+          this->dataPtr->ecm->RemoveComponent<sim::components::JointForceCmd>(
+            this->dataPtr->joints_[j].sim_joint);
+        }
       }
     }
 

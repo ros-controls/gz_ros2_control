@@ -48,8 +48,7 @@ target_link_libraries(example_velocity PUBLIC
   rclcpp_action::rclcpp_action
 )
 
-# use the same example_position.cpp for example_effort
-add_executable(example_effort examples/example_position.cpp)
+add_executable(example_effort examples/example_effort.cpp)
 target_link_libraries(example_effort PUBLIC
   ${control_msgs_TARGETS}
   rclcpp::rclcpp
