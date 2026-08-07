@@ -150,9 +150,10 @@ GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
         }
       case sdf::JointType::FIXED:
         {
-          RCLCPP_INFO(
-            node_->get_logger(), "[gz_ros2_control] Fixed joint ['%s'] (Entity='%llu') is skipped.",
-            jointName.c_str(), static_cast<unsigned long long>(jointEntity));
+          RCLCPP_INFO_STREAM(
+            node_->get_logger(),
+            "[gz_ros2_control] Fixed joint ['" << jointName << "'] (Entity='" << jointEntity
+                                               << "') is skipped.");
           continue;
         }
       case sdf::JointType::REVOLUTE2:
@@ -160,11 +161,11 @@ GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
       case sdf::JointType::BALL:
       case sdf::JointType::UNIVERSAL:
         {
-          RCLCPP_WARN(
+          RCLCPP_WARN_STREAM(
             node_->get_logger(),
-            "[gz_ros2_control] Joint ['%s'] (Entity='%llu') is of unsupported type."
-            " Only joints with a single axis are supported.",
-            jointName.c_str(), static_cast<unsigned long long>(jointEntity));
+            "[gz_ros2_control] Joint ['" << jointName << "'] (Entity='" << jointEntity
+                                         << "') is of unsupported type."
+              " Only joints with a single axis are supported.");
           continue;
         }
       default:
