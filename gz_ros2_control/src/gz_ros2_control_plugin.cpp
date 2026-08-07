@@ -165,7 +165,7 @@ GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
             node_->get_logger(),
             "[gz_ros2_control] Joint ['" << jointName << "'] (Entity='" << jointEntity
                                          << "') is of unsupported type."
-                                           " Only joints with a single axis are supported.");
+              " Only joints with a single axis are supported.");
           continue;
         }
       default:
