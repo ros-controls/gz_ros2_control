@@ -214,14 +214,8 @@ GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
       case sdf::JointType::FIXED:
         {
           RCLCPP_INFO(
-<<<<<<< HEAD
-            node_->get_logger(),
-            "[gz_ros2_control] Fixed joint ['%s'] (Entity='%lu') is skipped.",
-            jointName.c_str(), jointEntity);
-=======
             node_->get_logger(), "[gz_ros2_control] Fixed joint ['%s'] (Entity='%llu') is skipped.",
             jointName.c_str(), static_cast<unsigned long long>(jointEntity));
->>>>>>> 262f2d7 (Use portable Gazebo entity ID formatting (#882))
           continue;
         }
       case sdf::JointType::REVOLUTE2:
