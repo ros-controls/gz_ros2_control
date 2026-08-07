@@ -1,14 +1,16 @@
-# This is a format job. Pre-commit has a first-party GitHub action, so we use
-# that: https://github.com/pre-commit/action
-
 name: Format
 
 on:
   workflow_dispatch:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   pre-commit:
+<<<<<<< HEAD
     name: Format
     runs-on: ubuntu-22.04
     steps:
@@ -21,3 +23,8 @@ jobs:
     - uses: pre-commit/action@v3.0.1
       with:
         extra_args: --all-files --hook-stage manual
+=======
+    uses: ros-controls/ros2_control_ci/.github/workflows/reusable-pre-commit.yml@master
+    with:
+      ros_distro: ${{ github.base_ref || 'rolling' }}
+>>>>>>> ef0d25b (Use reusable wf for pre-commit (#910))
