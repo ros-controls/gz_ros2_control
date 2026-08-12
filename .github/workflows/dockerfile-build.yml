@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - "Dockerfile/**"
+      - ".github/workflows/dockerfile-build.yml"
   schedule:
     - cron: "17 4 * * MON-FRI"
 
