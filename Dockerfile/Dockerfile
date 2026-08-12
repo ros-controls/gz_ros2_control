@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=ghcr.io/ros-controls/ros:rolling-ubuntu-testing
+ARG BASE_IMAGE=ghcr.io/ros-controls/ros:lyrical-ubuntu-testing
 FROM ${BASE_IMAGE}
 
 ENV DEBIAN_FRONTEND noninteractive
