@@ -10,7 +10,7 @@ RUN mkdir -p /home/ros2_ws/src \
     else \
       git clone https://github.com/ros-controls/gz_ros2_control/ -b ${ROS_DISTRO}; \
     fi \
-    && rosdep init && rosdep update \
+    && rosdep update \
     && apt-get update \
     && rosdep install --from-paths ./ -i -y --rosdistro ${ROS_DISTRO}
 
