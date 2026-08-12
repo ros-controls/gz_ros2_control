@@ -16,7 +16,8 @@ RUN apt-get update \
     ca-certificates \
     build-essential \
     cmake \
-  && apt-get clean
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null && \
@@ -34,7 +35,8 @@ RUN mkdir -p /home/ros2_ws/src \
       git clone https://github.com/ros-controls/gz_ros2_control/ -b ${ROS_DISTRO}; \
     fi \
     && rosdep init && rosdep update \
-    && rosdep install --from-paths ./ -i -y --rosdistro ${ROS_DISTRO}
+    && rosdep install --from-paths ./ -i -y --rosdistro ${ROS_DISTRO} \
+    && apt-get clean
 
 RUN cd /home/ros2_ws/ \
   && . /opt/ros/"${ROS_DISTRO}"/setup.sh \
