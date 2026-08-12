@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -25,6 +26,12 @@ RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o 
     python3-colcon-common-extensions \
     python3-rosdep \
     && apt-get clean
+=======
+ARG BASE_IMAGE=ghcr.io/ros-controls/ros:rolling-ubuntu-testing
+FROM ${BASE_IMAGE}
+
+ENV DEBIAN_FRONTEND noninteractive
+>>>>>>> 14e0206 (Add a PR job for building dockerfiles (#929))
 
 RUN mkdir -p /home/ros2_ws/src \
     && cd /home/ros2_ws/src \
@@ -33,7 +40,8 @@ RUN mkdir -p /home/ros2_ws/src \
     else \
       git clone https://github.com/ros-controls/gz_ros2_control/ -b ${ROS_DISTRO}; \
     fi \
-    && rosdep init && rosdep update \
+    && rosdep update \
+    && apt-get update \
     && rosdep install --from-paths ./ -i -y --rosdistro ${ROS_DISTRO}
 
 RUN cd /home/ros2_ws/ \
