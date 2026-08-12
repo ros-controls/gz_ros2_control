@@ -28,7 +28,7 @@ jobs:
         run: |
           docker build \
             --file Dockerfile/Dockerfile \
-            --build-arg BASE_IMAGE=ghcr.io/ros-controls/ros:${{ matrix.ros-distro }}-ubuntu \
+            --build-arg BASE_IMAGE=ghcr.io/ros-controls/ros:${{ matrix.ros-distro }}-ubuntu-testing \
             Dockerfile
 
   dockerfile-build-pr:
@@ -43,5 +43,5 @@ jobs:
         run: |
           docker build \
             --file Dockerfile/Dockerfile \
-            --build-arg BASE_IMAGE=ghcr.io/ros-controls/ros:${{ github.base_ref }}-ubuntu \
+            --build-arg BASE_IMAGE=ghcr.io/ros-controls/ros:${{ github.base_ref }}-ubuntu-testing \
             Dockerfile
