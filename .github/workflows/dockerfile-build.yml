@@ -28,7 +28,7 @@ jobs:
         run: |
           docker build \
             --file Dockerfile/Dockerfile \
-            .
+            Dockerfile
 
   dockerfile-build-pr:
     if: github.event_name == 'pull_request'
@@ -42,4 +42,4 @@ jobs:
         run: |
           docker build \
             --file Dockerfile/Dockerfile \
-            .
+            Dockerfile
