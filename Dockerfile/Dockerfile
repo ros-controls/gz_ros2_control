@@ -12,7 +12,8 @@ RUN mkdir -p /home/ros2_ws/src \
     fi \
     && rosdep update \
     && apt-get update \
-    && rosdep install --from-paths ./ -i -y --rosdistro ${ROS_DISTRO}
+    && rosdep install --from-paths ./ -i -y --rosdistro ${ROS_DISTRO} \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN cd /home/ros2_ws/ \
   && . /opt/ros/"${ROS_DISTRO}"/setup.sh \
