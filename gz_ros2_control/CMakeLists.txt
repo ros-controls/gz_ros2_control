@@ -80,12 +80,6 @@ install(EXPORT export_${PROJECT_NAME}
   DESTINATION share/${PROJECT_NAME}/cmake
 )
 
-# Testing and linting
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  ament_lint_auto_find_test_dependencies()
-endif()
-
 # Export old-style CMake variables
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME}-system gz_hardware_plugins)
