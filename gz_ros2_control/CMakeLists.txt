@@ -115,7 +115,6 @@ ament_target_dependencies(ign_ros2_control-system
   rclcpp_lifecycle
 )
 
-# Export old-style CMake variables
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME}-system gz_hardware_plugins)
 ament_export_libraries(ign_ros2_control-system gz_hardware_plugins)
