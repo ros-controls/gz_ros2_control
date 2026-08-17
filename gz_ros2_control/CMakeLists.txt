@@ -85,6 +85,7 @@ install(EXPORT export_${PROJECT_NAME}
   DESTINATION share/${PROJECT_NAME}/cmake
 )
 
+<<<<<<< HEAD
 #########
 
 add_library(ign_ros2_control-system SHARED
@@ -110,6 +111,8 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+=======
+>>>>>>> 5c35389 (Remove linters from test stage (#668))
 # Export old-style CMake variables
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME}-system gz_hardware_plugins)
