@@ -86,6 +86,9 @@ PUBLIC
   rclcpp::rclcpp
   rclcpp_lifecycle::rclcpp_lifecycle
 )
+if(MSVC)
+  target_compile_definitions(gz_custom_hardware_plugins PRIVATE _USE_MATH_DEFINES)
+endif()
 
 #########
 

@@ -1,0 +1,47 @@
+name: Dockerfile Build
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "Dockerfile/**"
+      - ".github/workflows/dockerfile-build.yml"
+  schedule:
+    - cron: "17 4 * * MON-FRI"
+
+jobs:
+  dockerfile-build-scheduled:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ros-distro: [humble, jazzy, kilted, lyrical, rolling]
+
+    steps:
+      - name: Checkout distro branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ matrix.ros-distro }}
+
+      - name: Build Dockerfile
+        run: |
+          docker build \
+            --file Dockerfile/Dockerfile \
+            --build-arg BASE_IMAGE=ghcr.io/ros-controls/ros:${{ matrix.ros-distro }}-ubuntu-testing \
+            Dockerfile
+
+  dockerfile-build-pr:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR changes
+        uses: actions/checkout@v7
+
+      - name: Build Dockerfile
+        run: |
+          docker build \
+            --file Dockerfile/Dockerfile \
+            --build-arg BASE_IMAGE=ghcr.io/ros-controls/ros:${{ github.base_ref }}-ubuntu-testing \
+            Dockerfile

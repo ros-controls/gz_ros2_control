@@ -23,15 +23,17 @@ jobs:
           - ros-distro: "rolling"
             ros-repo-packages: "-testing"
             upstream-repos: ""
-          - ros-distro: "rolling"
-            ros-repo-packages: ""
-            upstream-repos: ""
+          # TODO(anyone): activate once the next ROS 2 rolling sync is out
+          # - ros-distro: "rolling"
+          #   ros-repo-packages: ""
+          #   upstream-repos: ""
+
     env:
       ROS_DISTRO: ${{ matrix.ros-distro }}
     container:
       image: ghcr.io/ros-controls/ros:${{ matrix.ros-distro }}-ubuntu${{ matrix.ros-repo-packages }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Checkout ros2_control framework for semi-binary builds
       if: ${{ matrix.upstream-repos != '' }}
       run: vcs import --input ${{ matrix.upstream-repos }}
