@@ -102,16 +102,55 @@ class TestFixture(unittest.TestCase):
             ['slider_to_cart', 'cart_to_pendulum'],
         )
 
-    # ---------------------------------------------------------
-    # Helper: check initial pendulum position BEFORE any motion
-    # ---------------------------------------------------------
-    def _check_initial_cart_position(self):
+    def _check_initial_slider_position(self):
         from sensor_msgs.msg import JointState
         msg = None
-
+    
         def callback(m):
             nonlocal msg
             msg = m
+    
+        sub = self.node.create_subscription(
+            JointState,
+            '/joint_states',
+            callback,
+            10
+        )
+    
+        end_time = self.node.get_clock().now().nanoseconds + int(10e9)
+        while msg is None and self.node.get_clock().now().nanoseconds < end_time:
+            rclpy.spin_once(self.node, timeout_sec=0.1)
+    
+        self.node.destroy_subscription(sub)
+    
+        self.assertIsNotNone(msg, 'No joint_state message received')
+        self.assertIn('slider_to_cart', msg.name)
+    
+        joint_idx = msg.name.index('slider_to_cart')
+        expected_initial_value = 1.0
+        actual_value = msg.position[joint_idx]
+    
+        self.assertAlmostEqual(
+            actual_value,
+            expected_initial_value,
+            places=2,
+            msg=f'Initial position mismatch: expected {expected_initial_value}, got {actual_value}'
+        )
+    
+        print(f'Initial value verified: {actual_value} ≈ {expected_initial_value}')
+
+    # -----------------------------------------------------------
+    # Note: Startup is not deterministic unless the initial value 
+    #       is captured before physics. See #836 for reference
+    # -----------------------------------------------------------
+    def _check_pendulum_steady_state(self):
+        from sensor_msgs.msg import JointState
+
+        last_msg = None
+
+        def callback(m):
+            nonlocal last_msg
+            last_msg = m
 
         sub = self.node.create_subscription(
             JointState,
@@ -120,47 +159,68 @@ class TestFixture(unittest.TestCase):
             10
         )
 
-        end_time = self.node.get_clock().now().nanoseconds + int(10e9)
-        while msg is None and self.node.get_clock().now().nanoseconds < end_time:
+       # Wait-until-convergence
+        vel_eps = 0.05
+        eff_eps = 0.05
+        timeout_ns = int(10e9)
+        start = self.node.get_clock().now().nanoseconds
+
+        STABLE_REQUIRED = 5
+        stable_count = 0
+
+        converged = False
+
+        while self.node.get_clock().now().nanoseconds - start < timeout_ns:
             rclpy.spin_once(self.node, timeout_sec=0.1)
+
+            if last_msg is None:
+                continue
+
+            if 'cart_to_pendulum' not in last_msg.name:
+                continue
+
+            idx = last_msg.name.index('cart_to_pendulum')
+            vel = last_msg.velocity[idx]
+            eff = last_msg.effort[idx]
+            pos = last_msg.position[idx]
+
+            # Convergence condition with hysteresis
+            if abs(vel) < vel_eps and abs(eff) < eff_eps:
+                stable_count += 1
+                if stable_count >= STABLE_REQUIRED:
+                    converged = True
+                    break
+            else:
+                stable_count = 0
 
         self.node.destroy_subscription(sub)
 
-        self.assertIsNotNone(msg, 'No joint_state message received')
-        self.assertIn('cart_to_pendulum', msg.name)
 
-        joint_idx = msg.name.index('cart_to_pendulum')
-        expected_initial_value = 1.57
-        actual_value = msg.position[joint_idx]
-
-        self.assertAlmostEqual(
-            actual_value,
-            expected_initial_value,
-            places=2,
-            msg=f'Initial position mismatch: expected {expected_initial_value}, got {actual_value}'
-        )
-
-        print(f'Initial value verified: {actual_value} ≈ {expected_initial_value}')
+        self.assertTrue(converged, f'Pendulum did not converge. Last vel={vel}, eff={eff}')
+        print(f'Pendulum steady-state reached: position={pos}, vel={vel}, eff={eff}')
 
     # ---------------------------------------------------------
     # Main test
     # ---------------------------------------------------------
     def test_arm(self, launch_service, proc_info, proc_output):
 
-        # 1) Check initial position BEFORE any motion
-        self._check_initial_cart_position()
+        # 1) Check initial slider position 
+        self._check_initial_slider_position()
 
-        # 2) Wait for controller_manager to be ready
+        # 2) Check initial pendulum stabilization
+        self._check_pendulum_steady_state()
+
+        # 3) Wait for controller_manager to be ready
         self._wait_for_controller_manager()
 
-        # 3) Check controllers
+        # 4) Check controllers
         cnames = [
             'joint_trajectory_controller',
             'joint_state_broadcaster',
         ]
         check_controllers_running(self.node, cnames)
 
-        # 4) Launch the node that moves the joint
+        # 5) Launch the node that moves the joint
         proc_action = Node(
             package='gz_ros2_control_demos',
             executable='example_position',
