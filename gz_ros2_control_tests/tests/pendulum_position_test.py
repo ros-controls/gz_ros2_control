@@ -105,42 +105,42 @@ class TestFixture(unittest.TestCase):
     def _check_initial_slider_position(self):
         from sensor_msgs.msg import JointState
         msg = None
-    
+
         def callback(m):
             nonlocal msg
             msg = m
-    
+
         sub = self.node.create_subscription(
             JointState,
             '/joint_states',
             callback,
             10
         )
-    
+
         end_time = self.node.get_clock().now().nanoseconds + int(10e9)
         while msg is None and self.node.get_clock().now().nanoseconds < end_time:
             rclpy.spin_once(self.node, timeout_sec=0.1)
-    
+
         self.node.destroy_subscription(sub)
-    
+
         self.assertIsNotNone(msg, 'No joint_state message received')
         self.assertIn('slider_to_cart', msg.name)
-    
+
         joint_idx = msg.name.index('slider_to_cart')
         expected_initial_value = 1.0
         actual_value = msg.position[joint_idx]
-    
+
         self.assertAlmostEqual(
             actual_value,
             expected_initial_value,
             places=2,
             msg=f'Initial position mismatch: expected {expected_initial_value}, got {actual_value}'
         )
-    
+
         print(f'Initial value verified: {actual_value} ≈ {expected_initial_value}')
 
     # -----------------------------------------------------------
-    # Note: Startup is not deterministic unless the initial value 
+    # Note: Startup is not deterministic unless the initial value
     #       is captured before physics. See #836 for reference
     # -----------------------------------------------------------
     def _check_pendulum_steady_state(self):
@@ -159,7 +159,7 @@ class TestFixture(unittest.TestCase):
             10
         )
 
-       # Wait-until-convergence
+        # Wait-until-convergence
         vel_eps = 0.05
         eff_eps = 0.05
         timeout_ns = int(10e9)
@@ -195,7 +195,6 @@ class TestFixture(unittest.TestCase):
 
         self.node.destroy_subscription(sub)
 
-
         self.assertTrue(converged, f'Pendulum did not converge. Last vel={vel}, eff={eff}')
         print(f'Pendulum steady-state reached: position={pos}, vel={vel}, eff={eff}')
 
@@ -204,7 +203,7 @@ class TestFixture(unittest.TestCase):
     # ---------------------------------------------------------
     def test_arm(self, launch_service, proc_info, proc_output):
 
-        # 1) Check initial slider position 
+        # 1) Check initial slider position
         self._check_initial_slider_position()
 
         # 2) Check initial pendulum stabilization
