@@ -195,7 +195,8 @@ class TestFixture(unittest.TestCase):
 
         self.node.destroy_subscription(sub)
 
-        self.assertTrue(converged, f'Pendulum did not converge. Last vel={vel}, eff={eff}')
+        self.assertTrue(converged, 'Pendulum did not converge within timeout')
+
         print(f'Pendulum steady-state reached: position={pos}, vel={vel}, eff={eff}')
 
     # ---------------------------------------------------------
@@ -222,7 +223,8 @@ class TestFixture(unittest.TestCase):
         # 5) Launch the node that moves the joint
         proc_action = Node(
             package='gz_ros2_control_demos',
-            executable='example_position',
+            executable='example_effort',
+
             output='screen',
         )
 
