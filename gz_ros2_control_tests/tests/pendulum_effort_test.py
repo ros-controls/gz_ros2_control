@@ -23,6 +23,7 @@ from controller_manager.test_utils import (
     check_node_running
 )
 from controller_manager_msgs.srv import ListControllers
+from gz_ros2_control_tests.test_utils import wait_for_pendulum_steady_state
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -139,66 +140,6 @@ class TestFixture(unittest.TestCase):
 
         print(f'Initial value verified: {actual_value} ≈ {expected_initial_value}')
 
-    # -----------------------------------------------------------
-    # Note: Startup is not deterministic unless the initial value
-    #       is captured before physics. See #836 for reference
-    # -----------------------------------------------------------
-    def _check_pendulum_steady_state(self):
-        from sensor_msgs.msg import JointState
-
-        last_msg = None
-
-        def callback(m):
-            nonlocal last_msg
-            last_msg = m
-
-        sub = self.node.create_subscription(
-            JointState,
-            '/joint_states',
-            callback,
-            10
-        )
-
-        # Wait-until-convergence
-        vel_eps = 0.05
-        eff_eps = 0.05
-        timeout_ns = int(10e9)
-        start = self.node.get_clock().now().nanoseconds
-
-        STABLE_REQUIRED = 5
-        stable_count = 0
-
-        converged = False
-
-        while self.node.get_clock().now().nanoseconds - start < timeout_ns:
-            rclpy.spin_once(self.node, timeout_sec=0.1)
-
-            if last_msg is None:
-                continue
-
-            if 'cart_to_pendulum' not in last_msg.name:
-                continue
-
-            idx = last_msg.name.index('cart_to_pendulum')
-            vel = last_msg.velocity[idx]
-            eff = last_msg.effort[idx]
-            pos = last_msg.position[idx]
-
-            # Convergence condition with hysteresis
-            if abs(vel) < vel_eps and abs(eff) < eff_eps:
-                stable_count += 1
-                if stable_count >= STABLE_REQUIRED:
-                    converged = True
-                    break
-            else:
-                stable_count = 0
-
-        self.node.destroy_subscription(sub)
-
-        self.assertTrue(converged, 'Pendulum did not converge within timeout')
-
-        print(f'Pendulum steady-state reached: position={pos}, vel={vel}, eff={eff}')
-
     # ---------------------------------------------------------
     # Main test
     # ---------------------------------------------------------
@@ -208,7 +149,8 @@ class TestFixture(unittest.TestCase):
         self._check_initial_slider_position()
 
         # 2) Check initial pendulum stabilization
-        self._check_pendulum_steady_state()
+        pos, vel, eff = wait_for_pendulum_steady_state(self.node)
+        print(f'Pendulum steady-state reached: position={pos}, vel={vel}, eff={eff}')
 
         # 3) Wait for controller_manager to be ready
         self._wait_for_controller_manager()

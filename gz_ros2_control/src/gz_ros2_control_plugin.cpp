@@ -462,10 +462,21 @@ void GazeboSimROS2ControlPlugin::Configure(
       std::chrono::duration<double>(1.0 / static_cast<double>(this->dataPtr->update_rate))));
 
   // Wait for CM to receive robot description from the topic and then initialize Resource Manager
+  RCLCPP_WARN(
+  this->dataPtr->node_->get_logger(),
+  "Waiting RM to load and initialize hardware...");
+
+  auto last_warn = std::chrono::steady_clock::now();
+
   while (!this->dataPtr->controller_manager_->is_resource_manager_initialized()) {
-    RCLCPP_WARN(
-      this->dataPtr->node_->get_logger(),
-      "Waiting RM to load and initialize hardware...");
+    auto now = std::chrono::steady_clock::now();
+    if (now - last_warn > std::chrono::seconds(2)) {
+      RCLCPP_WARN(
+        this->dataPtr->node_->get_logger(),
+        "Waiting RM to load and initialize hardware...");
+      last_warn = now;
+    }
+
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 
