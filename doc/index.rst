@@ -214,7 +214,10 @@ The *gz_ros2_control* ``<plugin>`` tag also has the following optional child ele
 The following additional parameters can be set via child elements in the URDF/SDF or via ROS parameters in the YAML file above:
 
 * ``<hold_joints>``: if set to true (default), it will hold the joints' position if their interface was not claimed, e.g., the controller hasn't been activated yet.
-* ``<position_proportional_gain>``: Set the proportional gain. (default: 0.1) This determines the setpoint for a position-controlled joint ``joint_velocity = joint_position_error * position_proportional_gain``.
+* ``<position_proportional_gain>``: Set the proportional gain used by the position command interface. (default: 0.1) It determines the joint velocity setpoint as
+  ``joint_velocity = position_proportional_gain * joint_position_error * controller_manager_update_rate``.
+  See `Notes on the command interface`_ for the resulting closed-loop behavior and for the
+  stability bounds on this value.
 
 or via ROS parameters:
 
