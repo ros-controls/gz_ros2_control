@@ -68,7 +68,7 @@
     <limit effort="1000.0" lower="0" upper="0.38" velocity="10"/>
   </joint>
   <joint name="left_finger_joint" type="prismatic">
-    <mimic joint="right_finger_joint"/>
+    <mimic joint="right_finger_joint" multiplier="1.0" offset="0.05"/>
     <axis xyz="0 1 0"/>
     <origin xyz="0.0 0.48 1" rpy="0.0 0.0 3.1415926535"/>
     <parent link="base"/>
