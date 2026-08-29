@@ -134,12 +134,64 @@ class TestFixture(unittest.TestCase):
         print(f'Initial value verified: {actual_value} ≈ {expected_initial_value}')
 
     # ---------------------------------------------------------
+    # Helper: the follower must satisfy the URDF mimic relationship
+    #         follower = multiplier * driver + offset
+    # ---------------------------------------------------------
+    def _check_mimic_relationship(self):
+        from sensor_msgs.msg import JointState
+        multiplier = 1.0
+        offset = 0.05
+        msg = None
+
+        def callback(m):
+            nonlocal msg
+            if 'right_finger_joint' in m.name and 'left_finger_joint' in m.name:
+                msg = m
+
+        sub = self.node.create_subscription(JointState, '/joint_states', callback, 10)
+
+        # The follower is driven by a velocity proportional to its position error, so it
+        # converges over time. Sample until it settles rather than taking the first message.
+        end_time = self.node.get_clock().now().nanoseconds + int(20e9)
+        settled = None
+        while self.node.get_clock().now().nanoseconds < end_time:
+            rclpy.spin_once(self.node, timeout_sec=0.1)
+            if msg is None:
+                continue
+            driver = msg.position[msg.name.index('right_finger_joint')]
+            follower = msg.position[msg.name.index('left_finger_joint')]
+            if settled is not None and abs(follower - settled) < 1e-4:
+                break
+            settled = follower
+
+        self.node.destroy_subscription(sub)
+
+        self.assertIsNotNone(msg, 'No joint_state message received')
+
+        driver = msg.position[msg.name.index('right_finger_joint')]
+        follower = msg.position[msg.name.index('left_finger_joint')]
+        expected = multiplier * driver + offset
+
+        self.assertAlmostEqual(
+            follower,
+            expected,
+            places=2,
+            msg=(
+                f'mimic offset not applied: follower {follower} != '
+                f'{multiplier} * {driver} + {offset} = {expected}'
+            ),
+        )
+
+    # ---------------------------------------------------------
     # Main test
     # ---------------------------------------------------------
     def test_arm(self, launch_service, proc_info, proc_output):
 
         # 1) Check initial position BEFORE any motion
         self._check_initial_gripper_position()
+
+        # 1b) The follower must honour multiplier and offset from the URDF
+        self._check_mimic_relationship()
 
         # 2) Check controllers
         cnames = [
