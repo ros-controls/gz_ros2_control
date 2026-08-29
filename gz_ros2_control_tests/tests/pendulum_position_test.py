@@ -23,6 +23,7 @@ from controller_manager.test_utils import (
     check_node_running
 )
 from controller_manager_msgs.srv import ListControllers
+from gz_ros2_control_tests.test_utils import wait_for_pendulum_steady_state
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -102,10 +103,7 @@ class TestFixture(unittest.TestCase):
             ['slider_to_cart', 'cart_to_pendulum'],
         )
 
-    # ---------------------------------------------------------
-    # Helper: check initial pendulum position BEFORE any motion
-    # ---------------------------------------------------------
-    def _check_initial_cart_position(self):
+    def _check_initial_slider_position(self):
         from sensor_msgs.msg import JointState
         msg = None
 
@@ -127,10 +125,10 @@ class TestFixture(unittest.TestCase):
         self.node.destroy_subscription(sub)
 
         self.assertIsNotNone(msg, 'No joint_state message received')
-        self.assertIn('cart_to_pendulum', msg.name)
+        self.assertIn('slider_to_cart', msg.name)
 
-        joint_idx = msg.name.index('cart_to_pendulum')
-        expected_initial_value = 1.57
+        joint_idx = msg.name.index('slider_to_cart')
+        expected_initial_value = 1.0
         actual_value = msg.position[joint_idx]
 
         self.assertAlmostEqual(
@@ -147,20 +145,24 @@ class TestFixture(unittest.TestCase):
     # ---------------------------------------------------------
     def test_arm(self, launch_service, proc_info, proc_output):
 
-        # 1) Check initial position BEFORE any motion
-        self._check_initial_cart_position()
+        # 1) Check initial slider position
+        self._check_initial_slider_position()
 
-        # 2) Wait for controller_manager to be ready
+        # 2) Check initial pendulum stabilization
+        pos, vel, eff = wait_for_pendulum_steady_state(self.node)
+        print(f'Pendulum steady-state reached: position={pos}, vel={vel}, eff={eff}')
+
+        # 3) Wait for controller_manager to be ready
         self._wait_for_controller_manager()
 
-        # 3) Check controllers
+        # 4) Check controllers
         cnames = [
             'joint_trajectory_controller',
             'joint_state_broadcaster',
         ]
         check_controllers_running(self.node, cnames)
 
-        # 4) Launch the node that moves the joint
+        # 5) Launch the node that moves the joint
         proc_action = Node(
             package='gz_ros2_control_demos',
             executable='example_position',
