@@ -2,6 +2,12 @@
 Changelog for package gz_ros2_control_tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+4.0.1 (2026-08-31)
+------------------
+* Apply the mimic joint offset in GazeboSimSystem::write (`#953 <https://github.com/ros-controls/gz_ros2_control/issues/953>`_)
+* Remove linters from test stage (`#668 <https://github.com/ros-controls/gz_ros2_control/issues/668>`_)
+* Contributors: Christoph Fröhlich, Puja Chaudhury
+
 4.0.0 (2026-05-13)
 ------------------
 
