@@ -2,6 +2,11 @@
 Changelog for package gz_ros2_control_tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.9 (2026-08-31)
+------------------
+* Apply the mimic joint offset in GazeboSimSystem::write (`#953 <https://github.com/ros-controls/gz_ros2_control/issues/953>`_) (`#956 <https://github.com/ros-controls/gz_ros2_control/issues/956>`_)
+* Contributors: mergify[bot]
+
 3.0.8 (2026-05-14)
 ------------------
 

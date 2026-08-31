@@ -2,6 +2,16 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.9 (2026-08-31)
+------------------
+* Apply the mimic joint offset in GazeboSimSystem::write (`#953 <https://github.com/ros-controls/gz_ros2_control/issues/953>`_) (`#956 <https://github.com/ros-controls/gz_ros2_control/issues/956>`_)
+* Fix command mode stop masks (`#899 <https://github.com/ros-controls/gz_ros2_control/issues/899>`_) (`#919 <https://github.com/ros-controls/gz_ros2_control/issues/919>`_)
+* Fix portable entity ID logging (`#900 <https://github.com/ros-controls/gz_ros2_control/issues/900>`_) (`#915 <https://github.com/ros-controls/gz_ros2_control/issues/915>`_)
+* Use portable Gazebo entity ID formatting (`#882 <https://github.com/ros-controls/gz_ros2_control/issues/882>`_) (`#905 <https://github.com/ros-controls/gz_ros2_control/issues/905>`_)
+* Avoid Windows ERROR macro conflict in gz_system (`#883 <https://github.com/ros-controls/gz_ros2_control/issues/883>`_) (`#895 <https://github.com/ros-controls/gz_ros2_control/issues/895>`_)
+* Fix plugin loading in gazebo (`#876 <https://github.com/ros-controls/gz_ros2_control/issues/876>`_) (`#878 <https://github.com/ros-controls/gz_ros2_control/issues/878>`_)
+* Contributors: mergify[bot]
+
 3.0.8 (2026-05-14)
 ------------------
 

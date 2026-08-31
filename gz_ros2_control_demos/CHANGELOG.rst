@@ -2,6 +2,14 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.0.9 (2026-08-31)
+------------------
+* Apply the mimic joint offset in GazeboSimSystem::write (`#953 <https://github.com/ros-controls/gz_ros2_control/issues/953>`_) (`#956 <https://github.com/ros-controls/gz_ros2_control/issues/956>`_)
+* Update mininum CMakeLists.txt version (`#870 <https://github.com/ros-controls/gz_ros2_control/issues/870>`_) (`#942 <https://github.com/ros-controls/gz_ros2_control/issues/942>`_)
+* Enable MSVC math constants for custom demo plugin (`#884 <https://github.com/ros-controls/gz_ros2_control/issues/884>`_) (`#901 <https://github.com/ros-controls/gz_ros2_control/issues/901>`_)
+* Use correct tricycle_controller as dependency (`#861 <https://github.com/ros-controls/gz_ros2_control/issues/861>`_) (`#862 <https://github.com/ros-controls/gz_ros2_control/issues/862>`_)
+* Contributors: mergify[bot]
+
 3.0.8 (2026-05-14)
 ------------------
 * Fix controller dependencies (`#837 <https://github.com/ros-controls/gz_ros2_control/issues/837>`_)
