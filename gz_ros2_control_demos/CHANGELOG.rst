@@ -2,6 +2,15 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.20 (2026-08-31)
+-------------------
+* Apply the mimic joint offset in GazeboSimSystem::write (`#953 <https://github.com/ros-controls/gz_ros2_control/issues/953>`_) (`#954 <https://github.com/ros-controls/gz_ros2_control/issues/954>`_)
+* Remove linters from test stage (backport `#668 <https://github.com/ros-controls/gz_ros2_control/issues/668>`_) (`#940 <https://github.com/ros-controls/gz_ros2_control/issues/940>`_)
+* Enable MSVC math constants for custom demo plugin (`#884 <https://github.com/ros-controls/gz_ros2_control/issues/884>`_) (`#903 <https://github.com/ros-controls/gz_ros2_control/issues/903>`_)
+* Use correct tricycle_controller as dependency (`#861 <https://github.com/ros-controls/gz_ros2_control/issues/861>`_) (`#864 <https://github.com/ros-controls/gz_ros2_control/issues/864>`_)
+* Remove deprecated has\_*_limits parameters from diff_drive_controller config (`#845 <https://github.com/ros-controls/gz_ros2_control/issues/845>`_) (`#859 <https://github.com/ros-controls/gz_ros2_control/issues/859>`_)
+* Contributors: mergify[bot]
+
 1.2.19 (2026-05-13)
 -------------------
 * Add missing tests for pendulum and gripper (position and effort) (backport `#814 <https://github.com/ros-controls/gz_ros2_control/issues/814>`_) (`#841 <https://github.com/ros-controls/gz_ros2_control/issues/841>`_)

@@ -2,6 +2,12 @@
 Changelog for package gz_ros2_control_tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.20 (2026-08-31)
+-------------------
+* Apply the mimic joint offset in GazeboSimSystem::write (`#953 <https://github.com/ros-controls/gz_ros2_control/issues/953>`_) (`#954 <https://github.com/ros-controls/gz_ros2_control/issues/954>`_)
+* Remove linters from test stage (backport `#668 <https://github.com/ros-controls/gz_ros2_control/issues/668>`_) (`#940 <https://github.com/ros-controls/gz_ros2_control/issues/940>`_)
+* Contributors: mergify[bot]
+
 1.2.19 (2026-05-13)
 -------------------
 * Add missing tests for pendulum and gripper (position and effort) (backport `#814 <https://github.com/ros-controls/gz_ros2_control/issues/814>`_) (`#841 <https://github.com/ros-controls/gz_ros2_control/issues/841>`_)
