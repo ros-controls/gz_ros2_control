@@ -2,6 +2,12 @@
 Changelog for package gz_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.21 (2026-08-31)
+-------------------
+* Remove linters from test stage (backport `#668 <https://github.com/ros-controls/gz_ros2_control/issues/668>`_) (`#941 <https://github.com/ros-controls/gz_ros2_control/issues/941>`_)
+* Enable MSVC math constants for custom demo plugin (`#884 <https://github.com/ros-controls/gz_ros2_control/issues/884>`_) (`#904 <https://github.com/ros-controls/gz_ros2_control/issues/904>`_)
+* Contributors: mergify[bot]
+
 0.7.20 (2026-05-13)
 -------------------
 * Add missing tests for pendulum and gripper (position and effort) (backport `#814 <https://github.com/ros-controls/gz_ros2_control/issues/814>`_) (`#842 <https://github.com/ros-controls/gz_ros2_control/issues/842>`_)

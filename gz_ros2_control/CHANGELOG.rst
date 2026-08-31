@@ -2,6 +2,16 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.21 (2026-08-31)
+-------------------
+* Remove linters from test stage (backport `#668 <https://github.com/ros-controls/gz_ros2_control/issues/668>`_) (`#941 <https://github.com/ros-controls/gz_ros2_control/issues/941>`_)
+* Fix command mode stop masks (`#899 <https://github.com/ros-controls/gz_ros2_control/issues/899>`_) (`#922 <https://github.com/ros-controls/gz_ros2_control/issues/922>`_)
+* Fix portable entity ID logging (backport `#900 <https://github.com/ros-controls/gz_ros2_control/issues/900>`_) (`#918 <https://github.com/ros-controls/gz_ros2_control/issues/918>`_)
+* Use portable Gazebo entity ID formatting (backport `#882 <https://github.com/ros-controls/gz_ros2_control/issues/882>`_) (`#908 <https://github.com/ros-controls/gz_ros2_control/issues/908>`_)
+* Avoid Windows ERROR macro conflict in gz_system (backport `#883 <https://github.com/ros-controls/gz_ros2_control/issues/883>`_) (`#898 <https://github.com/ros-controls/gz_ros2_control/issues/898>`_)
+* Fix plugin loading in gazebo (`#876 <https://github.com/ros-controls/gz_ros2_control/issues/876>`_) (`#881 <https://github.com/ros-controls/gz_ros2_control/issues/881>`_)
+* Contributors: mergify[bot]
+
 0.7.20 (2026-05-13)
 -------------------
 

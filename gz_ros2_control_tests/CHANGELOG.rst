@@ -2,6 +2,11 @@
 Changelog for package gz_ros2_control_tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.21 (2026-08-31)
+-------------------
+* Remove linters from test stage (backport `#668 <https://github.com/ros-controls/gz_ros2_control/issues/668>`_) (`#941 <https://github.com/ros-controls/gz_ros2_control/issues/941>`_)
+* Contributors: mergify[bot]
+
 0.7.20 (2026-05-13)
 -------------------
 * Add missing tests for pendulum and gripper (position and effort) (backport `#814 <https://github.com/ros-controls/gz_ros2_control/issues/814>`_) (`#842 <https://github.com/ros-controls/gz_ros2_control/issues/842>`_)
