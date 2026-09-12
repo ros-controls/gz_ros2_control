@@ -362,7 +362,17 @@ void GazeboSimROS2ControlPlugin::Configure(
 
   std::string node_name = "gz_ros_control";
 
-  this->dataPtr->node_ = rclcpp::Node::make_shared(node_name, ns);
+  // Carry the plugin's ROS arguments (parameter files, remappings) on the node
+  // itself instead of relying only on the context's global arguments. The node's
+  // parameter overrides are resolved once at construction time from whatever the
+  // context holds at that moment, so when the context was already initialized
+  // (e.g. by another plugin instance in the same process) the <parameters> YAML
+  // would otherwise never reach this node and settings such as
+  // position_proportional_gain would silently fall back to their defaults.
+  // Node-local arguments take precedence over global ones. See #962.
+  rclcpp::NodeOptions node_options;
+  node_options.arguments(arguments);
+  this->dataPtr->node_ = rclcpp::Node::make_shared(node_name, ns, node_options);
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   this->dataPtr->executor_->add_node(this->dataPtr->node_);
   auto spin = [this]()
