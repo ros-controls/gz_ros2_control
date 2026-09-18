@@ -23,7 +23,7 @@ from controller_manager.test_utils import (
     check_node_running
 )
 from controller_manager_msgs.srv import ListControllers
-from gz_ros2_control_tests.tests.test_utils import wait_for_pendulum_steady_state
+from test_utils import wait_for_pendulum_steady_state
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource

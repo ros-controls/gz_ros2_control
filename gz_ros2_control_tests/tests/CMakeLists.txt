@@ -21,6 +21,7 @@ add_launch_test(ft_sensor_test.py
 
 add_launch_test(pendulum_effort_test.py
   TIMEOUT 50
+  ENV PYTHONPATH=${TEST_PYTHONPATH}
 )
 
 add_launch_test(pendulum_position_test.py
