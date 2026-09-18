@@ -23,7 +23,7 @@ from controller_manager.test_utils import (
     check_node_running
 )
 from controller_manager_msgs.srv import ListControllers
-from gz_ros2_control_tests.test_utils import (
+from test_utils import (
     read_joint_state,
     observe_joint_state_window,
     assert_joint_initial_position,
@@ -251,10 +251,4 @@ class TestFixture(unittest.TestCase):
             "Moving the cart did not induce sufficient pendulum motion: "
             f"maximum displacement={maximum_displacement:.4f}, "
             f"minimum expected={movement_tolerance:.4f}.",
-        )
-
-        print(
-            "Cart-induced pendulum motion exceeded the movement tolerance: "
-            f"maximum displacement={maximum_displacement:.4f}, "
-            f"movement tolerance={movement_tolerance:.4f}"
         )

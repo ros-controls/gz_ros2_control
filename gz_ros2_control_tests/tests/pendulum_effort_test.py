@@ -23,7 +23,7 @@ from controller_manager.test_utils import (
     check_node_running
 )
 from controller_manager_msgs.srv import ListControllers
-from gz_ros2_control_tests.test_utils import wait_for_pendulum_steady_state
+from gz_ros2_control_tests.tests.test_utils import wait_for_pendulum_steady_state
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -143,7 +143,7 @@ class TestFixture(unittest.TestCase):
     # ---------------------------------------------------------
     # Main test
     # ---------------------------------------------------------
-    def test_arm(self, launch_service, proc_info, proc_output):
+    def test_pendulum_joint_effort(self, launch_service, proc_info, proc_output):
 
         # 1) Check initial slider position
         self._check_initial_slider_position()
