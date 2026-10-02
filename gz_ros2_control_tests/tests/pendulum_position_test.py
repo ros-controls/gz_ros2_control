@@ -23,6 +23,12 @@ from controller_manager.test_utils import (
     check_node_running
 )
 from controller_manager_msgs.srv import ListControllers
+from test_utils import (
+    read_joint_state,
+    observe_joint_state_window,
+    assert_joint_initial_position,
+    wait_for_pendulum_steady_state,
+)
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -53,7 +59,11 @@ def generate_test_description():
         launch_arguments={'gz_args': '--headless-rendering -s'}.items(),
     )
 
-    return LaunchDescription([launch_include, KeepAliveProc(), ReadyToTest()])
+    return LaunchDescription([
+        launch_include,
+        KeepAliveProc(),
+        ReadyToTest()
+    ])
 
 
 class TestFixture(unittest.TestCase):
@@ -102,77 +112,143 @@ class TestFixture(unittest.TestCase):
             ['slider_to_cart', 'cart_to_pendulum'],
         )
 
-    # ---------------------------------------------------------
-    # Helper: check initial pendulum position BEFORE any motion
-    # ---------------------------------------------------------
-    def _check_initial_cart_position(self):
-        from sensor_msgs.msg import JointState
-        msg = None
+    def _observe_pendulum_motion(
+        self,
+        baseline_position,
+        movement_tolerance=2.0,
+    ):
+        joint_name = 'cart_to_pendulum'
 
-        def callback(m):
-            nonlocal msg
-            msg = m
+        def stop_when(samples):
+            if not samples:
+                return False
 
-        sub = self.node.create_subscription(
-            JointState,
-            '/joint_states',
-            callback,
-            10
+            position, _, _ = samples[-1]
+            displacement = abs(position - baseline_position)
+            return displacement > movement_tolerance
+
+        samples = observe_joint_state_window(
+            self.node,
+            joint_name,
+            duration=5.0,
+            sample_period=0.05,
+            stop_when=stop_when,
         )
 
-        end_time = self.node.get_clock().now().nanoseconds + int(10e9)
-        while msg is None and self.node.get_clock().now().nanoseconds < end_time:
-            rclpy.spin_once(self.node, timeout_sec=0.1)
+        maximum_displacement = 0.0
+        for position, _, _ in samples:
+            maximum_displacement = max(
+                maximum_displacement,
+                abs(position - baseline_position),
+            )
 
-        self.node.destroy_subscription(sub)
-
-        self.assertIsNotNone(msg, 'No joint_state message received')
-        self.assertIn('cart_to_pendulum', msg.name)
-
-        joint_idx = msg.name.index('cart_to_pendulum')
-        expected_initial_value = 1.57
-        actual_value = msg.position[joint_idx]
-
-        self.assertAlmostEqual(
-            actual_value,
-            expected_initial_value,
-            places=2,
-            msg=f'Initial position mismatch: expected {expected_initial_value}, got {actual_value}'
+        self.assertTrue(
+            samples,
+            f"No position samples were received for '{joint_name}' while the cart was moving.",
         )
 
-        print(f'Initial value verified: {actual_value} ≈ {expected_initial_value}')
+        return maximum_displacement
+
+    def _check_pendulum_initial_motion(self):
+        """
+        Verify that physics has affected a pendulum spawned outside equilibrium.
+
+        The first state observed by this test is not guaranteed to be the first
+        state produced by the simulation.
+        """
+        joint_name = 'cart_to_pendulum'
+
+        urdf_default_position = 1.57
+        position_tolerance = 0.01
+        velocity_tolerance = 0.01
+        effort_tolerance = 0.01
+
+        position, velocity, effort = read_joint_state(self.node, joint_name)
+
+        at_urdf_default = (
+            abs(position - urdf_default_position)
+            < position_tolerance
+        )
+        at_zero_default = abs(position) < position_tolerance
+        apparently_static = (
+            abs(velocity) < velocity_tolerance and
+            abs(effort) < effort_tolerance
+        )
+
+        self.assertFalse(
+            (at_urdf_default or at_zero_default) and apparently_static,
+            (
+                "The first observed pendulum state is effectively static and still looks "
+                f"like an uninitialized/default state: "
+                f"position={position:.4f}, velocity={velocity:.4f}, effort={effort:.4f}"
+            )
+        )
+
+        print("Pendulum correctly initialized")
 
     # ---------------------------------------------------------
     # Main test
     # ---------------------------------------------------------
-    def test_arm(self, launch_service, proc_info, proc_output):
+    def test_pendulum_joint_position(self, launch_service, proc_info, proc_output):
+        # 1. Check the configured initial slider position.
+        assert_joint_initial_position(self.node, 'slider_to_cart', 1.0)
 
-        # 1) Check initial position BEFORE any motion
-        self._check_initial_cart_position()
+        # 2. Verify that physics affected the pendulum after spawning.
+        self._check_pendulum_initial_motion()
 
-        # 2) Wait for controller_manager to be ready
+        # 3. Establish a stable baseline before measuring cart-induced motion
+        position_before, velocity_before, effort_before = (
+            wait_for_pendulum_steady_state(self.node)
+        )
+
+        print(
+            'Stable baseline established: '
+            f'position={position_before:.4f}, '
+            f'velocity={velocity_before:.4f}, '
+            f'effort={effort_before:.4f}'
+        )
+
+        # 4. Wait for controller_manager and verify the controllers.
         self._wait_for_controller_manager()
 
-        # 3) Check controllers
-        cnames = [
+        controller_names = [
             'joint_trajectory_controller',
             'joint_state_broadcaster',
         ]
-        check_controllers_running(self.node, cnames)
+        check_controllers_running(self.node, controller_names)
 
-        # 4) Launch the node that moves the joint
-        proc_action = Node(
+        # 5. Start the process that moves the cart.
+        process_action = Node(
             package='gz_ros2_control_demos',
             executable='example_position',
             output='screen',
         )
 
+        movement_tolerance = 2.0  # radians
+
         with launch_testing.tools.launch_process(
-            launch_service, proc_action, proc_info, proc_output
+            launch_service, process_action, proc_info, proc_output,
         ):
-            proc_info.assertWaitForShutdown(process=proc_action, timeout=300)
+            maximum_displacement = self._observe_pendulum_motion(
+                baseline_position=position_before,
+                movement_tolerance=movement_tolerance,
+            )
+
+            proc_info.assertWaitForShutdown(
+                process=process_action,
+                timeout=300
+            )
+
             launch_testing.asserts.assertExitCodes(
                 proc_info,
-                process=proc_action,
-                allowable_exit_codes=[0]
+                process=process_action,
+                allowable_exit_codes=[0],
             )
+
+        self.assertGreater(
+            maximum_displacement,
+            movement_tolerance,
+            "Moving the cart did not induce sufficient pendulum motion: "
+            f"maximum displacement={maximum_displacement:.4f}, "
+            f"minimum expected={movement_tolerance:.4f}.",
+        )
