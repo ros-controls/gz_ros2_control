@@ -119,7 +119,9 @@ ament_export_dependencies(
     hardware_interface
 )
 install(TARGETS ign_ros2_control-system
-  DESTINATION lib
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
 pluginlib_export_plugin_description_file(gz_ros2_control gz_hardware_plugins.xml)
