@@ -99,6 +99,14 @@ ament_export_dependencies(
     controller_manager
     hardware_interface
 )
+<<<<<<< HEAD
+=======
+install(TARGETS ign_ros2_control-system
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+>>>>>>> 3e199ce (Align installation location of ign_ros2_control-system with gz_ros2_control-system (#971))
 
 pluginlib_export_plugin_description_file(gz_ros2_control gz_hardware_plugins.xml)
 
