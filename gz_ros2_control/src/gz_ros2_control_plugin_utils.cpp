@@ -37,17 +37,20 @@ std::optional<PluginConfig> ParsePluginConfig(
   PluginConfig config;
 
   // Get params from SDF
-  std::string paramFileName = sdf->Get<std::string>("parameters");
-
-  if (paramFileName.empty()) {
-    error = "Gazebo ros2 control found an empty parameters file. Failed to initialize.";
-    return std::nullopt;
-  }
-
   sdf::ElementConstPtr argument_sdf_param = sdf->FindElement("parameters");
   while (argument_sdf_param) {
-    config.parameter_files.push_back(argument_sdf_param->Get<std::string>());
+    const std::string paramFileName = argument_sdf_param->Get<std::string>();
+    if (paramFileName.empty()) {
+      error = "Gazebo ros2 control found an empty parameters file. Failed to initialize.";
+      return std::nullopt;
+    }
+    config.parameter_files.push_back(paramFileName);
     argument_sdf_param = argument_sdf_param->GetNextElement("parameters");
+  }
+
+  if (config.parameter_files.empty()) {
+    error = "Gazebo ros2 control found no parameters file. Failed to initialize.";
+    return std::nullopt;
   }
 
   // Get controller manager node name
@@ -88,10 +91,12 @@ std::optional<PluginConfig> ParsePluginConfig(
 std::string NormalizeNamespace(const std::string & ns)
 {
   // prevent exception: namespace must be absolute, it must lead with a '/'
-  if (ns.empty() || ns[0] != '/') {
-    return '/' + ns;
+  std::string normalized = (ns.empty() || ns[0] != '/') ? '/' + ns : ns;
+  // and must not end with a '/', unless it is the root namespace
+  while (normalized.size() > 1 && normalized.back() == '/') {
+    normalized.pop_back();
   }
-  return ns;
+  return normalized;
 }
 
 //////////////////////////////////////////////////
@@ -104,12 +109,9 @@ std::vector<std::string> BuildRosArguments(const PluginConfig & config)
     arguments.push_back(parameter_file);
   }
 
-  if (!config.remappings.empty()) {
-    arguments.push_back(RCL_ROS_ARGS_FLAG);
-    for (const auto & remapping : config.remappings) {
-      arguments.push_back(RCL_REMAP_FLAG);
-      arguments.push_back(remapping);
-    }
+  for (const auto & remapping : config.remappings) {
+    arguments.push_back(RCL_REMAP_FLAG);
+    arguments.push_back(remapping);
   }
 
   return arguments;
@@ -128,12 +130,25 @@ std::map<std::string, gz::sim::Entity> GetEnabledJoints(
 
   // Iterate over all joints and verify whether they can be enabled or not
   for (const auto & jointEntity : jointEntities) {
-    const auto jointName = ecm.Component<gz::sim::components::Name>(
-      jointEntity)->Data();
+    const auto * nameComponent = ecm.Component<gz::sim::components::Name>(jointEntity);
+    if (nameComponent == nullptr) {
+      RCLCPP_WARN_STREAM(
+        logger,
+        "[gz_ros2_control] Joint (Entity=" << jointEntity << ") has no name and is skipped.");
+      continue;
+    }
+    const auto & jointName = nameComponent->Data();
 
     // Make sure the joint type is supported, i.e. it has exactly one
     // actuated axis
     const auto * jointType = ecm.Component<gz::sim::components::JointType>(jointEntity);
+    if (jointType == nullptr) {
+      RCLCPP_WARN_STREAM(
+        logger,
+        "[gz_ros2_control] Joint [" << jointName << "] (Entity=" << jointEntity
+                                    << ") has no type and is skipped.");
+      continue;
+    }
     switch (jointType->Data()) {
       case sdf::JointType::PRISMATIC:
       case sdf::JointType::REVOLUTE:

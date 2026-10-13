@@ -172,14 +172,14 @@ TEST(ParsePluginConfig, EmptyParametersFails)
   EXPECT_FALSE(error.empty());
 }
 
-TEST(ParsePluginConfig, LaterEmptyParametersAccepted)
+TEST(ParsePluginConfig, LaterEmptyParametersFails)
 {
-  // Current behavior: only the first <parameters> element is checked for an empty value
-  const auto config = Parse(
-    "<parameters>controllers.yaml</parameters>"
-    "<parameters></parameters>");
-  ASSERT_TRUE(config.has_value());
-  EXPECT_EQ(config->parameter_files, (std::vector<std::string>{"controllers.yaml", ""}));
+  std::string error;
+  EXPECT_FALSE(
+    Parse(
+      "<parameters>controllers.yaml</parameters>"
+      "<parameters></parameters>", error).has_value());
+  EXPECT_FALSE(error.empty());
 }
 
 TEST(ParsePluginConfig, MultipleRemappingsKeptInOrder)
@@ -220,10 +220,12 @@ TEST(NormalizeNamespace, AddsLeadingSlash)
   EXPECT_EQ(NormalizeNamespace("a/b"), "/a/b");
 }
 
-TEST(NormalizeNamespace, KeepsTrailingSlash)
+TEST(NormalizeNamespace, RemovesTrailingSlash)
 {
-  // Current behavior: a trailing '/' is kept, and rclcpp rejects such a namespace
-  EXPECT_EQ(NormalizeNamespace("ns/"), "/ns/");
+  EXPECT_EQ(NormalizeNamespace("/"), "/");
+  EXPECT_EQ(NormalizeNamespace("//"), "/");
+  EXPECT_EQ(NormalizeNamespace("ns/"), "/ns");
+  EXPECT_EQ(NormalizeNamespace("/a/b//"), "/a/b");
 }
 
 TEST(BuildRosArguments, ParameterFilesOnly)
@@ -241,11 +243,10 @@ TEST(BuildRosArguments, ParameterFilesAndRemappings)
   PluginConfig config;
   config.parameter_files = {"a.yaml"};
   config.remappings = {"x:=y", "z:=w"};
-  // Current behavior: a second --ros-args is added before the remappings
   EXPECT_EQ(
     BuildRosArguments(config),
     (std::vector<std::string>{
-    "--ros-args", "--params-file", "a.yaml", "--ros-args", "--remap", "x:=y", "--remap", "z:=w"}));
+    "--ros-args", "--params-file", "a.yaml", "--remap", "x:=y", "--remap", "z:=w"}));
 }
 
 TEST(BuildRosArguments, NoParameterFiles)
@@ -299,6 +300,28 @@ TEST_F(GetEnabledJointsTest, OtherModelsIgnored)
 
   const std::map<std::string, gz::sim::Entity> expected = {{"joint", joint}};
   EXPECT_EQ(GetEnabledJoints(robot, ecm_, logger_), expected);
+}
+
+TEST_F(GetEnabledJointsTest, JointWithoutNameSkipped)
+{
+  const auto model = CreateModel("robot");
+  const auto revolute = CreateJoint(model, "revolute", sdf::JointType::REVOLUTE);
+  const auto unnamed = CreateJoint(model, "unnamed", sdf::JointType::REVOLUTE);
+  ecm_.RemoveComponent<gz::sim::components::Name>(unnamed);
+
+  const std::map<std::string, gz::sim::Entity> expected = {{"revolute", revolute}};
+  EXPECT_EQ(GetEnabledJoints(model, ecm_, logger_), expected);
+}
+
+TEST_F(GetEnabledJointsTest, JointWithoutTypeSkipped)
+{
+  const auto model = CreateModel("robot");
+  const auto revolute = CreateJoint(model, "revolute", sdf::JointType::REVOLUTE);
+  const auto untyped = CreateJoint(model, "untyped", sdf::JointType::REVOLUTE);
+  ecm_.RemoveComponent<gz::sim::components::JointType>(untyped);
+
+  const std::map<std::string, gz::sim::Entity> expected = {{"revolute", revolute}};
+  EXPECT_EQ(GetEnabledJoints(model, ecm_, logger_), expected);
 }
 
 TEST_F(GetEnabledJointsTest, ModelWithoutJoints)
