@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <chrono>
+#include <exception>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -94,13 +95,20 @@ public:
       }
 
       // initialize simulation requirements
-      if (!gzSimSystem->initSim(
+      bool sim_initialized = false;
+      try {
+        sim_initialized = gzSimSystem->initSim(
           node_,
           enabledJoints_,
           individual_hardware_info,
           *ecm_,
-          params.update_rate))
-      {
+          params.update_rate);
+      } catch (const std::exception & ex) {
+        RCLCPP_ERROR(
+          logger_, "Exception while initializing robot simulation interface %s: %s",
+          robot_hw_sim_type_str_.c_str(), ex.what());
+      }
+      if (!sim_initialized) {
         RCLCPP_FATAL(
           logger_, "Could not initialize robot simulation interface");
         components_are_loaded_and_initialized_ = false;
@@ -238,6 +246,7 @@ GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
             "[gz_ros2_control] Joint [" << jointName << "] (Entity=" << jointEntity
                                         << ") is of unknown type."
           );
+          continue;
         }
     }
     output[jointName] = jointEntity;
@@ -255,8 +264,12 @@ GazeboSimROS2ControlPlugin::GazeboSimROS2ControlPlugin()
 //////////////////////////////////////////////////
 GazeboSimROS2ControlPlugin::~GazeboSimROS2ControlPlugin()
 {
-  this->dataPtr->executor_->cancel();
-  this->dataPtr->thread_executor_spin_.join();
+  if (this->dataPtr->executor_) {
+    this->dataPtr->executor_->cancel();
+  }
+  if (this->dataPtr->thread_executor_spin_.joinable()) {
+    this->dataPtr->thread_executor_spin_.join();
+  }
 }
 
 //////////////////////////////////////////////////
