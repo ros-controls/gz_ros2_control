@@ -61,11 +61,20 @@ public:
   : mFlags(original.mFlags) {}
 
   SafeEnum & operator|=(ENUM addValue) {mFlags |= addValue; return *this;}
-  SafeEnum operator|(ENUM addValue) {SafeEnum result(*this); result |= addValue; return result;}
+  SafeEnum operator|(ENUM addValue) const
+  {
+    SafeEnum result(*this); result |= addValue; return result;
+  }
   SafeEnum & operator&=(ENUM maskValue) {mFlags &= maskValue; return *this;}
-  SafeEnum operator&(ENUM maskValue) {SafeEnum result(*this); result &= maskValue; return result;}
-  SafeEnum operator~() {SafeEnum result(*this); result.mFlags = ~result.mFlags; return result;}
-  explicit operator bool() {return mFlags != 0;}
+  SafeEnum operator&(ENUM maskValue) const
+  {
+    SafeEnum result(*this); result &= maskValue; return result;
+  }
+  SafeEnum operator~() const
+  {
+    SafeEnum result(*this); result.mFlags = ~result.mFlags; return result;
+  }
+  explicit operator bool() const {return mFlags != 0;}
 
 protected:
   UNDERLYING mFlags;
