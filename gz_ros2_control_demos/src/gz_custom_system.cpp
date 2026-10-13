@@ -400,11 +400,12 @@ hardware_interface::return_type GazeboCustomSimSystem::write(
     if (this->dataPtr->joints_[i].velocity.command &&
       this->dataPtr->joints_[i].velocity.command->get_value(velocity_cmd, true))
     {
-      double vel_cmd;
-      if (this->dataPtr->joints_[i].lpf && this->dataPtr->joints_[i].lpf->is_configured()) {
-        this->dataPtr->joints_[i].lpf->update(velocity_cmd, vel_cmd);
-      } else {
-        vel_cmd = velocity_cmd;
+      double vel_cmd = velocity_cmd;
+      if (this->dataPtr->joints_[i].lpf && this->dataPtr->joints_[i].lpf->is_configured() &&
+        !this->dataPtr->joints_[i].lpf->update(velocity_cmd, vel_cmd))
+      {
+        // The filter rejects a non-finite first sample, don't forward it to Gazebo
+        continue;
       }
       this->dataPtr->ecm->SetComponentData<sim::components::JointVelocityCmd>(
         this->dataPtr->joints_[i].sim_joint,
