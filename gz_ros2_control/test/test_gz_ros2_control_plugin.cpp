@@ -14,6 +14,7 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <string>
@@ -45,6 +46,7 @@ using gz_ros2_control::detail::NormalizeNamespace;
 using gz_ros2_control::detail::ParsePluginConfig;
 using gz_ros2_control::detail::PeriodMismatch;
 using gz_ros2_control::detail::PluginConfig;
+using gz_ros2_control::detail::ShouldUpdate;
 
 // Parse a <plugin> element with the given contents the same way Gazebo does
 class PluginSdf
@@ -337,4 +339,49 @@ TEST(CheckPeriodMismatch, ComparesPeriods)
   EXPECT_EQ(CheckPeriodMismatch(one_ms, one_ms), PeriodMismatch::kNone);
   EXPECT_EQ(CheckPeriodMismatch(one_ms, ten_ms), PeriodMismatch::kControlFaster);
   EXPECT_EQ(CheckPeriodMismatch(ten_ms, one_ms), PeriodMismatch::kControlSlower);
+}
+
+TEST(ShouldUpdate, ComparesElapsedTimeWithControlPeriod)
+{
+  const rclcpp::Duration control_period(0, 10000000);
+  EXPECT_FALSE(ShouldUpdate(rclcpp::Duration(0, 0), control_period));
+  EXPECT_FALSE(ShouldUpdate(rclcpp::Duration(0, 9999999), control_period));
+  EXPECT_TRUE(ShouldUpdate(rclcpp::Duration(0, 10000000), control_period));
+  EXPECT_TRUE(ShouldUpdate(rclcpp::Duration(0, 25000000), control_period));
+}
+
+TEST(ShouldUpdate, RunsAtControlRateWithFasterSimulation)
+{
+  // Same bookkeeping as PostUpdate: 1 ms simulation steps, 100 Hz controllers
+  const rclcpp::Duration gazebo_period(0, 1000000);
+  const rclcpp::Duration control_period(0, 10000000);
+  rclcpp::Duration sim_time(0, 0);
+  rclcpp::Duration last_update(0, 0);
+  std::vector<int64_t> update_times_ms;
+  for (int step = 0; step < 50; ++step) {
+    sim_time = sim_time + gazebo_period;
+    if (ShouldUpdate(sim_time - last_update, control_period)) {
+      last_update = sim_time;
+      update_times_ms.push_back(sim_time.nanoseconds() / 1000000);
+    }
+  }
+  EXPECT_EQ(update_times_ms, (std::vector<int64_t>{10, 20, 30, 40, 50}));
+}
+
+TEST(ShouldUpdate, RunsEveryStepWithSlowerSimulation)
+{
+  // 20 ms simulation steps are slower than the 10 ms control period
+  const rclcpp::Duration gazebo_period(0, 20000000);
+  const rclcpp::Duration control_period(0, 10000000);
+  rclcpp::Duration sim_time(0, 0);
+  rclcpp::Duration last_update(0, 0);
+  int updates = 0;
+  for (int step = 0; step < 5; ++step) {
+    sim_time = sim_time + gazebo_period;
+    if (ShouldUpdate(sim_time - last_update, control_period)) {
+      last_update = sim_time;
+      ++updates;
+    }
+  }
+  EXPECT_EQ(updates, 5);
 }
