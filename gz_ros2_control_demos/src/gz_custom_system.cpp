@@ -367,6 +367,13 @@ hardware_interface::return_type GazeboCustomSimSystem::read(
       this->dataPtr->ecm->Component<sim::components::JointPosition>(
       this->dataPtr->joints_[i].sim_joint);
 
+    // Components are missing or empty until physics has run at least once
+    if (!jointPositions || jointPositions->Data().empty() ||
+      !jointVelocity || jointVelocity->Data().empty() || !jointWrench)
+    {
+      continue;
+    }
+
     (void)this->dataPtr->joints_[i].position.state->set_value(jointPositions->Data()[0], true);
     (void)this->dataPtr->joints_[i].velocity.state->set_value(jointVelocity->Data()[0], true);
     gz::physics::Vector3d force_or_torque;

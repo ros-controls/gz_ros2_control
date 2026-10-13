@@ -38,6 +38,10 @@ class GazeboSimSystemPrivate;
 class GazeboSimSystem : public GazeboSimSystemInterface
 {
 public:
+  GazeboSimSystem();
+
+  ~GazeboSimSystem() override;
+
   // Documentation Inherited
   CallbackReturn on_init(const hardware_interface::HardwareComponentInterfaceParams & params)
   override;

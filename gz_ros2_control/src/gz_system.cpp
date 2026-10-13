@@ -266,6 +266,10 @@ T get_parameter_or_log(
 }
 }  // namespace
 
+GazeboSimSystem::GazeboSimSystem() = default;
+
+GazeboSimSystem::~GazeboSimSystem() = default;
+
 bool GazeboSimSystem::initSim(
   rclcpp::Node::SharedPtr & model_nh,
   std::map<std::string, sim::Entity> & enableJoints,
@@ -706,7 +710,10 @@ hardware_interface::return_type GazeboSimSystem::read(
       this->dataPtr->ecm->Component<sim::components::JointPosition>(
       this->dataPtr->joints_[i].sim_joint);
 
-    if (!jointPositions || !jointVelocity || !jointWrench) {
+    // Components are empty until physics has run at least once
+    if (!jointPositions || jointPositions->Data().empty() ||
+      !jointVelocity || jointVelocity->Data().empty() || !jointWrench)
+    {
       continue;
     }
 
