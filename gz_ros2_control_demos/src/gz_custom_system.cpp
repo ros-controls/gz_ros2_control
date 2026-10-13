@@ -198,8 +198,7 @@ bool GazeboCustomSimSystem::initSim(
               "Failed converting initial_value string to real number for the joint "
                 << joint_name
                 << " and state interface " << interface_info.name
-                << ". Actual value of parameter: " << interface_info.initial_value
-                << ". Initial value will be set to 0.0");
+                << ". Actual value of parameter: " << interface_info.initial_value);
             throw std::invalid_argument("Failed converting initial_value string");
           }
         }
