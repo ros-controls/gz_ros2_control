@@ -73,7 +73,7 @@ struct jointData
   std::string name;
 
   /// \brief Joint's type.
-  sdf::JointType joint_type;
+  sdf::JointType joint_type{sdf::JointType::INVALID};
 
   /// \brief Joint's axis.
   sdf::JointAxis joint_axis;
@@ -88,10 +88,10 @@ struct jointData
   InterfaceData effort;
 
   /// \brief flag if joint is actuated (has command interfaces) or passive
-  bool is_actuated;
+  bool is_actuated{false};
 
   /// \brief handles to the joints from within Gazebo
-  sim::Entity sim_joint;
+  sim::Entity sim_joint{sim::kNullEntity};
 
   /// \brief Control method defined in the URDF for each joint.
   gz_ros2_control::GazeboSimSystemInterface::ControlMethod joint_control_method;
@@ -225,16 +225,16 @@ public:
 
   /// \brief Entity component manager, ECM shouldn't be accessed outside those
   /// methods, otherwise the app will crash
-  sim::EntityComponentManager * ecm;
+  sim::EntityComponentManager * ecm{nullptr};
 
   /// \brief controller update rate
-  unsigned int update_rate;
+  unsigned int update_rate{0};
 
   /// \brief Gazebo communication node.
   gz::transport::Node node;
 
   /// \brief Gain which converts position error to a velocity command
-  double position_proportional_gain_;
+  double position_proportional_gain_{0.1};
 
   // Should hold the joints if no control_mode is active
   bool hold_joints_ = true;
@@ -242,6 +242,29 @@ public:
 
 namespace gz_ros2_control
 {
+namespace
+{
+/// \brief Read a parameter from the node, logging and returning default_value on failure
+template<typename T>
+T get_parameter_or_log(
+  const rclcpp::Node::SharedPtr & node, const std::string & name, const T & default_value)
+{
+  try {
+    return node->get_parameter(name).get_value<T>();
+  } catch (const rclcpp::exceptions::ParameterUninitializedException & ex) {
+    RCLCPP_ERROR(
+      node->get_logger(), "Parameter '%s' not initialized, with error %s", name.c_str(), ex.what());
+  } catch (const rclcpp::exceptions::ParameterNotDeclaredException & ex) {
+    RCLCPP_ERROR(
+      node->get_logger(), "Parameter '%s' not declared, with error %s", name.c_str(), ex.what());
+  } catch (const rclcpp::ParameterTypeException & ex) {
+    RCLCPP_ERROR(
+      node->get_logger(), "Parameter '%s' has wrong type: %s", name.c_str(), ex.what());
+  }
+  RCLCPP_WARN_STREAM(node->get_logger(), "Using default value: " << default_value);
+  return default_value;
+}
+}  // namespace
 
 bool GazeboSimSystem::initSim(
   rclcpp::Node::SharedPtr & model_nh,
@@ -258,58 +281,16 @@ bool GazeboSimSystem::initSim(
 
   this->dataPtr->update_rate = update_rate;
 
-  try {
-    this->dataPtr->hold_joints_ = this->nh_->get_parameter("hold_joints").as_bool();
-  } catch (rclcpp::exceptions::ParameterUninitializedException & ex) {
-    RCLCPP_ERROR(
-      this->nh_->get_logger(),
-      "Parameter 'hold_joints' not initialized, with error %s", ex.what());
-    RCLCPP_WARN_STREAM(
-      this->nh_->get_logger(), "Using default value: " << this->dataPtr->hold_joints_);
-  } catch (rclcpp::exceptions::ParameterNotDeclaredException & ex) {
-    RCLCPP_ERROR(
-      this->nh_->get_logger(),
-      "Parameter 'hold_joints' not declared, with error %s", ex.what());
-    RCLCPP_WARN_STREAM(
-      this->nh_->get_logger(), "Using default value: " << this->dataPtr->hold_joints_);
-  } catch (rclcpp::ParameterTypeException & ex) {
-    RCLCPP_ERROR(
-      this->nh_->get_logger(),
-      "Parameter 'hold_joints' has wrong type: %s", ex.what());
-    RCLCPP_WARN_STREAM(
-      this->nh_->get_logger(), "Using default value: " << this->dataPtr->hold_joints_);
-  }
+  this->dataPtr->hold_joints_ =
+    get_parameter_or_log(this->nh_, "hold_joints", this->dataPtr->hold_joints_);
   RCLCPP_DEBUG_STREAM(
     this->nh_->get_logger(), "hold_joints (system): " << this->dataPtr->hold_joints_ << std::endl);
 
 
   this->dataPtr->joints_.resize(hardware_info.joints.size());
 
-  try {
-    this->dataPtr->position_proportional_gain_ =
-      this->nh_->get_parameter("position_proportional_gain").as_double();
-  } catch (rclcpp::exceptions::ParameterUninitializedException & ex) {
-    RCLCPP_ERROR(
-      this->nh_->get_logger(),
-      "Parameter 'position_proportional_gain' not initialized, with error %s", ex.what());
-    RCLCPP_WARN_STREAM(
-      this->nh_->get_logger(),
-      "Using default value: " << this->dataPtr->position_proportional_gain_);
-  } catch (rclcpp::exceptions::ParameterNotDeclaredException & ex) {
-    RCLCPP_ERROR(
-      this->nh_->get_logger(),
-      "Parameter 'position_proportional_gain' not declared, with error %s", ex.what());
-    RCLCPP_WARN_STREAM(
-      this->nh_->get_logger(),
-      "Using default value: " << this->dataPtr->position_proportional_gain_);
-  } catch (rclcpp::ParameterTypeException & ex) {
-    RCLCPP_ERROR(
-      this->nh_->get_logger(),
-      "Parameter 'position_proportional_gain' has wrong type: %s", ex.what());
-    RCLCPP_WARN_STREAM(
-      this->nh_->get_logger(),
-      "Using default value: " << this->dataPtr->position_proportional_gain_);
-  }
+  this->dataPtr->position_proportional_gain_ = get_parameter_or_log(
+    this->nh_, "position_proportional_gain", this->dataPtr->position_proportional_gain_);
 
   RCLCPP_INFO_STREAM(
     this->nh_->get_logger(),
