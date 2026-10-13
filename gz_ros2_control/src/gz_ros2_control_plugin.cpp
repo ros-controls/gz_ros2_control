@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <chrono>
+#include <exception>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -38,7 +39,17 @@
 
 #include <pluginlib/class_loader.hpp>
 
-#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/duration.hpp>
+#include <rclcpp/exceptions/exceptions.hpp>
+#include <rclcpp/executors/multi_threaded_executor.hpp>
+#include <rclcpp/init_options.hpp>
+#include <rclcpp/logger.hpp>
+#include <rclcpp/logging.hpp>
+#include <rclcpp/node.hpp>
+#include <rclcpp/node_options.hpp>
+#include <rclcpp/parameter_value.hpp>
+#include <rclcpp/time.hpp>
+#include <rclcpp/utilities.hpp>
 
 #include "gz_ros2_control/gz_ros2_control_plugin.hpp"
 #include "gz_ros2_control/gz_system.hpp"
@@ -94,13 +105,20 @@ public:
       }
 
       // initialize simulation requirements
-      if (!gzSimSystem->initSim(
+      bool sim_initialized = false;
+      try {
+        sim_initialized = gzSimSystem->initSim(
           node_,
           enabledJoints_,
           individual_hardware_info,
           *ecm_,
-          params.update_rate))
-      {
+          params.update_rate);
+      } catch (const std::exception & ex) {
+        RCLCPP_ERROR(
+          logger_, "Exception while initializing robot simulation interface %s: %s",
+          robot_hw_sim_type_str_.c_str(), ex.what());
+      }
+      if (!sim_initialized) {
         RCLCPP_FATAL(
           logger_, "Could not initialize robot simulation interface");
         components_are_loaded_and_initialized_ = false;
@@ -148,9 +166,6 @@ public:
     const sim::Entity & _entity,
     sim::EntityComponentManager & _ecm) const;
 
-  /// \brief Entity ID for sensor within Gazebo.
-  sim::Entity entity_;
-
   /// \brief Node Handles
   std::shared_ptr<rclcpp::Node> node_{nullptr};
 
@@ -171,9 +186,6 @@ public:
   rclcpp::Time last_update_sim_time_ros_ =
     rclcpp::Time(static_cast<int64_t>(0), RCL_ROS_TIME);
 
-  /// \brief ECM pointer
-  sim::EntityComponentManager * ecm{nullptr};
-
   /// \brief controller update rate
   int update_rate;
 
@@ -188,8 +200,6 @@ GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
   sim::EntityComponentManager & _ecm) const
 {
   std::map<std::string, sim::Entity> output;
-
-  std::vector<std::string> enabledJoints;
 
   // Get all available joints
   auto jointEntities = _ecm.ChildrenByComponents(_entity, sim::components::Joint());
@@ -238,6 +248,7 @@ GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
             "[gz_ros2_control] Joint [" << jointName << "] (Entity=" << jointEntity
                                         << ") is of unknown type."
           );
+          continue;
         }
     }
     output[jointName] = jointEntity;
@@ -255,8 +266,12 @@ GazeboSimROS2ControlPlugin::GazeboSimROS2ControlPlugin()
 //////////////////////////////////////////////////
 GazeboSimROS2ControlPlugin::~GazeboSimROS2ControlPlugin()
 {
-  this->dataPtr->executor_->cancel();
-  this->dataPtr->thread_executor_spin_.join();
+  if (this->dataPtr->executor_) {
+    this->dataPtr->executor_->cancel();
+  }
+  if (this->dataPtr->thread_executor_spin_.joinable()) {
+    this->dataPtr->thread_executor_spin_.join();
+  }
 }
 
 //////////////////////////////////////////////////
@@ -292,9 +307,7 @@ void GazeboSimROS2ControlPlugin::Configure(
   // Get params from SDF
   std::vector<std::string> arguments = {"--ros-args"};
 
-  auto sdfPtr = const_cast<sdf::Element *>(_sdf.get());
-
-  sdf::ElementPtr argument_sdf_param = sdfPtr->GetElement("parameters");
+  sdf::ElementConstPtr argument_sdf_param = _sdf->FindElement("parameters");
   while (argument_sdf_param) {
     std::string argument = argument_sdf_param->Get<std::string>();
     arguments.push_back(RCL_PARAM_FILE_FLAG);
@@ -305,30 +318,30 @@ void GazeboSimROS2ControlPlugin::Configure(
   // Get controller manager node name
   std::string controllerManagerNodeName{"controller_manager"};
 
-  if (sdfPtr->HasElement("controller_manager_name")) {
-    controllerManagerNodeName = sdfPtr->GetElement("controller_manager_name")->Get<std::string>();
+  if (_sdf->HasElement("controller_manager_name")) {
+    controllerManagerNodeName = _sdf->FindElement("controller_manager_name")->Get<std::string>();
   }
 
   std::string ns = "/";
 
   // Hold joints if no control mode is active?
   bool hold_joints = true;  // default
-  if (sdfPtr->HasElement("hold_joints")) {
+  if (_sdf->HasElement("hold_joints")) {
     hold_joints =
-      sdfPtr->GetElement("hold_joints")->Get<bool>();
+      _sdf->FindElement("hold_joints")->Get<bool>();
   }
   double position_proportional_gain = 0.1;  // default
-  if (sdfPtr->HasElement("position_proportional_gain")) {
+  if (_sdf->HasElement("position_proportional_gain")) {
     position_proportional_gain =
-      sdfPtr->GetElement("position_proportional_gain")->Get<double>();
+      _sdf->FindElement("position_proportional_gain")->Get<double>();
   }
 
-  if (sdfPtr->HasElement("ros")) {
-    sdf::ElementPtr sdfRos = sdfPtr->GetElement("ros");
+  if (_sdf->HasElement("ros")) {
+    sdf::ElementConstPtr sdfRos = _sdf->FindElement("ros");
 
     // Set namespace if tag is present
     if (sdfRos->HasElement("namespace")) {
-      ns = sdfRos->GetElement("namespace")->Get<std::string>();
+      ns = sdfRos->FindElement("namespace")->Get<std::string>();
       // prevent exception: namespace must be absolute, it must lead with a '/'
       if (ns.empty() || ns[0] != '/') {
         ns = '/' + ns;
@@ -337,7 +350,7 @@ void GazeboSimROS2ControlPlugin::Configure(
 
     // Get list of remapping rules from SDF
     if (sdfRos->HasElement("remapping")) {
-      sdf::ElementPtr argument_sdf_remapping = sdfRos->GetElement("remapping");
+      sdf::ElementConstPtr argument_sdf_remapping = sdfRos->FindElement("remapping");
 
       arguments.push_back(RCL_ROS_ARGS_FLAG);
       while (argument_sdf_remapping) {
@@ -468,8 +481,6 @@ void GazeboSimROS2ControlPlugin::Configure(
       "Waiting RM to load and initialize hardware...");
     std::this_thread::sleep_for(std::chrono::milliseconds(2000));
   }
-
-  this->dataPtr->entity_ = _entity;
 }
 
 //////////////////////////////////////////////////
