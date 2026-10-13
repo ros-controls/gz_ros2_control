@@ -51,6 +51,12 @@
 #include <hardware_interface/lexical_casts.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 
+#include <rclcpp/duration.hpp>
+#include <rclcpp/exceptions/exceptions.hpp>
+#include <rclcpp/logging.hpp>
+#include <rclcpp/parameter_value.hpp>
+#include <rclcpp/time.hpp>
+
 #ifdef ERROR
 #undef ERROR
 #endif
@@ -406,8 +412,7 @@ bool GazeboSimSystem::initSim(
               "Failed converting initial_value string to real number for the joint "
                 << joint_name
                 << " and state interface " << interface_info.name
-                << ". Actual value of parameter: " << interface_info.initial_value
-                << ". Initial value will be set to 0.0");
+                << ". Actual value of parameter: " << interface_info.initial_value);
             throw std::invalid_argument("Failed converting initial_value string");
           }
         }
@@ -575,7 +580,15 @@ void GazeboSimSystem::registerSensors(
       for (const auto & state_interface : component.state_interfaces) {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t " << state_interface.name);
 
-        size_t data_index = interface_name_map.at(state_interface.name);
+        auto index_it = interface_name_map.find(state_interface.name);
+        if (index_it == interface_name_map.end()) {
+          RCLCPP_ERROR_STREAM(
+            this->nh_->get_logger(),
+            "IMU sensor '" << imuData->name << "' has unknown state interface '" <<
+              state_interface.name << "', skipping.");
+          continue;
+        }
+        size_t data_index = index_it->second;
         auto si = std::make_shared<hardware_interface::StateInterface>(
           imuData->name,
           state_interface.name);
@@ -627,7 +640,15 @@ void GazeboSimSystem::registerSensors(
       for (const auto & state_interface : component.state_interfaces) {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t " << state_interface.name);
 
-        size_t data_index = interface_name_map.at(state_interface.name);
+        auto index_it = interface_name_map.find(state_interface.name);
+        if (index_it == interface_name_map.end()) {
+          RCLCPP_ERROR_STREAM(
+            this->nh_->get_logger(),
+            "ForceTorque sensor '" << ftData->name << "' has unknown state interface '" <<
+              state_interface.name << "', skipping.");
+          continue;
+        }
+        size_t data_index = index_it->second;
         auto si = std::make_shared<hardware_interface::StateInterface>(
           ftData->name,
           state_interface.name);
@@ -889,14 +910,28 @@ hardware_interface::return_type GazeboSimSystem::write(
 
   // set values of all mimic joints with respect to mimicked joint
   for (const auto & mimic_joint : this->info_.mimic_joints) {
-    // Get the joint position
-    double position_mimicked_joint =
-      this->dataPtr->ecm->Component<sim::components::JointPosition>(
-      this->dataPtr->joints_[mimic_joint.mimicked_joint_index].sim_joint)->Data()[0];
+    const sim::Entity mimicked_sim_joint =
+      this->dataPtr->joints_[mimic_joint.mimicked_joint_index].sim_joint;
+    const sim::Entity mimic_sim_joint =
+      this->dataPtr->joints_[mimic_joint.joint_index].sim_joint;
+    if (mimicked_sim_joint == sim::kNullEntity || mimic_sim_joint == sim::kNullEntity) {
+      continue;
+    }
 
-    double position_mimic_joint =
-      this->dataPtr->ecm->Component<sim::components::JointPosition>(
-      this->dataPtr->joints_[mimic_joint.joint_index].sim_joint)->Data()[0];
+    // Get the joint position
+    const auto * mimickedJointPosition =
+      this->dataPtr->ecm->Component<sim::components::JointPosition>(mimicked_sim_joint);
+    const auto * mimicJointPosition =
+      this->dataPtr->ecm->Component<sim::components::JointPosition>(mimic_sim_joint);
+    // Components are empty until physics has run at least once
+    if (!mimickedJointPosition || mimickedJointPosition->Data().empty() ||
+      !mimicJointPosition || mimicJointPosition->Data().empty())
+    {
+      continue;
+    }
+
+    double position_mimicked_joint = mimickedJointPosition->Data()[0];
+    double position_mimic_joint = mimicJointPosition->Data()[0];
 
     double position_error =
       position_mimic_joint -
@@ -905,12 +940,11 @@ hardware_interface::return_type GazeboSimSystem::write(
     double velocity_sp = (-1.0) * position_error * this->dataPtr->update_rate;
 
     auto vel =
-      this->dataPtr->ecm->Component<sim::components::JointVelocityCmd>(
-      this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
+      this->dataPtr->ecm->Component<sim::components::JointVelocityCmd>(mimic_sim_joint);
 
     if (vel == nullptr) {
       this->dataPtr->ecm->CreateComponent(
-        this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
+        mimic_sim_joint,
         sim::components::JointVelocityCmd({velocity_sp}));
     } else if (!vel->Data().empty()) {
       vel->Data()[0] = velocity_sp;
