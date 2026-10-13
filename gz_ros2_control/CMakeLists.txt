@@ -56,6 +56,7 @@ target_link_libraries(gz_hardware_plugins
 PUBLIC
   gz-sim::gz-sim
   hardware_interface::hardware_interface
+  ${pluginlib_TARGETS}
   rclcpp::rclcpp
   rclcpp_lifecycle::rclcpp_lifecycle
 )
@@ -92,6 +93,8 @@ ament_export_targets(
 ament_export_dependencies(
     controller_manager
     hardware_interface
+    rclcpp
+    rclcpp_lifecycle
 )
 
 pluginlib_export_plugin_description_file(gz_ros2_control gz_hardware_plugins.xml)
