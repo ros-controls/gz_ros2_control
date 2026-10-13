@@ -22,9 +22,6 @@
 #include <utility>
 #include <vector>
 
-#include <gz/sim/components/Joint.hh>
-#include <gz/sim/components/JointType.hh>
-#include <gz/sim/components/Name.hh>
 #include <gz/sim/components/ParentEntity.hh>
 #include <gz/sim/components/World.hh>
 #include <gz/sim/Model.hh>
@@ -53,6 +50,7 @@
 
 #include "gz_ros2_control/gz_ros2_control_plugin.hpp"
 #include "gz_ros2_control/gz_system.hpp"
+#include "gz_ros2_control_plugin_utils.hpp"
 
 namespace gz_ros2_control
 {
@@ -155,17 +153,6 @@ private:
 class GazeboSimROS2ControlPluginPrivate
 {
 public:
-  /// \brief Get a list of enabled, unique, 1-axis joints of the model. If no
-  /// joint names are specified in the plugin configuration, all valid 1-axis
-  /// joints are returned
-  /// \param[in] _entity Entity of the model that the plugin is being
-  /// configured for
-  /// \param[in] _ecm Gazebo Entity Component Manager
-  /// \return List of entities containing all enabled joints
-  std::map<std::string, sim::Entity> GetEnabledJoints(
-    const sim::Entity & _entity,
-    sim::EntityComponentManager & _ecm) const;
-
   /// \brief Node Handles
   std::shared_ptr<rclcpp::Node> node_{nullptr};
 
@@ -192,70 +179,6 @@ public:
   /// \brief Whether the control/sim period mismatch warning has been emitted
   bool period_mismatch_warned_{false};
 };
-
-//////////////////////////////////////////////////
-std::map<std::string, sim::Entity>
-GazeboSimROS2ControlPluginPrivate::GetEnabledJoints(
-  const sim::Entity & _entity,
-  sim::EntityComponentManager & _ecm) const
-{
-  std::map<std::string, sim::Entity> output;
-
-  // Get all available joints
-  auto jointEntities = _ecm.ChildrenByComponents(_entity, sim::components::Joint());
-
-  // Iterate over all joints and verify whether they can be enabled or not
-  for (const auto & jointEntity : jointEntities) {
-    const auto jointName = _ecm.Component<sim::components::Name>(
-      jointEntity)->Data();
-
-    // Make sure the joint type is supported, i.e. it has exactly one
-    // actuated axis
-    const auto * jointType = _ecm.Component<sim::components::JointType>(jointEntity);
-    switch (jointType->Data()) {
-      case sdf::JointType::PRISMATIC:
-      case sdf::JointType::REVOLUTE:
-      case sdf::JointType::CONTINUOUS:
-      case sdf::JointType::GEARBOX:
-        {
-          // Supported joint type
-          break;
-        }
-      case sdf::JointType::FIXED:
-        {
-          RCLCPP_INFO_STREAM(
-            node_->get_logger(),
-            "[gz_ros2_control] Fixed joint ['" << jointName << "'] (Entity='" << jointEntity
-                                               << "') is skipped.");
-          continue;
-        }
-      case sdf::JointType::REVOLUTE2:
-      case sdf::JointType::SCREW:
-      case sdf::JointType::BALL:
-      case sdf::JointType::UNIVERSAL:
-        {
-          RCLCPP_WARN_STREAM(
-            node_->get_logger(),
-            "[gz_ros2_control] Joint ['" << jointName << "'] (Entity='" << jointEntity
-                                         << "') is of unsupported type."
-                                           " Only joints with a single axis are supported.");
-          continue;
-        }
-      default:
-        {
-          RCLCPP_WARN_STREAM(
-            node_->get_logger(),
-            "[gz_ros2_control] Joint [" << jointName << "] (Entity=" << jointEntity
-                                        << ") is of unknown type."
-          );
-          continue;
-        }
-    }
-    output[jointName] = jointEntity;
-  }
-
-  return output;
-}
 
 //////////////////////////////////////////////////
 GazeboSimROS2ControlPlugin::GazeboSimROS2ControlPlugin()
@@ -295,72 +218,16 @@ void GazeboSimROS2ControlPlugin::Configure(
   }
 
   // Get params from SDF
-  std::string paramFileName = _sdf->Get<std::string>("parameters");
-
-  if (paramFileName.empty()) {
-    RCLCPP_ERROR(
-      logger,
-      "Gazebo ros2 control found an empty parameters file. Failed to initialize.");
+  std::string error;
+  const auto config = detail::ParsePluginConfig(_sdf, error);
+  if (!config) {
+    RCLCPP_ERROR(logger, "%s", error.c_str());
     return;
   }
+  const std::string & controllerManagerNodeName = config->controller_manager_name;
+  const std::string & ns = config->ns;
 
-  // Get params from SDF
-  std::vector<std::string> arguments = {"--ros-args"};
-
-  sdf::ElementConstPtr argument_sdf_param = _sdf->FindElement("parameters");
-  while (argument_sdf_param) {
-    std::string argument = argument_sdf_param->Get<std::string>();
-    arguments.push_back(RCL_PARAM_FILE_FLAG);
-    arguments.push_back(argument);
-    argument_sdf_param = argument_sdf_param->GetNextElement("parameters");
-  }
-
-  // Get controller manager node name
-  std::string controllerManagerNodeName{"controller_manager"};
-
-  if (_sdf->HasElement("controller_manager_name")) {
-    controllerManagerNodeName = _sdf->FindElement("controller_manager_name")->Get<std::string>();
-  }
-
-  std::string ns = "/";
-
-  // Hold joints if no control mode is active?
-  bool hold_joints = true;  // default
-  if (_sdf->HasElement("hold_joints")) {
-    hold_joints =
-      _sdf->FindElement("hold_joints")->Get<bool>();
-  }
-  double position_proportional_gain = 0.1;  // default
-  if (_sdf->HasElement("position_proportional_gain")) {
-    position_proportional_gain =
-      _sdf->FindElement("position_proportional_gain")->Get<double>();
-  }
-
-  if (_sdf->HasElement("ros")) {
-    sdf::ElementConstPtr sdfRos = _sdf->FindElement("ros");
-
-    // Set namespace if tag is present
-    if (sdfRos->HasElement("namespace")) {
-      ns = sdfRos->FindElement("namespace")->Get<std::string>();
-      // prevent exception: namespace must be absolute, it must lead with a '/'
-      if (ns.empty() || ns[0] != '/') {
-        ns = '/' + ns;
-      }
-    }
-
-    // Get list of remapping rules from SDF
-    if (sdfRos->HasElement("remapping")) {
-      sdf::ElementConstPtr argument_sdf_remapping = sdfRos->FindElement("remapping");
-
-      arguments.push_back(RCL_ROS_ARGS_FLAG);
-      while (argument_sdf_remapping) {
-        std::string argument = argument_sdf_remapping->Get<std::string>();
-        arguments.push_back(RCL_REMAP_FLAG);
-        arguments.push_back(argument);
-        argument_sdf_remapping = argument_sdf_remapping->GetNextElement("remapping");
-      }
-    }
-  }
+  std::vector<std::string> arguments = detail::BuildRosArguments(*config);
 
   std::vector<const char *> argv;
   for (const auto & arg : arguments) {
@@ -389,9 +256,8 @@ void GazeboSimROS2ControlPlugin::Configure(
       model.Name(_ecm) << "] (Entity=" << _entity << ")].");
 
   // Get list of enabled joints
-  auto enabledJoints = this->dataPtr->GetEnabledJoints(
-    _entity,
-    _ecm);
+  auto enabledJoints = detail::GetEnabledJoints(
+    _entity, _ecm, this->dataPtr->node_->get_logger());
 
   if (enabledJoints.size() == 0) {
     RCLCPP_DEBUG_STREAM(
@@ -401,7 +267,8 @@ void GazeboSimROS2ControlPlugin::Configure(
   }
 
   try {
-    this->dataPtr->node_->declare_parameter("hold_joints", rclcpp::ParameterValue(hold_joints));
+    this->dataPtr->node_->declare_parameter(
+      "hold_joints", rclcpp::ParameterValue(config->hold_joints));
   } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException & e) {
     RCLCPP_ERROR(
       this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' has already been declared, %s",
@@ -423,7 +290,7 @@ void GazeboSimROS2ControlPlugin::Configure(
   try {
     this->dataPtr->node_->declare_parameter(
       "position_proportional_gain",
-      rclcpp::ParameterValue(position_proportional_gain));
+      rclcpp::ParameterValue(config->position_proportional_gain));
   } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException & e) {
     RCLCPP_ERROR(
       this->dataPtr->node_->get_logger(),
@@ -495,13 +362,15 @@ void GazeboSimROS2ControlPlugin::PreUpdate(
     rclcpp::Duration gazebo_period(_info.dt);
 
     // Check the period against the simulation period
-    if (this->dataPtr->control_period_ < gazebo_period) {
+    const auto mismatch =
+      detail::CheckPeriodMismatch(this->dataPtr->control_period_, gazebo_period);
+    if (mismatch == detail::PeriodMismatch::kControlFaster) {
       RCLCPP_ERROR_STREAM(
         this->dataPtr->node_->get_logger(),
         "Desired controller update period (" << this->dataPtr->control_period_.seconds() <<
           " s) is faster than the gazebo simulation period (" <<
           gazebo_period.seconds() << " s).");
-    } else if (this->dataPtr->control_period_ > gazebo_period) {
+    } else if (mismatch == detail::PeriodMismatch::kControlSlower) {
       RCLCPP_WARN_STREAM(
         this->dataPtr->node_->get_logger(),
         " Desired controller update period (" << this->dataPtr->control_period_.seconds() <<
