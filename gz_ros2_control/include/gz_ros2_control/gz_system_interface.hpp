@@ -27,7 +27,7 @@ namespace sim = gz::sim;
 #include <hardware_interface/system_interface.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 
-#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/node.hpp>
 
 namespace gz_ros2_control
 {

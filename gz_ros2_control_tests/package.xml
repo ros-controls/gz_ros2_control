@@ -5,7 +5,11 @@
   <version>4.0.1</version>
   <description>Gazebo ros2 control tests</description>
   <maintainer email="alejandro@openrobotics.org">Alejandro Hernández</maintainer>
-  <license>Apache License 2.0</license>
+  <license>Apache-2.0</license>
+
+  <url type="website">https://github.com/ros-controls/gz_ros2_control/blob/rolling/README.md</url>
+  <url type="bugtracker">https://github.com/ros-controls/gz_ros2_control/issues</url>
+  <url type="repository">https://github.com/ros-controls/gz_ros2_control</url>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

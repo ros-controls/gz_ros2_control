@@ -6,7 +6,11 @@
   <maintainer email="alejandro@openrobotics.com">Alejandro Hernández</maintainer>
   <maintainer email="bence.magyar.robotics@gmail.com">Bence Magyar</maintainer>
   <author>Alejandro Hernández</author>
-  <license>Apache 2</license>
+  <license>Apache-2.0</license>
+
+  <url type="website">https://github.com/ros-controls/gz_ros2_control/blob/rolling/README.md</url>
+  <url type="bugtracker">https://github.com/ros-controls/gz_ros2_control/issues</url>
+  <url type="repository">https://github.com/ros-controls/gz_ros2_control</url>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

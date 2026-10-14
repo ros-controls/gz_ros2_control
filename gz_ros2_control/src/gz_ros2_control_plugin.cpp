@@ -40,7 +40,17 @@
 
 #include <pluginlib/class_loader.hpp>
 
-#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/duration.hpp>
+#include <rclcpp/exceptions/exceptions.hpp>
+#include <rclcpp/executors/multi_threaded_executor.hpp>
+#include <rclcpp/init_options.hpp>
+#include <rclcpp/logger.hpp>
+#include <rclcpp/logging.hpp>
+#include <rclcpp/node.hpp>
+#include <rclcpp/node_options.hpp>
+#include <rclcpp/parameter_value.hpp>
+#include <rclcpp/time.hpp>
+#include <rclcpp/utilities.hpp>
 
 #include "gz_ros2_control/gz_ros2_control_plugin.hpp"
 #include "gz_ros2_control/gz_system.hpp"
