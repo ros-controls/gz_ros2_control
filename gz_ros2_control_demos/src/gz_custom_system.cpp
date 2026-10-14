@@ -40,6 +40,9 @@
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/lexical_casts.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
+#include "rclcpp/duration.hpp"
+#include "rclcpp/logging.hpp"
+#include "rclcpp/time.hpp"
 
 struct InterfaceData
 {
