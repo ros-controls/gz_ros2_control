@@ -370,9 +370,16 @@ void GazeboSimROS2ControlPlugin::Configure(
   // would otherwise never reach this node and settings such as
   // position_proportional_gain would silently fall back to their defaults.
   // Node-local arguments take precedence over global ones. See #962.
-  rclcpp::NodeOptions node_options;
-  node_options.arguments(arguments);
-  this->dataPtr->node_ = rclcpp::Node::make_shared(node_name, ns, node_options);
+  try {
+    rclcpp::NodeOptions node_options;
+    node_options.arguments(arguments);
+    this->dataPtr->node_ =
+      rclcpp::Node::make_shared(node_name, ns, node_options);
+  } catch (const std::exception & ex) {
+    RCLCPP_ERROR(
+      logger, "Failed to create gz_ros2_control node: %s", ex.what());
+    return;
+  }
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   this->dataPtr->executor_->add_node(this->dataPtr->node_);
   auto spin = [this]()
