@@ -56,6 +56,11 @@ std::optional<PluginConfig> ParsePluginConfig(
       sdf->FindElement("controller_manager_name")->Get<std::string>();
   }
 
+  // Seconds to wait for the hardware to be initialized, 0 waits forever
+  if (sdf->HasElement("hardware_init_timeout")) {
+    config.hardware_init_timeout = sdf->FindElement("hardware_init_timeout")->Get<double>();
+  }
+
   // Hold joints if no control mode is active?
   if (sdf->HasElement("hold_joints")) {
     config.hold_joints = sdf->FindElement("hold_joints")->Get<bool>();
