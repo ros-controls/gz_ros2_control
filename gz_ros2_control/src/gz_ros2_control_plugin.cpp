@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <algorithm>
 #include <chrono>
 #include <exception>
 #include <map>
@@ -216,7 +217,18 @@ public:
 
   /// \brief Whether the control/sim period mismatch warning has been emitted
   bool period_mismatch_warned_{false};
+
+  /// \brief Stop and release the controller manager after a failed initialization, so it can
+  /// no longer initialize hardware from the executor thread
+  void RemoveControllerManager();
 };
+
+//////////////////////////////////////////////////
+void GazeboSimROS2ControlPluginPrivate::RemoveControllerManager()
+{
+  this->executor_->remove_node(this->controller_manager_);
+  this->controller_manager_.reset();
+}
 
 //////////////////////////////////////////////////
 std::map<std::string, sim::Entity>
@@ -347,6 +359,12 @@ void GazeboSimROS2ControlPlugin::Configure(
     controllerManagerNodeName = _sdf->FindElement("controller_manager_name")->Get<std::string>();
   }
 
+  // Seconds to wait for the hardware to be initialized, 0 waits forever
+  double hardware_init_timeout = 0.0;  // default
+  if (_sdf->HasElement("hardware_init_timeout")) {
+    hardware_init_timeout = _sdf->FindElement("hardware_init_timeout")->Get<double>();
+  }
+
   std::string ns = "/";
 
   // Hold joints if no control mode is active?
@@ -458,8 +476,7 @@ void GazeboSimROS2ControlPlugin::Configure(
       this->dataPtr->node_->get_logger(),
       "Controller manager update_rate must be positive, got %d. Failed to initialize.",
       this->dataPtr->update_rate);
-    this->dataPtr->executor_->remove_node(this->dataPtr->controller_manager_);
-    this->dataPtr->controller_manager_.reset();
+    this->dataPtr->RemoveControllerManager();
     return;
   }
   this->dataPtr->control_period_ = rclcpp::Duration(
@@ -467,11 +484,36 @@ void GazeboSimROS2ControlPlugin::Configure(
       std::chrono::duration<double>(1.0 / static_cast<double>(this->dataPtr->update_rate))));
 
   // Wait for CM to receive robot description from the topic and then initialize Resource Manager
+  const auto wait_start = std::chrono::steady_clock::now();
+  const auto wait_timeout = std::chrono::duration<double>(hardware_init_timeout);
   while (!this->dataPtr->controller_manager_->is_resource_manager_initialized()) {
+    if (!rclcpp::ok()) {
+      RCLCPP_ERROR(
+        this->dataPtr->node_->get_logger(),
+        "ROS was shut down while waiting RM to load and initialize hardware.");
+      this->dataPtr->RemoveControllerManager();
+      return;
+    }
+    const auto waited = std::chrono::steady_clock::now() - wait_start;
+    if (hardware_init_timeout > 0.0 && waited >= wait_timeout) {
+      RCLCPP_ERROR(
+        this->dataPtr->node_->get_logger(),
+        "Timed out after %.1f s waiting RM to load and initialize hardware. "
+        "Is robot_description being published? Failed to initialize.",
+        hardware_init_timeout);
+      this->dataPtr->RemoveControllerManager();
+      return;
+    }
     RCLCPP_WARN(
       this->dataPtr->node_->get_logger(),
       "Waiting RM to load and initialize hardware...");
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    auto sleep_time = std::chrono::duration<double>(std::chrono::milliseconds(2000));
+    if (hardware_init_timeout > 0.0) {
+      sleep_time = std::min(
+        sleep_time,
+        std::chrono::duration_cast<std::chrono::duration<double>>(wait_timeout - waited));
+    }
+    std::this_thread::sleep_for(sleep_time);
   }
 }
 

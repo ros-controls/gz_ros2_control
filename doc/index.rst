@@ -210,6 +210,8 @@ The *gz_ros2_control* ``<plugin>`` tag also has the following optional child ele
 
 * ``<parameters>``: A YAML file with the configuration of the controllers. This element can be given multiple times to load multiple files.
 * ``<controller_manager_name>``: Set controller manager name (default: ``controller_manager``)
+* ``<hardware_init_timeout>``: Maximum time in seconds to wait for the controller manager to receive the ``robot_description`` and initialize the hardware.
+  If it expires, the plugin logs an error and the robot is not controlled. (default: ``0``, wait forever)
 
 The following additional parameters can be set via child elements in the URDF/SDF or via ROS parameters in the YAML file above:
 
