@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <algorithm>
 #include <chrono>
 #include <exception>
 #include <map>
@@ -54,6 +55,31 @@
 
 namespace gz_ros2_control
 {
+namespace
+{
+/// \brief Declare a parameter on the node, logging an error instead of throwing on failure
+template<typename T>
+void declare_parameter_or_log(
+  const rclcpp::Node::SharedPtr & node, const std::string & name, const T & default_value)
+{
+  try {
+    node->declare_parameter(name, rclcpp::ParameterValue(default_value));
+  } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException & e) {
+    RCLCPP_ERROR(
+      node->get_logger(), "Parameter '%s' has already been declared, %s", name.c_str(), e.what());
+  } catch (const rclcpp::exceptions::InvalidParametersException & e) {
+    RCLCPP_ERROR(
+      node->get_logger(), "Parameter '%s' has invalid name, %s", name.c_str(), e.what());
+  } catch (const rclcpp::exceptions::InvalidParameterValueException & e) {
+    RCLCPP_ERROR(
+      node->get_logger(), "Parameter '%s' value is invalid, %s", name.c_str(), e.what());
+  } catch (const rclcpp::exceptions::InvalidParameterTypeException & e) {
+    RCLCPP_ERROR(
+      node->get_logger(), "Parameter '%s' value has wrong type, %s", name.c_str(), e.what());
+  }
+}
+}  // namespace
+
 class GZResourceManager : public hardware_interface::ResourceManager
 {
 public:
@@ -174,11 +200,22 @@ public:
     rclcpp::Time(static_cast<int64_t>(0), RCL_ROS_TIME);
 
   /// \brief controller update rate
-  int update_rate;
+  int update_rate{0};
 
   /// \brief Whether the control/sim period mismatch warning has been emitted
   bool period_mismatch_warned_{false};
+
+  /// \brief Stop and release the controller manager after a failed initialization, so it can
+  /// no longer initialize hardware from the executor thread
+  void RemoveControllerManager();
 };
+
+//////////////////////////////////////////////////
+void GazeboSimROS2ControlPluginPrivate::RemoveControllerManager()
+{
+  this->executor_->remove_node(this->controller_manager_);
+  this->controller_manager_.reset();
+}
 
 //////////////////////////////////////////////////
 GazeboSimROS2ControlPlugin::GazeboSimROS2ControlPlugin()
@@ -226,6 +263,7 @@ void GazeboSimROS2ControlPlugin::Configure(
   }
   const std::string & controllerManagerNodeName = config->controller_manager_name;
   const std::string & ns = config->ns;
+  const double hardware_init_timeout = config->hardware_init_timeout;
 
   std::vector<std::string> arguments = detail::BuildRosArguments(*config);
 
@@ -266,52 +304,9 @@ void GazeboSimROS2ControlPlugin::Configure(
     return;
   }
 
-  try {
-    this->dataPtr->node_->declare_parameter(
-      "hold_joints", rclcpp::ParameterValue(config->hold_joints));
-  } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' has already been declared, %s",
-      e.what());
-  } catch (const rclcpp::exceptions::InvalidParametersException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' has invalid name, %s",
-      e.what());
-  } catch (const rclcpp::exceptions::InvalidParameterValueException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' value is invalid, %s",
-      e.what());
-  } catch (const rclcpp::exceptions::InvalidParameterTypeException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' value has wrong type, %s",
-      e.what());
-  }
-
-  try {
-    this->dataPtr->node_->declare_parameter(
-      "position_proportional_gain",
-      rclcpp::ParameterValue(config->position_proportional_gain));
-  } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(),
-      "Parameter 'position_proportional_gain' has already been declared, %s",
-      e.what());
-  } catch (const rclcpp::exceptions::InvalidParametersException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(),
-      "Parameter 'position_proportional_gain' has invalid name, %s",
-      e.what());
-  } catch (const rclcpp::exceptions::InvalidParameterValueException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(),
-      "Parameter 'position_proportional_gain' value is invalid, %s",
-      e.what());
-  } catch (const rclcpp::exceptions::InvalidParameterTypeException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(),
-      "Parameter 'position_proportional_gain' value has wrong type, %s",
-      e.what());
-  }
+  declare_parameter_or_log(this->dataPtr->node_, "hold_joints", config->hold_joints);
+  declare_parameter_or_log(
+    this->dataPtr->node_, "position_proportional_gain", config->position_proportional_gain);
 
   std::unique_ptr<hardware_interface::ResourceManager> resource_manager_ =
     std::make_unique<gz_ros2_control::GZResourceManager>(this->dataPtr->node_, _ecm, enabledJoints);
@@ -337,16 +332,49 @@ void GazeboSimROS2ControlPlugin::Configure(
 
   this->dataPtr->update_rate =
     static_cast<int>(this->dataPtr->controller_manager_->get_update_rate());
+  if (this->dataPtr->update_rate <= 0) {
+    RCLCPP_ERROR(
+      this->dataPtr->node_->get_logger(),
+      "Controller manager update_rate must be positive, got %d. Failed to initialize.",
+      this->dataPtr->update_rate);
+    this->dataPtr->RemoveControllerManager();
+    return;
+  }
   this->dataPtr->control_period_ = rclcpp::Duration(
     std::chrono::duration_cast<std::chrono::nanoseconds>(
       std::chrono::duration<double>(1.0 / static_cast<double>(this->dataPtr->update_rate))));
 
   // Wait for CM to receive robot description from the topic and then initialize Resource Manager
+  const auto wait_start = std::chrono::steady_clock::now();
+  const auto wait_timeout = std::chrono::duration<double>(hardware_init_timeout);
   while (!this->dataPtr->controller_manager_->is_resource_manager_initialized()) {
+    if (!rclcpp::ok()) {
+      RCLCPP_ERROR(
+        this->dataPtr->node_->get_logger(),
+        "ROS was shut down while waiting RM to load and initialize hardware.");
+      this->dataPtr->RemoveControllerManager();
+      return;
+    }
+    const auto waited = std::chrono::steady_clock::now() - wait_start;
+    if (hardware_init_timeout > 0.0 && waited >= wait_timeout) {
+      RCLCPP_ERROR(
+        this->dataPtr->node_->get_logger(),
+        "Timed out after %.1f s waiting RM to load and initialize hardware. "
+        "Is robot_description being published? Failed to initialize.",
+        hardware_init_timeout);
+      this->dataPtr->RemoveControllerManager();
+      return;
+    }
     RCLCPP_WARN(
       this->dataPtr->node_->get_logger(),
       "Waiting RM to load and initialize hardware...");
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    auto sleep_time = std::chrono::duration<double>(std::chrono::milliseconds(2000));
+    if (hardware_init_timeout > 0.0) {
+      sleep_time = std::min(
+        sleep_time,
+        std::chrono::duration_cast<std::chrono::duration<double>>(wait_timeout - waited));
+    }
+    std::this_thread::sleep_for(sleep_time);
   }
 }
 

@@ -123,6 +123,7 @@ TEST(ParsePluginConfig, DefaultsWithOnlyParameters)
   ASSERT_TRUE(config.has_value());
   EXPECT_EQ(config->parameter_files, std::vector<std::string>{"controllers.yaml"});
   EXPECT_EQ(config->controller_manager_name, "controller_manager");
+  EXPECT_DOUBLE_EQ(config->hardware_init_timeout, 0.0);
   EXPECT_TRUE(config->hold_joints);
   EXPECT_DOUBLE_EQ(config->position_proportional_gain, 0.1);
   EXPECT_EQ(config->ns, "/");
@@ -134,6 +135,7 @@ TEST(ParsePluginConfig, AllTagsOverridden)
   const auto config = Parse(
     "<parameters>controllers.yaml</parameters>"
     "<controller_manager_name>my_cm</controller_manager_name>"
+    "<hardware_init_timeout>30.5</hardware_init_timeout>"
     "<hold_joints>false</hold_joints>"
     "<position_proportional_gain>2.5</position_proportional_gain>"
     "<ros>"
@@ -142,6 +144,7 @@ TEST(ParsePluginConfig, AllTagsOverridden)
     "</ros>");
   ASSERT_TRUE(config.has_value());
   EXPECT_EQ(config->controller_manager_name, "my_cm");
+  EXPECT_DOUBLE_EQ(config->hardware_init_timeout, 30.5);
   EXPECT_FALSE(config->hold_joints);
   EXPECT_DOUBLE_EQ(config->position_proportional_gain, 2.5);
   EXPECT_EQ(config->ns, "/robot");

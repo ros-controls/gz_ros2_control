@@ -39,6 +39,10 @@ struct PluginConfig
   /// \brief Value of <controller_manager_name>
   std::string controller_manager_name{"controller_manager"};
 
+  /// \brief Value of <hardware_init_timeout>, seconds to wait for the hardware to be
+  /// initialized, 0 waits forever
+  double hardware_init_timeout{0.0};
+
   /// \brief Value of <hold_joints>
   bool hold_joints{true};
 
