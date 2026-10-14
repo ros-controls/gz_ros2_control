@@ -56,6 +56,31 @@
 
 namespace gz_ros2_control
 {
+namespace
+{
+/// \brief Declare a parameter on the node, logging an error instead of throwing on failure
+template<typename T>
+void declare_parameter_or_log(
+  const rclcpp::Node::SharedPtr & node, const std::string & name, const T & default_value)
+{
+  try {
+    node->declare_parameter(name, rclcpp::ParameterValue(default_value));
+  } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException & e) {
+    RCLCPP_ERROR(
+      node->get_logger(), "Parameter '%s' has already been declared, %s", name.c_str(), e.what());
+  } catch (const rclcpp::exceptions::InvalidParametersException & e) {
+    RCLCPP_ERROR(
+      node->get_logger(), "Parameter '%s' has invalid name, %s", name.c_str(), e.what());
+  } catch (const rclcpp::exceptions::InvalidParameterValueException & e) {
+    RCLCPP_ERROR(
+      node->get_logger(), "Parameter '%s' value is invalid, %s", name.c_str(), e.what());
+  } catch (const rclcpp::exceptions::InvalidParameterTypeException & e) {
+    RCLCPP_ERROR(
+      node->get_logger(), "Parameter '%s' value has wrong type, %s", name.c_str(), e.what());
+  }
+}
+}  // namespace
+
 class GZResourceManager : public hardware_interface::ResourceManager
 {
 public:
@@ -187,7 +212,7 @@ public:
     rclcpp::Time(static_cast<int64_t>(0), RCL_ROS_TIME);
 
   /// \brief controller update rate
-  int update_rate;
+  int update_rate{0};
 
   /// \brief Whether the control/sim period mismatch warning has been emitted
   bool period_mismatch_warned_{false};
@@ -400,51 +425,9 @@ void GazeboSimROS2ControlPlugin::Configure(
     return;
   }
 
-  try {
-    this->dataPtr->node_->declare_parameter("hold_joints", rclcpp::ParameterValue(hold_joints));
-  } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' has already been declared, %s",
-      e.what());
-  } catch (const rclcpp::exceptions::InvalidParametersException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' has invalid name, %s",
-      e.what());
-  } catch (const rclcpp::exceptions::InvalidParameterValueException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' value is invalid, %s",
-      e.what());
-  } catch (const rclcpp::exceptions::InvalidParameterTypeException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(), "Parameter 'hold_joints' value has wrong type, %s",
-      e.what());
-  }
-
-  try {
-    this->dataPtr->node_->declare_parameter(
-      "position_proportional_gain",
-      rclcpp::ParameterValue(position_proportional_gain));
-  } catch (const rclcpp::exceptions::ParameterAlreadyDeclaredException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(),
-      "Parameter 'position_proportional_gain' has already been declared, %s",
-      e.what());
-  } catch (const rclcpp::exceptions::InvalidParametersException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(),
-      "Parameter 'position_proportional_gain' has invalid name, %s",
-      e.what());
-  } catch (const rclcpp::exceptions::InvalidParameterValueException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(),
-      "Parameter 'position_proportional_gain' value is invalid, %s",
-      e.what());
-  } catch (const rclcpp::exceptions::InvalidParameterTypeException & e) {
-    RCLCPP_ERROR(
-      this->dataPtr->node_->get_logger(),
-      "Parameter 'position_proportional_gain' value has wrong type, %s",
-      e.what());
-  }
+  declare_parameter_or_log(this->dataPtr->node_, "hold_joints", hold_joints);
+  declare_parameter_or_log(
+    this->dataPtr->node_, "position_proportional_gain", position_proportional_gain);
 
   std::unique_ptr<hardware_interface::ResourceManager> resource_manager_ =
     std::make_unique<gz_ros2_control::GZResourceManager>(this->dataPtr->node_, _ecm, enabledJoints);
@@ -470,6 +453,15 @@ void GazeboSimROS2ControlPlugin::Configure(
 
   this->dataPtr->update_rate =
     static_cast<int>(this->dataPtr->controller_manager_->get_update_rate());
+  if (this->dataPtr->update_rate <= 0) {
+    RCLCPP_ERROR(
+      this->dataPtr->node_->get_logger(),
+      "Controller manager update_rate must be positive, got %d. Failed to initialize.",
+      this->dataPtr->update_rate);
+    this->dataPtr->executor_->remove_node(this->dataPtr->controller_manager_);
+    this->dataPtr->controller_manager_.reset();
+    return;
+  }
   this->dataPtr->control_period_ = rclcpp::Duration(
     std::chrono::duration_cast<std::chrono::nanoseconds>(
       std::chrono::duration<double>(1.0 / static_cast<double>(this->dataPtr->update_rate))));
