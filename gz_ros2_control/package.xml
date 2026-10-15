@@ -25,6 +25,8 @@
   <depend>hardware_interface</depend>
   <depend>ros2_control_cmake</depend>
 
+  <test_depend>ament_cmake_gtest</test_depend>
+
   <export>
       <build_type>ament_cmake</build_type>
   </export>

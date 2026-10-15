@@ -63,6 +63,13 @@ target_include_directories(gz_hardware_plugins PUBLIC
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
 )
 
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+
+  ament_add_gtest(test_gz_system test/test_gz_system.cpp)
+  target_link_libraries(test_gz_system gz_hardware_plugins)
+endif()
+
 # Install headers
 install(DIRECTORY include/
   DESTINATION include/${PROJECT_NAME}
