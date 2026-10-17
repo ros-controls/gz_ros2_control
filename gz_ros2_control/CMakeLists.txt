@@ -85,6 +85,9 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_gz_ros2_control_plugin test/test_gz_ros2_control_plugin.cpp)
   target_link_libraries(test_gz_ros2_control_plugin gz_ros2_control_plugin_utils)
+
+  ament_add_gtest(test_gz_system test/test_gz_system.cpp)
+  target_link_libraries(test_gz_system gz_hardware_plugins)
 endif()
 
 # Install headers
