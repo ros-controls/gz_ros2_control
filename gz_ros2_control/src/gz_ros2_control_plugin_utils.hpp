@@ -49,7 +49,7 @@ struct PluginConfig
   /// \brief Value of <position_proportional_gain>
   double position_proportional_gain{0.1};
 
-  /// \brief Value of <ros><namespace>, always absolute
+  /// \brief Value of <ros><namespace>, normalized with NormalizeNamespace
   std::string ns{"/"};
 
   /// \brief Values of all the <ros><remapping> elements, in order
@@ -59,11 +59,11 @@ struct PluginConfig
 /// \brief Read the plugin settings from its SDF element
 /// \param[in] sdf The <plugin> element
 /// \param[out] error Reason for the failure, if any
-/// \return The settings, or std::nullopt if the SDF can't be used
+/// \return The settings, or std::nullopt if a <parameters> element is missing or empty
 std::optional<PluginConfig> ParsePluginConfig(
   const sdf::ElementConstPtr & sdf, std::string & error);
 
-/// \brief Make a namespace absolute by adding a leading '/' if needed
+/// \brief Make a namespace valid for rclcpp: add a leading '/' and remove trailing ones
 std::string NormalizeNamespace(const std::string & ns);
 
 /// \brief Build the ROS arguments used to initialize rclcpp
