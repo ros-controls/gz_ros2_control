@@ -272,6 +272,10 @@ T get_parameter_or_log(
 }
 }  // namespace
 
+GazeboSimSystem::GazeboSimSystem() = default;
+
+GazeboSimSystem::~GazeboSimSystem() = default;
+
 bool GazeboSimSystem::initSim(
   rclcpp::Node::SharedPtr & model_nh,
   std::map<std::string, sim::Entity> & enableJoints,
@@ -373,8 +377,8 @@ bool GazeboSimSystem::initSim(
     if (it != hardware_info.mimic_joints.end()) {
       RCLCPP_INFO_STREAM(
         this->nh_->get_logger(),
-        "Joint '" << joint_name << "'is mimicking joint '" <<
-          this->dataPtr->joints_[it->mimicked_joint_index].name <<
+        "Joint '" << joint_name << "' is mimicking joint '" <<
+          hardware_info.joints[it->mimicked_joint_index].name <<
           "' with multiplier: " << it->multiplier << " and offset: " << it->offset);
     }
 
@@ -491,6 +495,20 @@ bool GazeboSimSystem::initSim(
 
     // check if joint is actuated (has command interfaces) or passive
     this->dataPtr->joints_[j].is_actuated = (joint_info.command_interfaces.size() > 0);
+  }
+
+  // write() can only enforce a mimic relation when both joints exist in the gazebo model
+  for (const auto & mimic_joint : hardware_info.mimic_joints) {
+    const auto & mimic_name = hardware_info.joints[mimic_joint.joint_index].name;
+    const auto & mimicked_name = hardware_info.joints[mimic_joint.mimicked_joint_index].name;
+    if (this->dataPtr->joints_[mimic_joint.joint_index].sim_joint == sim::kNullEntity ||
+      this->dataPtr->joints_[mimic_joint.mimicked_joint_index].sim_joint == sim::kNullEntity)
+    {
+      RCLCPP_WARN_STREAM(
+        this->nh_->get_logger(),
+        "Joint '" << mimic_name << "' mimics joint '" << mimicked_name <<
+          "', but at least one of them is not in the gazebo model. The mimic relation is ignored.");
+    }
   }
 
   registerSensors(hardware_info);
@@ -712,7 +730,10 @@ hardware_interface::return_type GazeboSimSystem::read(
       this->dataPtr->ecm->Component<sim::components::JointPosition>(
       this->dataPtr->joints_[i].sim_joint);
 
-    if (!jointPositions || !jointVelocity || !jointWrench) {
+    // Components are empty until physics has run at least once
+    if (!jointPositions || jointPositions->Data().empty() ||
+      !jointVelocity || jointVelocity->Data().empty() || !jointWrench)
+    {
       continue;
     }
 
@@ -896,6 +917,7 @@ hardware_interface::return_type GazeboSimSystem::write(
     const sim::Entity mimic_sim_joint =
       this->dataPtr->joints_[mimic_joint.joint_index].sim_joint;
     if (mimicked_sim_joint == sim::kNullEntity || mimic_sim_joint == sim::kNullEntity) {
+      // already reported in initSim
       continue;
     }
 
