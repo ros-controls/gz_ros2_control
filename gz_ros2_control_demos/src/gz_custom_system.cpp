@@ -40,6 +40,9 @@
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/lexical_casts.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
+#include "rclcpp/duration.hpp"
+#include "rclcpp/logging.hpp"
+#include "rclcpp/time.hpp"
 
 struct InterfaceData
 {
@@ -195,8 +198,7 @@ bool GazeboCustomSimSystem::initSim(
               "Failed converting initial_value string to real number for the joint "
                 << joint_name
                 << " and state interface " << interface_info.name
-                << ". Actual value of parameter: " << interface_info.initial_value
-                << ". Initial value will be set to 0.0");
+                << ". Actual value of parameter: " << interface_info.initial_value);
             throw std::invalid_argument("Failed converting initial_value string");
           }
         }
@@ -368,6 +370,13 @@ hardware_interface::return_type GazeboCustomSimSystem::read(
       this->dataPtr->ecm->Component<sim::components::JointPosition>(
       this->dataPtr->joints_[i].sim_joint);
 
+    // Components are missing or empty until physics has run at least once
+    if (!jointPositions || jointPositions->Data().empty() ||
+      !jointVelocity || jointVelocity->Data().empty() || !jointWrench)
+    {
+      continue;
+    }
+
     (void)this->dataPtr->joints_[i].position.state->set_value(jointPositions->Data()[0], true);
     (void)this->dataPtr->joints_[i].velocity.state->set_value(jointVelocity->Data()[0], true);
     gz::physics::Vector3d force_or_torque;
@@ -401,11 +410,12 @@ hardware_interface::return_type GazeboCustomSimSystem::write(
     if (this->dataPtr->joints_[i].velocity.command &&
       this->dataPtr->joints_[i].velocity.command->get_value(velocity_cmd, true))
     {
-      double vel_cmd;
-      if (this->dataPtr->joints_[i].lpf && this->dataPtr->joints_[i].lpf->is_configured()) {
-        this->dataPtr->joints_[i].lpf->update(velocity_cmd, vel_cmd);
-      } else {
-        vel_cmd = velocity_cmd;
+      double vel_cmd = velocity_cmd;
+      if (this->dataPtr->joints_[i].lpf && this->dataPtr->joints_[i].lpf->is_configured() &&
+        !this->dataPtr->joints_[i].lpf->update(velocity_cmd, vel_cmd))
+      {
+        // The filter rejects a non-finite first sample, don't forward it to Gazebo
+        continue;
       }
       this->dataPtr->ecm->SetComponentData<sim::components::JointVelocityCmd>(
         this->dataPtr->joints_[i].sim_joint,

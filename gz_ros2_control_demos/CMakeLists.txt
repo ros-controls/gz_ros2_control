@@ -18,6 +18,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(trajectory_msgs REQUIRED)
 
 find_package(control_msgs REQUIRED)
 find_package(control_toolbox REQUIRED)
@@ -38,6 +39,7 @@ target_link_libraries(example_position PUBLIC
   ${control_msgs_TARGETS}
   rclcpp::rclcpp
   rclcpp_action::rclcpp_action
+  ${trajectory_msgs_TARGETS}
 )
 
 # use the same example_position.cpp for example_velocity
@@ -46,6 +48,7 @@ target_link_libraries(example_velocity PUBLIC
   ${control_msgs_TARGETS}
   rclcpp::rclcpp
   rclcpp_action::rclcpp_action
+  ${trajectory_msgs_TARGETS}
 )
 
 # use the same example_position.cpp for example_effort
@@ -54,10 +57,11 @@ target_link_libraries(example_effort PUBLIC
   ${control_msgs_TARGETS}
   rclcpp::rclcpp
   rclcpp_action::rclcpp_action
+  ${trajectory_msgs_TARGETS}
 )
 
 add_executable(example_mobile_robots examples/example_mobile_robots.cpp)
-target_link_libraries(example_mobile_robots
+target_link_libraries(example_mobile_robots PUBLIC
   rclcpp::rclcpp
   ${geometry_msgs_TARGETS}
 )
@@ -83,6 +87,7 @@ PUBLIC
   control_toolbox::control_toolbox
   gz_ros2_control::gz_ros2_control-system
   hardware_interface::hardware_interface
+  ${pluginlib_TARGETS}
   rclcpp::rclcpp
   rclcpp_lifecycle::rclcpp_lifecycle
 )

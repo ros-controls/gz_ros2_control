@@ -4,11 +4,11 @@
   <version>4.0.1</version>
   <description>gz_ros2_control_demos</description>
 
-  <maintainer email="ahcorde@osrfoundation.org">Alejandro Hernandez</maintainer>
+  <maintainer email="ahcorde@osrfoundation.org">Alejandro Hernández</maintainer>
 
-  <license>Apache License 2.0</license>
+  <license>Apache-2.0</license>
 
-  <url type="website">https://github.com/ros-controls/gz_ros2_control/blob/master/README.md</url>
+  <url type="website">https://github.com/ros-controls/gz_ros2_control/blob/rolling/README.md</url>
   <url type="bugtracker">https://github.com/ros-controls/gz_ros2_control/issues</url>
   <url type="repository">https://github.com/ros-controls/gz_ros2_control</url>
 
@@ -21,6 +21,7 @@
   <build_depend>rclcpp</build_depend>
   <build_depend>rclcpp_action</build_depend>
   <build_depend>std_msgs</build_depend>
+  <build_depend>trajectory_msgs</build_depend>
 
   <depend>gz_sim_vendor</depend>
   <depend>rclcpp_lifecycle</depend>
@@ -35,6 +36,7 @@
   <exec_depend>ros_gz_sim</exec_depend>
   <exec_depend>ros2launch</exec_depend>
   <exec_depend>std_msgs</exec_depend>
+  <exec_depend>trajectory_msgs</exec_depend>
   <exec_depend>xacro</exec_depend>
 
   <!-- ros2_control -->
