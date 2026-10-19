@@ -25,6 +25,20 @@ find_package(gz-sim REQUIRED)
 find_package(gz_plugin_vendor REQUIRED)
 find_package(gz-plugin REQUIRED)
 
+# Internal helpers of the plugin, shared with the tests. Not installed.
+add_library(gz_ros2_control_plugin_utils STATIC
+  src/gz_ros2_control_plugin_utils.cpp
+)
+set_target_properties(gz_ros2_control_plugin_utils PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_include_directories(gz_ros2_control_plugin_utils PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+)
+target_link_libraries(gz_ros2_control_plugin_utils
+  PUBLIC
+  gz-sim::gz-sim
+  rclcpp::rclcpp
+)
+
 add_library(${PROJECT_NAME}-system SHARED
   src/gz_ros2_control_plugin.cpp
 )
@@ -39,6 +53,9 @@ target_link_libraries(${PROJECT_NAME}-system
   ${pluginlib_TARGETS}
   rclcpp::rclcpp
   rclcpp_lifecycle::rclcpp_lifecycle
+  PRIVATE
+  # BUILD_INTERFACE keeps the static helper library out of the exported targets
+  $<BUILD_INTERFACE:gz_ros2_control_plugin_utils>
 )
 target_include_directories(${PROJECT_NAME}-system PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -65,6 +82,9 @@ target_include_directories(gz_hardware_plugins PUBLIC
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
+
+  ament_add_gtest(test_gz_ros2_control_plugin test/test_gz_ros2_control_plugin.cpp)
+  target_link_libraries(test_gz_ros2_control_plugin gz_ros2_control_plugin_utils)
 
   ament_add_gtest(test_gz_system test/test_gz_system.cpp)
   target_link_libraries(test_gz_system gz_hardware_plugins)
