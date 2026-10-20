@@ -36,8 +36,6 @@
 
 #include <rclcpp/duration.hpp>
 #include <rclcpp/logger.hpp>
-#include <rclcpp/node.hpp>
-#include <rclcpp/node_options.hpp>
 #include <rclcpp/parameter_value.hpp>
 #include <rclcpp/utilities.hpp>
 
@@ -47,6 +45,7 @@ namespace
 {
 using gz_ros2_control::detail::BuildRosArguments;
 using gz_ros2_control::detail::CheckPeriodMismatch;
+using gz_ros2_control::detail::CreatePluginNode;
 using gz_ros2_control::detail::GetEnabledJoints;
 using gz_ros2_control::detail::NormalizeNamespace;
 using gz_ros2_control::detail::ParsePluginConfig;
@@ -351,11 +350,12 @@ TEST(CheckPeriodMismatch, ComparesPeriods)
 
 TEST(NodeParameterLoading, ParametersFileOverridesReachNode)
 {
-  // Regression test for #962: the plugin node used to be created without its
-  // ROS arguments, so its parameter overrides came only from the rcl context.
-  // When the context was already initialized without the <parameters> file
-  // (e.g. by another plugin in the same process), parameters set in that file
-  // never reached the node and the declared defaults silently won.
+  // Regression test for #962: Configure creates the plugin node through
+  // CreatePluginNode, which carries the plugin's ROS arguments on the node.
+  // When the rcl context was already initialized without the <parameters>
+  // file (e.g. by another plugin in the same process), a node created from
+  // the context's arguments alone never sees that file, and the declared
+  // defaults silently win.
   const std::string param_file = "test_gz_ros2_control_plugin_parameters.yaml";
   {
     std::ofstream out(param_file);
@@ -379,29 +379,21 @@ TEST(NodeParameterLoading, ParametersFileOverridesReachNode)
   rclcpp::init(1, context_argv);
 
   double loaded_gain = 0.0;
-  double unloaded_gain = 0.0;
   {
-    // Node created the way Configure creates it: with the plugin's arguments
-    rclcpp::NodeOptions node_options;
-    node_options.arguments(arguments);
-    auto node = rclcpp::Node::make_shared("gz_ros_control", config->ns, node_options);
+    // The node creation used by Configure itself
+    auto node = CreatePluginNode(
+      "gz_ros_control", config->ns, arguments,
+      rclcpp::get_logger("test_gz_ros2_control_plugin"));
+    ASSERT_TRUE(node != nullptr);
     node->declare_parameter(
       "position_proportional_gain",
       rclcpp::ParameterValue(config->position_proportional_gain));
     loaded_gain = node->get_parameter("position_proportional_gain").as_double();
-
-    // Node created the old way, without the arguments: no overrides reach it
-    auto legacy_node = rclcpp::Node::make_shared("gz_ros_control", "/legacy");
-    legacy_node->declare_parameter(
-      "position_proportional_gain",
-      rclcpp::ParameterValue(config->position_proportional_gain));
-    unloaded_gain = legacy_node->get_parameter("position_proportional_gain").as_double();
   }
   rclcpp::shutdown();
   std::remove(param_file.c_str());
 
-  // The parameters file wins over the SDF value when the arguments are
-  // carried on the node; without them the SDF value silently wins
+  // The parameters file wins over the SDF value because the arguments are
+  // carried on the node; without them the SDF value would silently win
   EXPECT_DOUBLE_EQ(loaded_gain, 0.5);
-  EXPECT_DOUBLE_EQ(unloaded_gain, 2.5);
 }
