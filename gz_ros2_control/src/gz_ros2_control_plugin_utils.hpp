@@ -91,6 +91,13 @@ enum class PeriodMismatch
 PeriodMismatch CheckPeriodMismatch(
   const rclcpp::Duration & control_period,
   const rclcpp::Duration & gazebo_period);
+
+/// \brief Whether enough simulation time has passed to run the controllers again
+/// \param[in] sim_period Simulation time elapsed since the last controller update
+/// \param[in] control_period Controller update period
+bool ShouldUpdate(
+  const rclcpp::Duration & sim_period,
+  const rclcpp::Duration & control_period);
 }  // namespace gz_ros2_control::detail
 
 #endif  // GZ_ROS2_CONTROL_PLUGIN_UTILS_HPP_

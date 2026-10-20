@@ -331,7 +331,7 @@ void GazeboSimROS2ControlPlugin::PostUpdate(
       _info.simTime).count(), RCL_ROS_TIME);
   rclcpp::Duration sim_period = sim_time_ros - this->dataPtr->last_update_sim_time_ros_;
 
-  if (sim_period >= this->dataPtr->control_period_) {
+  if (detail::ShouldUpdate(sim_period, this->dataPtr->control_period_)) {
     this->dataPtr->last_update_sim_time_ros_ = sim_time_ros;
     this->dataPtr->controller_manager_->read(sim_time_ros, sim_period);
     this->dataPtr->controller_manager_->update(sim_time_ros, sim_period);
