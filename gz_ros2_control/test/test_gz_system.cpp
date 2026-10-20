@@ -17,6 +17,7 @@
 #include <gz/msgs/wrench.pb.h>
 
 #include <chrono>
+#include <cmath>
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -189,6 +190,7 @@ protected:
   }
 
   /// \brief Publish msg on the Gazebo topic until the state interface has the expected value
+  /// \throws std::invalid_argument if the state interface is not exported
   template<typename MsgT>
   bool publish_until(
     const std::string & topic, const MsgT & msg, const std::string & state, double expected)
@@ -197,13 +199,13 @@ protected:
     auto publisher = node.Advertise<MsgT>(topic);
     const auto state_interface = find_interface(state_interfaces_, state);
     if (!state_interface) {
-      return false;
+      throw std::invalid_argument("State interface '" + state + "' is not exported");
     }
     // Discovery is asynchronous, the first messages may be lost
     for (int i = 0; i < 100; ++i) {
       publisher.Publish(msg);
       std::this_thread::sleep_for(std::chrono::milliseconds(50));
-      if (state_interface->get_optional<double>().value() == expected) {
+      if (std::abs(state_interface->get_optional<double>().value() - expected) < 1e-9) {
         return true;
       }
     }
