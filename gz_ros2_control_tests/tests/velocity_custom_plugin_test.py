@@ -63,14 +63,17 @@ class TestFixture(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        for proc in psutil.process_iter():
-            # check whether the process name matches
-            if proc.name() == 'ruby' or 'gz sim' in proc.name():
-                # up to version 9 of gz-sim
-                proc.kill()
-            if 'gz-sim' in proc.name():
-                # from version 10 of gz-sim
-                proc.kill()
+        gz_procs = [
+            proc for proc in psutil.process_iter()
+            # ruby and 'gz sim' up to version 9 of gz-sim, gz-sim from version 10
+            if proc.name() == 'ruby' or 'gz sim' in proc.name() or 'gz-sim' in proc.name()
+        ]
+        # Stop Gazebo gracefully so it can write its coverage data, kill it if it hangs
+        for proc in gz_procs:
+            proc.terminate()
+        _, alive = psutil.wait_procs(gz_procs, timeout=10)
+        for proc in alive:
+            proc.kill()
         rclpy.shutdown()
 
     def setUp(self):
