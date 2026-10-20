@@ -14,6 +14,8 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdio>
+#include <fstream>
 #include <map>
 #include <optional>
 #include <string>
@@ -30,9 +32,6 @@
 #include <sdf/Joint.hh>
 #include <sdf/Model.hh>
 #include <sdf/Root.hh>
-
-#include <cstdio>
-#include <fstream>
 
 #include <rclcpp/duration.hpp>
 #include <rclcpp/logger.hpp>
