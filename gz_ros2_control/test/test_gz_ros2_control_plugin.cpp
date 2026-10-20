@@ -361,8 +361,8 @@ TEST(NodeParameterLoading, ParametersFileOverridesReachNode)
     std::ofstream out(param_file);
     ASSERT_TRUE(out.is_open());
     out << "/**:\n"
-           "  ros__parameters:\n"
-           "    position_proportional_gain: 0.5\n";
+      "  ros__parameters:\n"
+      "    position_proportional_gain: 0.5\n";
   }
 
   // The SDF gain (2.5) differs from both the compiled-in default (0.1) and
