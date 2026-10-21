@@ -260,7 +260,7 @@ protected:
   rclcpp::Node::SharedPtr node_;
   gz::sim::EntityComponentManager ecm_;
   std::map<std::string, gz::sim::Entity> sim_joints_;
-  hardware_interface::HardwareInfo info_;
+  hardware_interface::HardwareInfo info_{};
   gz_ros2_control::GazeboSimSystem system_;
   std::vector<hardware_interface::StateInterface::SharedPtr> state_interfaces_;
   std::vector<hardware_interface::CommandInterface::SharedPtr> command_interfaces_;
