@@ -13,15 +13,20 @@
 // limitations under the License.
 
 #include <gtest/gtest.h>
+#include <gz/msgs/imu.pb.h>
 #include <gz/msgs/wrench.pb.h>
 
+#include <chrono>
+#include <cmath>
 #include <map>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include <gz/sim/EntityComponentManager.hh>
+#include <gz/sim/components/ForceTorque.hh>
 #include <gz/sim/components/Imu.hh>
 #include <gz/sim/components/Joint.hh>
 #include <gz/sim/components/JointAxis.hh>
@@ -33,6 +38,8 @@
 #include <gz/sim/components/JointVelocity.hh>
 #include <gz/sim/components/JointVelocityCmd.hh>
 #include <gz/sim/components/Name.hh>
+#include <gz/sim/components/Sensor.hh>
+#include <gz/transport/Node.hh>
 #include <sdf/JointAxis.hh>
 #include <sdf/Sensor.hh>
 
@@ -76,6 +83,26 @@ hardware_interface::ComponentInfo make_joint(
     make_interface(hardware_interface::HW_IF_EFFORT)};
   return joint;
 }
+
+hardware_interface::ComponentInfo make_sensor(
+  const std::string & name, const std::vector<std::string> & state_interfaces)
+{
+  hardware_interface::ComponentInfo sensor;
+  sensor.name = name;
+  sensor.type = "sensor";
+  for (const auto & state_interface : state_interfaces) {
+    sensor.state_interfaces.push_back(make_interface(state_interface));
+  }
+  return sensor;
+}
+
+const std::vector<std::string> kImuInterfaces = {
+  "orientation.x", "orientation.y", "orientation.z", "orientation.w",
+  "angular_velocity.x", "angular_velocity.y", "angular_velocity.z",
+  "linear_acceleration.x", "linear_acceleration.y", "linear_acceleration.z"};
+
+const std::vector<std::string> kForceTorqueInterfaces = {
+  "force.x", "force.y", "force.z", "torque.x", "torque.y", "torque.z"};
 
 template<typename HandleT>
 std::shared_ptr<HandleT> find_interface(
@@ -147,6 +174,42 @@ protected:
     }
     command_interfaces_ = system_.on_export_command_interfaces();
     return true;
+  }
+
+  /// \brief Create a sensor in the ECM, SensorComponentT is the sensor type component
+  template<typename SensorComponentT>
+  gz::sim::Entity add_sim_sensor(const std::string & name, const std::string & topic = "")
+  {
+    const auto entity = ecm_.CreateEntity();
+    ecm_.CreateComponent(entity, SensorComponentT(sdf::Sensor()));
+    ecm_.CreateComponent(entity, gz::sim::components::Name(name));
+    if (!topic.empty()) {
+      ecm_.CreateComponent(entity, gz::sim::components::SensorTopic(topic));
+    }
+    return entity;
+  }
+
+  /// \brief Publish msg on the Gazebo topic until the state interface has the expected value
+  /// \throws std::invalid_argument if the state interface is not exported
+  template<typename MsgT>
+  bool publish_until(
+    const std::string & topic, const MsgT & msg, const std::string & state, double expected)
+  {
+    gz::transport::Node node;
+    auto publisher = node.Advertise<MsgT>(topic);
+    const auto state_interface = find_interface(state_interfaces_, state);
+    if (!state_interface) {
+      throw std::invalid_argument("State interface '" + state + "' is not exported");
+    }
+    // Discovery is asynchronous, the first messages may be lost
+    for (int i = 0; i < 100; ++i) {
+      publisher.Publish(msg);
+      std::this_thread::sleep_for(std::chrono::milliseconds(50));
+      if (std::abs(state_interface->get_optional<double>().value() - expected) < 1e-9) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /// \brief Set the joint state as the Gazebo physics system would after a step
@@ -451,6 +514,123 @@ TEST_F(TestGazeboSimSystem, UnknownSensorInterfaceIsSkipped)
   ASSERT_TRUE(init_system());
   EXPECT_NE(find_interface(state_interfaces_, "imu_sensor/orientation.x"), nullptr);
   EXPECT_EQ(find_interface(state_interfaces_, "imu_sensor/orientation.X"), nullptr);
+}
+
+TEST_F(TestGazeboSimSystem, ImuMessagesUpdateStateInterfaces)
+{
+  add_sim_joint("joint1");
+  info_.joints = {make_joint("joint1", {})};
+  const std::string topic = "/test_gz_system/imu";
+  add_sim_sensor<gz::sim::components::Imu>("imu_sensor", topic);
+  info_.sensors = {make_sensor("imu_sensor", kImuInterfaces)};
+  ASSERT_TRUE(init_system());
+  for (const auto & name : kImuInterfaces) {
+    EXPECT_NE(find_interface(state_interfaces_, "imu_sensor/" + name), nullptr) << name;
+  }
+
+  // read() subscribes to the sensor topic
+  read();
+  gz::msgs::IMU msg;
+  msg.mutable_orientation()->set_x(0.1);
+  msg.mutable_orientation()->set_y(0.2);
+  msg.mutable_orientation()->set_z(0.3);
+  msg.mutable_orientation()->set_w(0.4);
+  msg.mutable_angular_velocity()->set_x(1.1);
+  msg.mutable_angular_velocity()->set_y(1.2);
+  msg.mutable_angular_velocity()->set_z(1.3);
+  msg.mutable_linear_acceleration()->set_x(2.1);
+  msg.mutable_linear_acceleration()->set_y(2.2);
+  msg.mutable_linear_acceleration()->set_z(9.8);
+  ASSERT_TRUE(publish_until(topic, msg, "imu_sensor/linear_acceleration.z", 9.8));
+
+  EXPECT_DOUBLE_EQ(state_value("imu_sensor/orientation.x"), 0.1);
+  EXPECT_DOUBLE_EQ(state_value("imu_sensor/orientation.y"), 0.2);
+  EXPECT_DOUBLE_EQ(state_value("imu_sensor/orientation.z"), 0.3);
+  EXPECT_DOUBLE_EQ(state_value("imu_sensor/orientation.w"), 0.4);
+  EXPECT_DOUBLE_EQ(state_value("imu_sensor/angular_velocity.x"), 1.1);
+  EXPECT_DOUBLE_EQ(state_value("imu_sensor/angular_velocity.y"), 1.2);
+  EXPECT_DOUBLE_EQ(state_value("imu_sensor/angular_velocity.z"), 1.3);
+  EXPECT_DOUBLE_EQ(state_value("imu_sensor/linear_acceleration.x"), 2.1);
+  EXPECT_DOUBLE_EQ(state_value("imu_sensor/linear_acceleration.y"), 2.2);
+}
+
+TEST_F(TestGazeboSimSystem, ForceTorqueMessagesUpdateStateInterfaces)
+{
+  add_sim_joint("joint1");
+  info_.joints = {make_joint("joint1", {})};
+  const std::string topic = "/test_gz_system/force_torque";
+  // The sensors system sets the topic after the plugin is initialized
+  const auto ft = add_sim_sensor<gz::sim::components::ForceTorque>("ft_sensor");
+  info_.sensors = {make_sensor("ft_sensor", kForceTorqueInterfaces)};
+  ASSERT_TRUE(init_system());
+  for (const auto & name : kForceTorqueInterfaces) {
+    EXPECT_NE(find_interface(state_interfaces_, "ft_sensor/" + name), nullptr) << name;
+  }
+
+  // Without topic there is nothing to subscribe to yet
+  read();
+  ecm_.CreateComponent(ft, gz::sim::components::SensorTopic(topic));
+  read();
+
+  gz::msgs::Wrench msg;
+  msg.mutable_force()->set_x(1.0);
+  msg.mutable_force()->set_y(2.0);
+  msg.mutable_force()->set_z(3.0);
+  msg.mutable_torque()->set_x(4.0);
+  msg.mutable_torque()->set_y(5.0);
+  msg.mutable_torque()->set_z(6.0);
+  ASSERT_TRUE(publish_until(topic, msg, "ft_sensor/torque.z", 6.0));
+
+  EXPECT_DOUBLE_EQ(state_value("ft_sensor/force.x"), 1.0);
+  EXPECT_DOUBLE_EQ(state_value("ft_sensor/force.y"), 2.0);
+  EXPECT_DOUBLE_EQ(state_value("ft_sensor/force.z"), 3.0);
+  EXPECT_DOUBLE_EQ(state_value("ft_sensor/torque.x"), 4.0);
+  EXPECT_DOUBLE_EQ(state_value("ft_sensor/torque.y"), 5.0);
+}
+
+TEST_F(TestGazeboSimSystem, OnlyListedSensorInterfacesAreUpdated)
+{
+  add_sim_joint("joint1");
+  info_.joints = {make_joint("joint1", {})};
+  const std::string topic = "/test_gz_system/imu_partial";
+  add_sim_sensor<gz::sim::components::Imu>("imu_sensor", topic);
+  info_.sensors = {make_sensor("imu_sensor", {"angular_velocity.z", "orientation.w"})};
+  ASSERT_TRUE(init_system());
+
+  // 3 joint state interfaces and the 2 listed sensor interfaces
+  EXPECT_EQ(state_interfaces_.size(), 5u);
+
+  read();
+  gz::msgs::IMU msg;
+  msg.mutable_orientation()->set_w(0.7);
+  msg.mutable_angular_velocity()->set_z(-0.5);
+  ASSERT_TRUE(publish_until(topic, msg, "imu_sensor/angular_velocity.z", -0.5));
+  EXPECT_DOUBLE_EQ(state_value("imu_sensor/orientation.w"), 0.7);
+}
+
+TEST_F(TestGazeboSimSystem, SensorNotInHardwareInfoIsSkipped)
+{
+  add_sim_joint("joint1");
+  info_.joints = {make_joint("joint1", {})};
+  add_sim_sensor<gz::sim::components::Imu>("other_imu", "/test_gz_system/other_imu");
+  add_sim_sensor<gz::sim::components::ForceTorque>("other_ft", "/test_gz_system/other_ft");
+  ASSERT_TRUE(init_system());
+
+  EXPECT_EQ(state_interfaces_.size(), 3u);
+  read();
+}
+
+TEST_F(TestGazeboSimSystem, SensorMissingInSimulationExportsNoInterfaces)
+{
+  add_sim_joint("joint1");
+  info_.joints = {make_joint("joint1", {})};
+  info_.sensors = {
+    make_sensor("imu_sensor", kImuInterfaces),
+    make_sensor("ft_sensor", kForceTorqueInterfaces)};
+  ASSERT_TRUE(init_system());
+
+  EXPECT_EQ(state_interfaces_.size(), 3u);
+  read();
 }
 
 TEST(SafeEnum, FlagsCanBeCombinedAndCleared)
