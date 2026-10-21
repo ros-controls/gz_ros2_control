@@ -23,6 +23,7 @@ from controller_manager.test_utils import (
     check_node_running
 )
 from controller_manager_msgs.srv import ListControllers
+from gz_ros2_control_tests.gazebo import stop_gazebo
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -31,7 +32,6 @@ import launch_testing
 from launch_testing.actions import ReadyToTest
 from launch_testing.util import KeepAliveProc
 from launch_testing_ros import WaitForTopics
-import psutil
 import pytest
 import rclpy
 from rosgraph_msgs.msg import Clock
@@ -64,17 +64,7 @@ class TestFixture(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        gz_procs = [
-            proc for proc in psutil.process_iter()
-            # ruby and 'gz sim' up to version 9 of gz-sim, gz-sim from version 10
-            if proc.name() == 'ruby' or 'gz sim' in proc.name() or 'gz-sim' in proc.name()
-        ]
-        # Stop Gazebo gracefully so it can write its coverage data, kill it if it hangs
-        for proc in gz_procs:
-            proc.terminate()
-        _, alive = psutil.wait_procs(gz_procs, timeout=10)
-        for proc in alive:
-            proc.kill()
+        stop_gazebo()
         rclpy.shutdown()
 
     def setUp(self):
