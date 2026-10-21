@@ -12,6 +12,9 @@
   <url type="repository">https://github.com/ros-controls/gz_ros2_control</url>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+
+  <exec_depend>python3-psutil</exec_depend>
 
   <test_depend>ament_index_python</test_depend>
   <test_depend>gz_ros2_control_demos</test_depend>
@@ -19,7 +22,6 @@
   <test_depend>launch_testing_ament_cmake</test_depend>
   <test_depend>launch_testing_ros</test_depend>
   <test_depend>launch</test_depend>
-  <test_depend>python3-psutil</test_depend>
   <test_depend>python3-pytest</test_depend>
   <test_depend>rclpy</test_depend>
   <test_depend>controller_manager</test_depend>
