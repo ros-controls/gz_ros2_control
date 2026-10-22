@@ -16,6 +16,7 @@
 
 #include <rcl/arguments.h>
 
+#include <exception>
 #include <map>
 #include <optional>
 #include <string>
@@ -27,6 +28,8 @@
 #include <sdf/Joint.hh>
 
 #include <rclcpp/logging.hpp>
+#include <rclcpp/node.hpp>
+#include <rclcpp/node_options.hpp>
 
 namespace gz_ros2_control::detail
 {
@@ -120,6 +123,31 @@ std::vector<std::string> BuildRosArguments(const PluginConfig & config)
   }
 
   return arguments;
+}
+
+//////////////////////////////////////////////////
+rclcpp::Node::SharedPtr CreatePluginNode(
+  const std::string & name,
+  const std::string & ns,
+  const std::vector<std::string> & arguments,
+  const rclcpp::Logger & logger)
+{
+  // Carry the plugin's ROS arguments (parameter files, remappings) on the node
+  // itself instead of relying only on the context's global arguments. The node's
+  // parameter overrides are resolved once at construction time from whatever the
+  // context holds at that moment, so when the context was already initialized
+  // (e.g. by another plugin instance in the same process) the <parameters> YAML
+  // would otherwise never reach this node and settings such as
+  // position_proportional_gain would silently fall back to their defaults.
+  // Node-local arguments take precedence over global ones. See #962.
+  try {
+    rclcpp::NodeOptions node_options;
+    node_options.arguments(arguments);
+    return rclcpp::Node::make_shared(name, ns, node_options);
+  } catch (const std::exception & ex) {
+    RCLCPP_ERROR(logger, "Failed to create gz_ros2_control node: %s", ex.what());
+    return nullptr;
+  }
 }
 
 //////////////////////////////////////////////////

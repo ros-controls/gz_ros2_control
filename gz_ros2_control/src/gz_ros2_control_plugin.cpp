@@ -182,7 +182,10 @@ void GazeboSimROS2ControlPlugin::Configure(
 
   std::string node_name = "gz_ros_control";
 
-  this->dataPtr->node_ = rclcpp::Node::make_shared(node_name, ns);
+  this->dataPtr->node_ = detail::CreatePluginNode(node_name, ns, arguments, logger);
+  if (!this->dataPtr->node_) {
+    return;
+  }
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   this->dataPtr->executor_->add_node(this->dataPtr->node_);
   auto spin = [this]()

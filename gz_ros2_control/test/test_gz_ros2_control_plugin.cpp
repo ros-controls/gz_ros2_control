@@ -15,6 +15,8 @@
 #include <gtest/gtest.h>
 
 #include <cstdint>
+#include <cstdio>
+#include <fstream>
 #include <map>
 #include <optional>
 #include <string>
@@ -34,6 +36,8 @@
 
 #include <rclcpp/duration.hpp>
 #include <rclcpp/logger.hpp>
+#include <rclcpp/parameter_value.hpp>
+#include <rclcpp/utilities.hpp>
 
 #include "gz_ros2_control_plugin_utils.hpp"
 
@@ -41,6 +45,7 @@ namespace
 {
 using gz_ros2_control::detail::BuildRosArguments;
 using gz_ros2_control::detail::CheckPeriodMismatch;
+using gz_ros2_control::detail::CreatePluginNode;
 using gz_ros2_control::detail::GetEnabledJoints;
 using gz_ros2_control::detail::NormalizeNamespace;
 using gz_ros2_control::detail::ParsePluginConfig;
@@ -342,6 +347,56 @@ TEST(CheckPeriodMismatch, ComparesPeriods)
   EXPECT_EQ(CheckPeriodMismatch(one_ms, one_ms), PeriodMismatch::kNone);
   EXPECT_EQ(CheckPeriodMismatch(one_ms, ten_ms), PeriodMismatch::kControlFaster);
   EXPECT_EQ(CheckPeriodMismatch(ten_ms, one_ms), PeriodMismatch::kControlSlower);
+}
+
+TEST(NodeParameterLoading, ParametersFileOverridesReachNode)
+{
+  // Regression test for #962: Configure creates the plugin node through
+  // CreatePluginNode, which carries the plugin's ROS arguments on the node.
+  // When the rcl context was already initialized without the <parameters>
+  // file (e.g. by another plugin in the same process), a node created from
+  // the context's arguments alone never sees that file, and the declared
+  // defaults silently win.
+  const std::string param_file = "test_gz_ros2_control_plugin_parameters.yaml";
+  {
+    std::ofstream out(param_file);
+    ASSERT_TRUE(out.is_open());
+    out << "/**:\n"
+      "  ros__parameters:\n"
+      "    position_proportional_gain: 0.5\n";
+  }
+
+  // The SDF gain (2.5) differs from both the compiled-in default (0.1) and
+  // the value in the parameters file (0.5)
+  const auto config = Parse(
+    "<parameters>" + param_file + "</parameters>"
+    "<position_proportional_gain>2.5</position_proportional_gain>");
+  ASSERT_TRUE(config.has_value());
+  const auto arguments = BuildRosArguments(*config);
+
+  // Simulate the context already being initialized without the plugin's
+  // arguments, as happens when another plugin initializes it first
+  const char * context_argv[] = {"test_gz_ros2_control_plugin"};
+  rclcpp::init(1, context_argv);
+
+  double loaded_gain = 0.0;
+  {
+    // The node creation used by Configure itself
+    auto node = CreatePluginNode(
+      "gz_ros_control", config->ns, arguments,
+      rclcpp::get_logger("test_gz_ros2_control_plugin"));
+    ASSERT_TRUE(node != nullptr);
+    node->declare_parameter(
+      "position_proportional_gain",
+      rclcpp::ParameterValue(config->position_proportional_gain));
+    loaded_gain = node->get_parameter("position_proportional_gain").as_double();
+  }
+  rclcpp::shutdown();
+  std::remove(param_file.c_str());
+
+  // The parameters file wins over the SDF value because the arguments are
+  // carried on the node; without them the SDF value would silently win
+  EXPECT_DOUBLE_EQ(loaded_gain, 0.5);
 }
 
 TEST(ShouldUpdate, ComparesElapsedTimeWithControlPeriod)
