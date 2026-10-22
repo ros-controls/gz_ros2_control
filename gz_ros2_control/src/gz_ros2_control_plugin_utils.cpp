@@ -240,4 +240,12 @@ PeriodMismatch CheckPeriodMismatch(
   }
   return PeriodMismatch::kNone;
 }
+
+//////////////////////////////////////////////////
+bool ShouldUpdate(
+  const rclcpp::Duration & sim_period,
+  const rclcpp::Duration & control_period)
+{
+  return sim_period >= control_period;
+}
 }  // namespace gz_ros2_control::detail

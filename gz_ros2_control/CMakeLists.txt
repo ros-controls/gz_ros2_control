@@ -39,6 +39,23 @@ target_link_libraries(gz_ros2_control_plugin_utils
   rclcpp::rclcpp
 )
 
+# Internal resource manager of the plugin, shared with the tests. Not installed.
+add_library(gz_resource_manager STATIC
+  src/gz_resource_manager.cpp
+)
+set_target_properties(gz_resource_manager PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_include_directories(gz_resource_manager PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+)
+target_link_libraries(gz_resource_manager
+  PUBLIC
+  gz-sim::gz-sim
+  hardware_interface::hardware_interface
+  ${pluginlib_TARGETS}
+  rclcpp::rclcpp
+)
+
 add_library(${PROJECT_NAME}-system SHARED
   src/gz_ros2_control_plugin.cpp
 )
@@ -56,6 +73,7 @@ target_link_libraries(${PROJECT_NAME}-system
   PRIVATE
   # BUILD_INTERFACE keeps the static helper library out of the exported targets
   $<BUILD_INTERFACE:gz_ros2_control_plugin_utils>
+  $<BUILD_INTERFACE:gz_resource_manager>
 )
 target_include_directories(${PROJECT_NAME}-system PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -88,6 +106,9 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_gz_system test/test_gz_system.cpp)
   target_link_libraries(test_gz_system gz_hardware_plugins)
+
+  ament_add_gtest(test_gz_resource_manager test/test_gz_resource_manager.cpp)
+  target_link_libraries(test_gz_resource_manager gz_resource_manager)
 endif()
 
 # Install headers
