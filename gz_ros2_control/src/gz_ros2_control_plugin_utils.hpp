@@ -26,6 +26,7 @@
 
 #include <rclcpp/duration.hpp>
 #include <rclcpp/logger.hpp>
+#include <rclcpp/node.hpp>
 
 // Internal helpers of GazeboSimROS2ControlPlugin. Not installed, only shared with the tests.
 namespace gz_ros2_control::detail
@@ -68,6 +69,18 @@ std::string NormalizeNamespace(const std::string & ns);
 
 /// \brief Build the ROS arguments used to initialize rclcpp
 std::vector<std::string> BuildRosArguments(const PluginConfig & config);
+
+/// \brief Create the plugin's node, carrying the plugin's ROS arguments on the node itself
+/// \param[in] name Node name
+/// \param[in] ns Node namespace
+/// \param[in] arguments ROS arguments built by BuildRosArguments
+/// \param[in] logger Logger used to report a creation failure
+/// \return The node, or nullptr if its creation failed
+rclcpp::Node::SharedPtr CreatePluginNode(
+  const std::string & name,
+  const std::string & ns,
+  const std::vector<std::string> & arguments,
+  const rclcpp::Logger & logger);
 
 /// \brief Get the joints of a model that can be controlled, i.e. those with a single axis
 /// \param[in] model Model entity

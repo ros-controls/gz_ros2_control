@@ -16,6 +16,7 @@
 
 #include <rcl/arguments.h>
 
+#include <exception>
 #include <map>
 #include <optional>
 #include <string>
@@ -27,6 +28,8 @@
 #include <sdf/Joint.hh>
 
 #include <rclcpp/logging.hpp>
+#include <rclcpp/node.hpp>
+#include <rclcpp/node_options.hpp>
 
 namespace gz_ros2_control::detail
 {
@@ -120,6 +123,25 @@ std::vector<std::string> BuildRosArguments(const PluginConfig & config)
   }
 
   return arguments;
+}
+
+//////////////////////////////////////////////////
+rclcpp::Node::SharedPtr CreatePluginNode(
+  const std::string & name,
+  const std::string & ns,
+  const std::vector<std::string> & arguments,
+  const rclcpp::Logger & logger)
+{
+  // Carry the plugin's ROS arguments on the node itself so an already-initialized
+  // context cannot leave the <parameters> YAML unseen (see #962).
+  try {
+    rclcpp::NodeOptions node_options;
+    node_options.arguments(arguments);
+    return rclcpp::Node::make_shared(name, ns, node_options);
+  } catch (const std::exception & ex) {
+    RCLCPP_ERROR(logger, "Failed to create gz_ros2_control node: %s", ex.what());
+    return nullptr;
+  }
 }
 
 //////////////////////////////////////////////////
