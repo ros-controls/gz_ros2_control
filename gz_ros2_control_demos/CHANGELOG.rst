@@ -2,6 +2,17 @@
 Changelog for package ign_ros2_control_demos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+4.0.2 (2026-11-03)
+------------------
+* Add unit tests for GazeboSimSystem and fix read() on empty components (`#983 <https://github.com/ros-controls/gz_ros2_control/issues/983>`_)
+* Add optional timeout while waiting for hardware initialization (`#982 <https://github.com/ros-controls/gz_ros2_control/issues/982>`_)
+* Unify package.xml metadata and modernize gz_ros2_control CMake exports (`#980 <https://github.com/ros-controls/gz_ros2_control/issues/980>`_)
+* Removed dead code and const_cast (`#979 <https://github.com/ros-controls/gz_ros2_control/issues/979>`_)
+* Fix package.xml and CMakeLists.txt (`#977 <https://github.com/ros-controls/gz_ros2_control/issues/977>`_)
+* Fixes several crashes (`#978 <https://github.com/ros-controls/gz_ros2_control/issues/978>`_)
+* Include what you use and granular includes (`#976 <https://github.com/ros-controls/gz_ros2_control/issues/976>`_)
+* Contributors: Alejandro Hernández Cordero
+
 4.0.1 (2026-08-31)
 ------------------
 * Apply the mimic joint offset in GazeboSimSystem::write (`#953 <https://github.com/ros-controls/gz_ros2_control/issues/953>`_)

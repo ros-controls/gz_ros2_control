@@ -2,6 +2,25 @@
 Changelog for package ign_ros2_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+4.0.2 (2026-11-03)
+------------------
+* Value-initialize HardwareInfo in the GazeboSimSystem tests (`#992 <https://github.com/ros-controls/gz_ros2_control/issues/992>`_)
+* Add unit tests for the IMU and force-torque sensor path (`#991 <https://github.com/ros-controls/gz_ros2_control/issues/991>`_)
+* Extract controller update gating into a testable helper (`#987 <https://github.com/ros-controls/gz_ros2_control/issues/987>`_)
+* Make plugin load failures fail startup and add GZResourceManager tests (`#989 <https://github.com/ros-controls/gz_ros2_control/issues/989>`_)
+* Fix plugin SDF parsing edge cases and crash on joints without name or… (`#986 <https://github.com/ros-controls/gz_ros2_control/issues/986>`_)
+* feedback 978 (`#988 <https://github.com/ros-controls/gz_ros2_control/issues/988>`_)
+* Extract plugin SDF parsing and joint filtering into testable helpers (`#985 <https://github.com/ros-controls/gz_ros2_control/issues/985>`_)
+* Add unit tests for GazeboSimSystem and fix read() on empty components (`#983 <https://github.com/ros-controls/gz_ros2_control/issues/983>`_)
+* Add optional timeout while waiting for hardware initialization (`#982 <https://github.com/ros-controls/gz_ros2_control/issues/982>`_)
+* Validate update_rate, deduplicate parameter handling and add default … (`#981 <https://github.com/ros-controls/gz_ros2_control/issues/981>`_)
+* Unify package.xml metadata and modernize gz_ros2_control CMake exports (`#980 <https://github.com/ros-controls/gz_ros2_control/issues/980>`_)
+* Removed dead code and const_cast (`#979 <https://github.com/ros-controls/gz_ros2_control/issues/979>`_)
+* Fix package.xml and CMakeLists.txt (`#977 <https://github.com/ros-controls/gz_ros2_control/issues/977>`_)
+* Fixes several crashes (`#978 <https://github.com/ros-controls/gz_ros2_control/issues/978>`_)
+* Include what you use and granular includes (`#976 <https://github.com/ros-controls/gz_ros2_control/issues/976>`_)
+* Contributors: Alejandro Hernández Cordero
+
 4.0.1 (2026-08-31)
 ------------------
 * Apply the mimic joint offset in GazeboSimSystem::write (`#953 <https://github.com/ros-controls/gz_ros2_control/issues/953>`_)
