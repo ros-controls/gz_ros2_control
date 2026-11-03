@@ -16,6 +16,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <filesystem>
 #include <fstream>
 #include <map>
 #include <optional>
@@ -94,6 +95,39 @@ std::optional<PluginConfig> Parse(const std::string & plugin_contents)
   std::string error;
   return Parse(plugin_contents, error);
 }
+
+// Shuts the rcl context down and removes a temporary parameters file when it
+// goes out of scope, including on an early ASSERT return.
+class ScopedRclContext
+{
+public:
+  explicit ScopedRclContext(const std::string & param_file)
+  : param_file_(param_file)
+  {
+  }
+
+  ScopedRclContext(const ScopedRclContext &) = delete;
+  ScopedRclContext & operator=(const ScopedRclContext &) = delete;
+
+  ~ScopedRclContext()
+  {
+    if (initialized_) {
+      rclcpp::shutdown();
+    }
+    if (!param_file_.empty()) {
+      std::remove(param_file_.c_str());
+    }
+  }
+
+  void MarkInitialized()
+  {
+    initialized_ = true;
+  }
+
+private:
+  std::string param_file_;
+  bool initialized_ = false;
+};
 
 class GetEnabledJointsTest : public ::testing::Test
 {
@@ -357,7 +391,10 @@ TEST(NodeParameterLoading, ParametersFileOverridesReachNode)
   // file (e.g. by another plugin in the same process), a node created from
   // the context's arguments alone never sees that file, and the declared
   // defaults silently win.
-  const std::string param_file = "test_gz_ros2_control_plugin_parameters.yaml";
+  const std::string param_file =
+    (std::filesystem::temp_directory_path() /
+    "test_gz_ros2_control_plugin_parameters.yaml").string();
+  ScopedRclContext scoped_context(param_file);
   {
     std::ofstream out(param_file);
     ASSERT_TRUE(out.is_open());
@@ -378,6 +415,7 @@ TEST(NodeParameterLoading, ParametersFileOverridesReachNode)
   // arguments, as happens when another plugin initializes it first
   const char * context_argv[] = {"test_gz_ros2_control_plugin"};
   rclcpp::init(1, context_argv);
+  scoped_context.MarkInitialized();
 
   double loaded_gain = 0.0;
   {
@@ -391,9 +429,9 @@ TEST(NodeParameterLoading, ParametersFileOverridesReachNode)
       rclcpp::ParameterValue(config->position_proportional_gain));
     loaded_gain = node->get_parameter("position_proportional_gain").as_double();
   }
-  rclcpp::shutdown();
-  std::remove(param_file.c_str());
 
+  // scoped_context shuts the context down and removes the parameters file,
+  // even if an ASSERT above returned early
   // The parameters file wins over the SDF value because the arguments are
   // carried on the node; without them the SDF value would silently win
   EXPECT_DOUBLE_EQ(loaded_gain, 0.5);

@@ -132,14 +132,8 @@ rclcpp::Node::SharedPtr CreatePluginNode(
   const std::vector<std::string> & arguments,
   const rclcpp::Logger & logger)
 {
-  // Carry the plugin's ROS arguments (parameter files, remappings) on the node
-  // itself instead of relying only on the context's global arguments. The node's
-  // parameter overrides are resolved once at construction time from whatever the
-  // context holds at that moment, so when the context was already initialized
-  // (e.g. by another plugin instance in the same process) the <parameters> YAML
-  // would otherwise never reach this node and settings such as
-  // position_proportional_gain would silently fall back to their defaults.
-  // Node-local arguments take precedence over global ones. See #962.
+  // Carry the plugin's ROS arguments on the node itself so an already-initialized
+  // context cannot leave the <parameters> YAML unseen (see #962).
   try {
     rclcpp::NodeOptions node_options;
     node_options.arguments(arguments);
