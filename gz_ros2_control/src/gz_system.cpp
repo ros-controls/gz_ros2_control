@@ -51,6 +51,12 @@
 #include <hardware_interface/lexical_casts.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 
+#include <rclcpp/duration.hpp>
+#include <rclcpp/exceptions/exceptions.hpp>
+#include <rclcpp/logging.hpp>
+#include <rclcpp/parameter_value.hpp>
+#include <rclcpp/time.hpp>
+
 #ifdef ERROR
 #undef ERROR
 #endif
@@ -73,7 +79,7 @@ struct jointData
   std::string name;
 
   /// \brief Joint's type.
-  sdf::JointType joint_type;
+  sdf::JointType joint_type{sdf::JointType::INVALID};
 
   /// \brief Joint's axis.
   sdf::JointAxis joint_axis;
@@ -88,10 +94,10 @@ struct jointData
   InterfaceData effort;
 
   /// \brief flag if joint is actuated (has command interfaces) or passive
-  bool is_actuated;
+  bool is_actuated{false};
 
   /// \brief handles to the joints from within Gazebo
-  sim::Entity sim_joint;
+  sim::Entity sim_joint{sim::kNullEntity};
 
   /// \brief Control method defined in the URDF for each joint.
   gz_ros2_control::GazeboSimSystemInterface::ControlMethod joint_control_method;
@@ -225,16 +231,16 @@ public:
 
   /// \brief Entity component manager, ECM shouldn't be accessed outside those
   /// methods, otherwise the app will crash
-  sim::EntityComponentManager * ecm;
+  sim::EntityComponentManager * ecm{nullptr};
 
   /// \brief controller update rate
-  unsigned int update_rate;
+  unsigned int update_rate{0};
 
   /// \brief Gazebo communication node.
   gz::transport::Node node;
 
   /// \brief Gain which converts position error to a velocity command
-  double position_proportional_gain_;
+  double position_proportional_gain_{0.1};
 
   // Should hold the joints if no control_mode is active
   bool hold_joints_ = true;
@@ -242,6 +248,33 @@ public:
 
 namespace gz_ros2_control
 {
+namespace
+{
+/// \brief Read a parameter from the node, logging and returning default_value on failure
+template<typename T>
+T get_parameter_or_log(
+  const rclcpp::Node::SharedPtr & node, const std::string & name, const T & default_value)
+{
+  try {
+    return node->get_parameter(name).get_value<T>();
+  } catch (const rclcpp::exceptions::ParameterUninitializedException & ex) {
+    RCLCPP_ERROR(
+      node->get_logger(), "Parameter '%s' not initialized, with error %s", name.c_str(), ex.what());
+  } catch (const rclcpp::exceptions::ParameterNotDeclaredException & ex) {
+    RCLCPP_ERROR(
+      node->get_logger(), "Parameter '%s' not declared, with error %s", name.c_str(), ex.what());
+  } catch (const rclcpp::ParameterTypeException & ex) {
+    RCLCPP_ERROR(
+      node->get_logger(), "Parameter '%s' has wrong type: %s", name.c_str(), ex.what());
+  }
+  RCLCPP_WARN_STREAM(node->get_logger(), "Using default value: " << default_value);
+  return default_value;
+}
+}  // namespace
+
+GazeboSimSystem::GazeboSimSystem() = default;
+
+GazeboSimSystem::~GazeboSimSystem() = default;
 
 bool GazeboSimSystem::initSim(
   rclcpp::Node::SharedPtr & model_nh,
@@ -258,58 +291,16 @@ bool GazeboSimSystem::initSim(
 
   this->dataPtr->update_rate = update_rate;
 
-  try {
-    this->dataPtr->hold_joints_ = this->nh_->get_parameter("hold_joints").as_bool();
-  } catch (rclcpp::exceptions::ParameterUninitializedException & ex) {
-    RCLCPP_ERROR(
-      this->nh_->get_logger(),
-      "Parameter 'hold_joints' not initialized, with error %s", ex.what());
-    RCLCPP_WARN_STREAM(
-      this->nh_->get_logger(), "Using default value: " << this->dataPtr->hold_joints_);
-  } catch (rclcpp::exceptions::ParameterNotDeclaredException & ex) {
-    RCLCPP_ERROR(
-      this->nh_->get_logger(),
-      "Parameter 'hold_joints' not declared, with error %s", ex.what());
-    RCLCPP_WARN_STREAM(
-      this->nh_->get_logger(), "Using default value: " << this->dataPtr->hold_joints_);
-  } catch (rclcpp::ParameterTypeException & ex) {
-    RCLCPP_ERROR(
-      this->nh_->get_logger(),
-      "Parameter 'hold_joints' has wrong type: %s", ex.what());
-    RCLCPP_WARN_STREAM(
-      this->nh_->get_logger(), "Using default value: " << this->dataPtr->hold_joints_);
-  }
+  this->dataPtr->hold_joints_ =
+    get_parameter_or_log(this->nh_, "hold_joints", this->dataPtr->hold_joints_);
   RCLCPP_DEBUG_STREAM(
     this->nh_->get_logger(), "hold_joints (system): " << this->dataPtr->hold_joints_ << std::endl);
 
 
   this->dataPtr->joints_.resize(hardware_info.joints.size());
 
-  try {
-    this->dataPtr->position_proportional_gain_ =
-      this->nh_->get_parameter("position_proportional_gain").as_double();
-  } catch (rclcpp::exceptions::ParameterUninitializedException & ex) {
-    RCLCPP_ERROR(
-      this->nh_->get_logger(),
-      "Parameter 'position_proportional_gain' not initialized, with error %s", ex.what());
-    RCLCPP_WARN_STREAM(
-      this->nh_->get_logger(),
-      "Using default value: " << this->dataPtr->position_proportional_gain_);
-  } catch (rclcpp::exceptions::ParameterNotDeclaredException & ex) {
-    RCLCPP_ERROR(
-      this->nh_->get_logger(),
-      "Parameter 'position_proportional_gain' not declared, with error %s", ex.what());
-    RCLCPP_WARN_STREAM(
-      this->nh_->get_logger(),
-      "Using default value: " << this->dataPtr->position_proportional_gain_);
-  } catch (rclcpp::ParameterTypeException & ex) {
-    RCLCPP_ERROR(
-      this->nh_->get_logger(),
-      "Parameter 'position_proportional_gain' has wrong type: %s", ex.what());
-    RCLCPP_WARN_STREAM(
-      this->nh_->get_logger(),
-      "Using default value: " << this->dataPtr->position_proportional_gain_);
-  }
+  this->dataPtr->position_proportional_gain_ = get_parameter_or_log(
+    this->nh_, "position_proportional_gain", this->dataPtr->position_proportional_gain_);
 
   RCLCPP_INFO_STREAM(
     this->nh_->get_logger(),
@@ -386,8 +377,8 @@ bool GazeboSimSystem::initSim(
     if (it != hardware_info.mimic_joints.end()) {
       RCLCPP_INFO_STREAM(
         this->nh_->get_logger(),
-        "Joint '" << joint_name << "'is mimicking joint '" <<
-          this->dataPtr->joints_[it->mimicked_joint_index].name <<
+        "Joint '" << joint_name << "' is mimicking joint '" <<
+          hardware_info.joints[it->mimicked_joint_index].name <<
           "' with multiplier: " << it->multiplier << " and offset: " << it->offset);
     }
 
@@ -406,8 +397,7 @@ bool GazeboSimSystem::initSim(
               "Failed converting initial_value string to real number for the joint "
                 << joint_name
                 << " and state interface " << interface_info.name
-                << ". Actual value of parameter: " << interface_info.initial_value
-                << ". Initial value will be set to 0.0");
+                << ". Actual value of parameter: " << interface_info.initial_value);
             throw std::invalid_argument("Failed converting initial_value string");
           }
         }
@@ -507,6 +497,20 @@ bool GazeboSimSystem::initSim(
     this->dataPtr->joints_[j].is_actuated = (joint_info.command_interfaces.size() > 0);
   }
 
+  // write() can only enforce a mimic relation when both joints exist in the gazebo model
+  for (const auto & mimic_joint : hardware_info.mimic_joints) {
+    const auto & mimic_name = hardware_info.joints[mimic_joint.joint_index].name;
+    const auto & mimicked_name = hardware_info.joints[mimic_joint.mimicked_joint_index].name;
+    if (this->dataPtr->joints_[mimic_joint.joint_index].sim_joint == sim::kNullEntity ||
+      this->dataPtr->joints_[mimic_joint.mimicked_joint_index].sim_joint == sim::kNullEntity)
+    {
+      RCLCPP_WARN_STREAM(
+        this->nh_->get_logger(),
+        "Joint '" << mimic_name << "' mimics joint '" << mimicked_name <<
+          "', but at least one of them is not in the gazebo model. The mimic relation is ignored.");
+    }
+  }
+
   registerSensors(hardware_info);
 
   return true;
@@ -575,7 +579,15 @@ void GazeboSimSystem::registerSensors(
       for (const auto & state_interface : component.state_interfaces) {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t " << state_interface.name);
 
-        size_t data_index = interface_name_map.at(state_interface.name);
+        auto index_it = interface_name_map.find(state_interface.name);
+        if (index_it == interface_name_map.end()) {
+          RCLCPP_ERROR_STREAM(
+            this->nh_->get_logger(),
+            "IMU sensor '" << imuData->name << "' has unknown state interface '" <<
+              state_interface.name << "', skipping.");
+          continue;
+        }
+        size_t data_index = index_it->second;
         auto si = std::make_shared<hardware_interface::StateInterface>(
           imuData->name,
           state_interface.name);
@@ -627,7 +639,15 @@ void GazeboSimSystem::registerSensors(
       for (const auto & state_interface : component.state_interfaces) {
         RCLCPP_INFO_STREAM(this->nh_->get_logger(), "\t\t " << state_interface.name);
 
-        size_t data_index = interface_name_map.at(state_interface.name);
+        auto index_it = interface_name_map.find(state_interface.name);
+        if (index_it == interface_name_map.end()) {
+          RCLCPP_ERROR_STREAM(
+            this->nh_->get_logger(),
+            "ForceTorque sensor '" << ftData->name << "' has unknown state interface '" <<
+              state_interface.name << "', skipping.");
+          continue;
+        }
+        size_t data_index = index_it->second;
         auto si = std::make_shared<hardware_interface::StateInterface>(
           ftData->name,
           state_interface.name);
@@ -710,7 +730,10 @@ hardware_interface::return_type GazeboSimSystem::read(
       this->dataPtr->ecm->Component<sim::components::JointPosition>(
       this->dataPtr->joints_[i].sim_joint);
 
-    if (!jointPositions || !jointVelocity || !jointWrench) {
+    // Components are empty until physics has run at least once
+    if (!jointPositions || jointPositions->Data().empty() ||
+      !jointVelocity || jointVelocity->Data().empty() || !jointWrench)
+    {
       continue;
     }
 
@@ -889,14 +912,29 @@ hardware_interface::return_type GazeboSimSystem::write(
 
   // set values of all mimic joints with respect to mimicked joint
   for (const auto & mimic_joint : this->info_.mimic_joints) {
-    // Get the joint position
-    double position_mimicked_joint =
-      this->dataPtr->ecm->Component<sim::components::JointPosition>(
-      this->dataPtr->joints_[mimic_joint.mimicked_joint_index].sim_joint)->Data()[0];
+    const sim::Entity mimicked_sim_joint =
+      this->dataPtr->joints_[mimic_joint.mimicked_joint_index].sim_joint;
+    const sim::Entity mimic_sim_joint =
+      this->dataPtr->joints_[mimic_joint.joint_index].sim_joint;
+    if (mimicked_sim_joint == sim::kNullEntity || mimic_sim_joint == sim::kNullEntity) {
+      // already reported in initSim
+      continue;
+    }
 
-    double position_mimic_joint =
-      this->dataPtr->ecm->Component<sim::components::JointPosition>(
-      this->dataPtr->joints_[mimic_joint.joint_index].sim_joint)->Data()[0];
+    // Get the joint position
+    const auto * mimickedJointPosition =
+      this->dataPtr->ecm->Component<sim::components::JointPosition>(mimicked_sim_joint);
+    const auto * mimicJointPosition =
+      this->dataPtr->ecm->Component<sim::components::JointPosition>(mimic_sim_joint);
+    // Components are empty until physics has run at least once
+    if (!mimickedJointPosition || mimickedJointPosition->Data().empty() ||
+      !mimicJointPosition || mimicJointPosition->Data().empty())
+    {
+      continue;
+    }
+
+    double position_mimicked_joint = mimickedJointPosition->Data()[0];
+    double position_mimic_joint = mimicJointPosition->Data()[0];
 
     double position_error =
       position_mimic_joint -
@@ -905,12 +943,11 @@ hardware_interface::return_type GazeboSimSystem::write(
     double velocity_sp = (-1.0) * position_error * this->dataPtr->update_rate;
 
     auto vel =
-      this->dataPtr->ecm->Component<sim::components::JointVelocityCmd>(
-      this->dataPtr->joints_[mimic_joint.joint_index].sim_joint);
+      this->dataPtr->ecm->Component<sim::components::JointVelocityCmd>(mimic_sim_joint);
 
     if (vel == nullptr) {
       this->dataPtr->ecm->CreateComponent(
-        this->dataPtr->joints_[mimic_joint.joint_index].sim_joint,
+        mimic_sim_joint,
         sim::components::JointVelocityCmd({velocity_sp}));
     } else if (!vel->Data().empty()) {
       vel->Data()[0] = velocity_sp;

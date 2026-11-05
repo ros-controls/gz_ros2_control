@@ -15,11 +15,15 @@
 // Author: Denis Štogl (Stogl Robotics Consulting)
 //
 
+#include <chrono>
 #include <memory>
 #include <string>
+#include <thread>
 #include <vector>
 
-#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/logging.hpp"
+#include "rclcpp/node.hpp"
+#include "rclcpp/utilities.hpp"
 
 #include "std_msgs/msg/float64_multi_array.hpp"
 

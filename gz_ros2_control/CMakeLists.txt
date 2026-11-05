@@ -25,7 +25,36 @@ find_package(gz-sim REQUIRED)
 find_package(gz_plugin_vendor REQUIRED)
 find_package(gz-plugin REQUIRED)
 
-include_directories(include)
+# Internal helpers of the plugin, shared with the tests. Not installed.
+add_library(gz_ros2_control_plugin_utils STATIC
+  src/gz_ros2_control_plugin_utils.cpp
+)
+set_target_properties(gz_ros2_control_plugin_utils PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_include_directories(gz_ros2_control_plugin_utils PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+)
+target_link_libraries(gz_ros2_control_plugin_utils
+  PUBLIC
+  gz-sim::gz-sim
+  rclcpp::rclcpp
+)
+
+# Internal resource manager of the plugin, shared with the tests. Not installed.
+add_library(gz_resource_manager STATIC
+  src/gz_resource_manager.cpp
+)
+set_target_properties(gz_resource_manager PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_include_directories(gz_resource_manager PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+)
+target_link_libraries(gz_resource_manager
+  PUBLIC
+  gz-sim::gz-sim
+  hardware_interface::hardware_interface
+  ${pluginlib_TARGETS}
+  rclcpp::rclcpp
+)
 
 add_library(${PROJECT_NAME}-system SHARED
   src/gz_ros2_control_plugin.cpp
@@ -41,6 +70,10 @@ target_link_libraries(${PROJECT_NAME}-system
   ${pluginlib_TARGETS}
   rclcpp::rclcpp
   rclcpp_lifecycle::rclcpp_lifecycle
+  PRIVATE
+  # BUILD_INTERFACE keeps the static helper library out of the exported targets
+  $<BUILD_INTERFACE:gz_ros2_control_plugin_utils>
+  $<BUILD_INTERFACE:gz_resource_manager>
 )
 target_include_directories(${PROJECT_NAME}-system PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -56,9 +89,27 @@ target_link_libraries(gz_hardware_plugins
 PUBLIC
   gz-sim::gz-sim
   hardware_interface::hardware_interface
+  ${pluginlib_TARGETS}
   rclcpp::rclcpp
   rclcpp_lifecycle::rclcpp_lifecycle
 )
+target_include_directories(gz_hardware_plugins PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
+)
+
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+
+  ament_add_gtest(test_gz_ros2_control_plugin test/test_gz_ros2_control_plugin.cpp)
+  target_link_libraries(test_gz_ros2_control_plugin gz_ros2_control_plugin_utils)
+
+  ament_add_gtest(test_gz_system test/test_gz_system.cpp)
+  target_link_libraries(test_gz_system gz_hardware_plugins)
+
+  ament_add_gtest(test_gz_resource_manager test/test_gz_resource_manager.cpp)
+  target_link_libraries(test_gz_resource_manager gz_resource_manager)
+endif()
 
 # Install headers
 install(DIRECTORY include/
@@ -80,18 +131,22 @@ install(EXPORT export_${PROJECT_NAME}
   DESTINATION share/${PROJECT_NAME}/cmake
 )
 
-# Export old-style CMake variables
-ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME}-system gz_hardware_plugins)
-
 # Export modern CMake targets
 ament_export_targets(
   export_${PROJECT_NAME}
+  HAS_LIBRARY_TARGET
 )
 
 ament_export_dependencies(
     controller_manager
+    gz_plugin_vendor
+    gz-plugin
+    gz_sim_vendor
+    gz-sim
     hardware_interface
+    pluginlib
+    rclcpp
+    rclcpp_lifecycle
 )
 
 pluginlib_export_plugin_description_file(gz_ros2_control gz_hardware_plugins.xml)

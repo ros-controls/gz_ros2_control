@@ -13,14 +13,25 @@
 // limitations under the License.
 
 #include <chrono>
+#include <cmath>
+#include <functional>
+#include <iostream>
 #include <memory>
 #include <string>
+#include <thread>
 #include <vector>
 
-#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/clock.hpp>
+#include <rclcpp/duration.hpp>
+#include <rclcpp/executors.hpp>
+#include <rclcpp/future_return_code.hpp>
+#include <rclcpp/logging.hpp>
+#include <rclcpp/node.hpp>
+#include <rclcpp/utilities.hpp>
 #include <rclcpp_action/rclcpp_action.hpp>
 
 #include <control_msgs/action/follow_joint_trajectory.hpp>
+#include <trajectory_msgs/msg/joint_trajectory_point.hpp>
 
 std::shared_ptr<rclcpp::Node> node;
 bool common_goal_accepted = false;

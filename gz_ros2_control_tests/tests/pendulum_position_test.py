@@ -29,6 +29,7 @@ from test_utils import (
     assert_joint_initial_position,
     wait_for_pendulum_steady_state,
 )
+from gz_ros2_control_tests.gazebo import stop_gazebo
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -37,7 +38,6 @@ import launch_testing
 from launch_testing.actions import ReadyToTest
 from launch_testing.util import KeepAliveProc
 from launch_testing_ros import WaitForTopics
-import psutil
 import pytest
 import rclpy
 from rosgraph_msgs.msg import Clock
@@ -74,14 +74,7 @@ class TestFixture(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        for proc in psutil.process_iter():
-            # check whether the process name matches
-            if proc.name() == 'ruby' or 'gz sim' in proc.name():
-                # up to version 9 of gz-sim
-                proc.kill()
-            if 'gz-sim' in proc.name():
-                # from version 10 of gz-sim
-                proc.kill()
+        stop_gazebo()
         rclpy.shutdown()
 
     def setUp(self):

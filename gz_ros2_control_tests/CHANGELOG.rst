@@ -2,6 +2,12 @@
 Changelog for package gz_ros2_control_tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+4.0.2 (2026-11-03)
+------------------
+* Stop Gazebo gracefully at the end of the launch tests (`#990 <https://github.com/ros-controls/gz_ros2_control/issues/990>`_)
+* Unify package.xml metadata and modernize gz_ros2_control CMake exports (`#980 <https://github.com/ros-controls/gz_ros2_control/issues/980>`_)
+* Contributors: Alejandro Hernández Cordero
+
 4.0.1 (2026-08-31)
 ------------------
 * Apply the mimic joint offset in GazeboSimSystem::write (`#953 <https://github.com/ros-controls/gz_ros2_control/issues/953>`_)
