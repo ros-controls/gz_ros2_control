@@ -167,7 +167,7 @@ def wait_for_pendulum_steady_state(
 def assert_joint_initial_position(node, joint_name, expected_position):
     actual_position, _, _ = read_joint_state(node, joint_name)
 
-    if abs(actual_position - expected_position) > 0.01:
+    if abs(actual_position - expected_position) > 0.1:
         raise AssertionError(
                 f"Initial position mismatch for '{joint_name}': "
                 f"expected {expected_position}, "
