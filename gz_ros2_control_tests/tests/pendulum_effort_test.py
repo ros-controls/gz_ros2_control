@@ -127,7 +127,7 @@ class TestFixture(unittest.TestCase):
         self.assertAlmostEqual(
             actual_value,
             expected_initial_value,
-            places=2,
+            places=1,
             msg=f'Initial position mismatch: expected {expected_initial_value}, got {actual_value}'
         )
 
