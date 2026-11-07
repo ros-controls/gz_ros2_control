@@ -1,6 +1,6 @@
 find_package(launch_testing_ament_cmake REQUIRED)
 
-set(TEST_PYTHONPATH "${CMAKE_CURRENT_SOURCE_DIR}:$ENV{PYTHONPATH}")
+set(TEST_PYTHONPATH "${CMAKE_CURRENT_SOURCE_DIR}/..:${CMAKE_CURRENT_SOURCE_DIR}:$ENV{PYTHONPATH}")
 
 add_launch_test(position_test.py
   TIMEOUT 50
