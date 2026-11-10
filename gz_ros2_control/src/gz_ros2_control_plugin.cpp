@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <chrono>
+#include <exception>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -362,7 +363,16 @@ void GazeboSimROS2ControlPlugin::Configure(
 
   std::string node_name = "gz_ros_control";
 
-  this->dataPtr->node_ = rclcpp::Node::make_shared(node_name, ns);
+  // Carry the plugin's ROS arguments on the node itself so an already-initialized
+  // context cannot leave the <parameters> YAML unseen (see #962).
+  try {
+    rclcpp::NodeOptions node_options;
+    node_options.arguments(arguments);
+    this->dataPtr->node_ = rclcpp::Node::make_shared(node_name, ns, node_options);
+  } catch (const std::exception & ex) {
+    RCLCPP_ERROR(logger, "Failed to create gz_ros2_control node: %s", ex.what());
+    return;
+  }
   this->dataPtr->executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   this->dataPtr->executor_->add_node(this->dataPtr->node_);
   auto spin = [this]()
