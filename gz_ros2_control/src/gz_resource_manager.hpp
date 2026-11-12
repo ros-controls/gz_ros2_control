@@ -35,9 +35,18 @@
 // tests.
 namespace gz_ros2_control
 {
+/// \brief Holds the loader of the GazeboSimSystemInterface plugins. GZResourceManager derives
+/// from it before ResourceManager, so the loader is destroyed after ResourceManager has destroyed
+/// the plugin instances it owns.
+struct GZSystemLoaderHolder
+{
+  /// \brief Interface loader, only created when no system loader is given
+  std::unique_ptr<pluginlib::ClassLoader<GazeboSimSystemInterface>> gz_system_loader_;
+};
+
 /// \brief Resource manager that loads GazeboSimSystemInterface plugins and initializes them
 /// with the simulation before handing them to ros2_control
-class GZResourceManager : public hardware_interface::ResourceManager
+class GZResourceManager : private GZSystemLoaderHolder, public hardware_interface::ResourceManager
 {
 public:
   /// \brief Creates a hardware component from its plugin name, throws std::exception on failure
@@ -68,9 +77,6 @@ private:
   std::shared_ptr<rclcpp::Node> node_;
   gz::sim::EntityComponentManager * ecm_;
   std::map<std::string, gz::sim::Entity> enabledJoints_;
-
-  /// \brief Interface loader, only created when no system loader is given
-  std::unique_ptr<pluginlib::ClassLoader<GazeboSimSystemInterface>> gz_system_loader_;
 
   SystemLoader system_loader_;
 
