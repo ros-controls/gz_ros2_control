@@ -488,3 +488,41 @@ Their current behavior is described below:
   For those who are designing control systems: This means that the response of the joint is equivalent to a discrete-time first-order system.
   The system's time constant is ``T = 1 / (position_proportional_gain * controller_manager_update_rate)``.
   In theory, ``position_proportional_gain`` cannot be greater than 2 to maintain system stability, and cannot be greater than 1 to avoid oscillations.
+
+Notes on the controller update rate
+===================================
+
+``gz_ros2_control`` reads state and updates the ``controller_manager`` on the first Gazebo physics
+step at which at least one controller period (``1 / update_rate``) has elapsed since the previous
+update.
+
+For the controllers to run at the configured ``update_rate``:
+
+* The physics step size (``<max_step_size>`` in the world's ``<physics>`` tag) must be less than or
+  equal to the controller update period.
+* The controller period should be an **integer multiple** of ``<max_step_size>`` (equivalently, the
+  physics update frequency ``1 / max_step_size`` should be an integer multiple of ``update_rate``).
+
+If the controller period is not an integer multiple of the physics step, every update waits until
+the next physics step, rounding the effective period up to
+``ceil(control_period / max_step_size) * max_step_size`` and lowering the actual loop rate. For
+example, with ``update_rate: 750`` (period ``1.333333 ms``) and Gazebo's default
+``<max_step_size>0.001</max_step_size>`` (``1 ms``), the plugin updates every 2 steps
+(``2 ms``), yielding an effective rate of **500 Hz** instead of 750 Hz.
+
+To match a non-divisor controller rate such as ``750 Hz``, configure a smaller world physics step
+in your world SDF whose reciprocal is a multiple of ``update_rate`` (e.g., ``1500 Hz``):
+
+.. code-block:: xml
+
+  <physics name="1500hz" type="ignored">
+    <max_step_size>0.000666667</max_step_size>
+    <real_time_factor>1.0</real_time_factor>
+  </physics>
+
+.. note::
+
+  Because Gazebo and ``rclcpp`` store durations in integer nanoseconds, avoid truncating repeating
+  decimal step sizes: for ``750 Hz`` (``1,333,333 ns``), ``0.000666667`` (``666,667 ns``) triggers
+  updates every 2 steps (``~750 Hz``), whereas ``0.000666`` or ``0.000666666`` falls short at 2
+  steps and drops to 3 steps (``500 Hz``).

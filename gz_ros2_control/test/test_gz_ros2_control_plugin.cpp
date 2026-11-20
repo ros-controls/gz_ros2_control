@@ -41,6 +41,7 @@ namespace
 {
 using gz_ros2_control::detail::BuildRosArguments;
 using gz_ros2_control::detail::CheckPeriodMismatch;
+using gz_ros2_control::detail::ComputeEffectivePeriod;
 using gz_ros2_control::detail::GetEnabledJoints;
 using gz_ros2_control::detail::NormalizeNamespace;
 using gz_ros2_control::detail::ParsePluginConfig;
@@ -387,4 +388,103 @@ TEST(ShouldUpdate, RunsEveryStepWithSlowerSimulation)
     }
   }
   EXPECT_EQ(updates, 5);
+}
+
+TEST(ComputeEffectivePeriod, EqualAndExactMultiplePeriods)
+{
+  const rclcpp::Duration one_ms(0, 1000000);
+  const rclcpp::Duration ten_ms(0, 10000000);
+
+  const auto equal = ComputeEffectivePeriod(one_ms, one_ms);
+  EXPECT_FALSE(equal.not_multiple);
+  EXPECT_EQ(equal.steps_per_update, 1);
+  EXPECT_EQ(equal.effective_period, one_ms);
+  EXPECT_DOUBLE_EQ(equal.effective_rate_hz, 1000.0);
+
+  const auto exact_multiple = ComputeEffectivePeriod(ten_ms, one_ms);
+  EXPECT_FALSE(exact_multiple.not_multiple);
+  EXPECT_EQ(exact_multiple.steps_per_update, 10);
+  EXPECT_EQ(exact_multiple.effective_period, ten_ms);
+  EXPECT_DOUBLE_EQ(exact_multiple.effective_rate_hz, 100.0);
+}
+
+TEST(ComputeEffectivePeriod, NonMultipleControlPeriodLowersEffectiveRate)
+{
+  // 750 Hz control period (1,333,333 ns) on a 1 ms physics step updates every 2 ms (500 Hz)
+  const rclcpp::Duration control_750hz(0, 1333333);
+  const rclcpp::Duration one_ms(0, 1000000);
+  const auto info_750 = ComputeEffectivePeriod(control_750hz, one_ms);
+  EXPECT_TRUE(info_750.not_multiple);
+  EXPECT_EQ(info_750.steps_per_update, 2);
+  EXPECT_EQ(info_750.effective_period, rclcpp::Duration(0, 2000000));
+  EXPECT_DOUBLE_EQ(info_750.effective_rate_hz, 500.0);
+
+  // 300 Hz control period (3,333,333 ns) on a 1 ms physics step updates every 4 ms (250 Hz)
+  const rclcpp::Duration control_300hz(0, 3333333);
+  const auto info_300 = ComputeEffectivePeriod(control_300hz, one_ms);
+  EXPECT_TRUE(info_300.not_multiple);
+  EXPECT_EQ(info_300.steps_per_update, 4);
+  EXPECT_EQ(info_300.effective_period, rclcpp::Duration(0, 4000000));
+  EXPECT_DOUBLE_EQ(info_300.effective_rate_hz, 250.0);
+}
+
+TEST(ComputeEffectivePeriod, HandlesNanosecondRoundingAndTruncation)
+{
+  // 750 Hz (1,333,333 ns) with 1/1500 s rounded up (666,667 ns) stays at 2 steps (~750 Hz)
+  const rclcpp::Duration control_750hz(0, 1333333);
+  const rclcpp::Duration step_rounded_up(0, 666667);
+  const auto rounded = ComputeEffectivePeriod(control_750hz, step_rounded_up);
+  EXPECT_FALSE(rounded.not_multiple);
+  EXPECT_EQ(rounded.steps_per_update, 2);
+  EXPECT_NEAR(rounded.effective_rate_hz, 750.0, 1e-2);
+
+  // Truncating 1/1500 s to 666,666 ns leaves 2 steps 1 ns short, dropping to 3 steps (~500 Hz)
+  const rclcpp::Duration step_truncated(0, 666666);
+  const auto truncated = ComputeEffectivePeriod(control_750hz, step_truncated);
+  EXPECT_TRUE(truncated.not_multiple);
+  EXPECT_EQ(truncated.steps_per_update, 3);
+  EXPECT_NEAR(truncated.effective_rate_hz, 500.0, 1e-2);
+}
+
+TEST(ComputeEffectivePeriod, ControlFasterAndNonPositiveGuards)
+{
+  const rclcpp::Duration one_ms(0, 1000000);
+  const rclcpp::Duration ten_ms(0, 10000000);
+  const auto faster = ComputeEffectivePeriod(one_ms, ten_ms);
+  EXPECT_FALSE(faster.not_multiple);
+  EXPECT_EQ(faster.steps_per_update, 1);
+  EXPECT_EQ(faster.effective_period, ten_ms);
+  EXPECT_DOUBLE_EQ(faster.effective_rate_hz, 100.0);
+
+  const rclcpp::Duration zero(0, 0);
+  const auto zero_step = ComputeEffectivePeriod(one_ms, zero);
+  EXPECT_FALSE(zero_step.not_multiple);
+  EXPECT_EQ(zero_step.steps_per_update, 0);
+  EXPECT_DOUBLE_EQ(zero_step.effective_rate_hz, 0.0);
+
+  const auto zero_control = ComputeEffectivePeriod(zero, one_ms);
+  EXPECT_FALSE(zero_control.not_multiple);
+  EXPECT_EQ(zero_control.steps_per_update, 0);
+  EXPECT_DOUBLE_EQ(zero_control.effective_rate_hz, 0.0);
+}
+
+TEST(ShouldUpdate, NonMultiplePeriodMatchesEffectiveStepCount)
+{
+  // 750 Hz controller on 1 ms step fires every 2 ms (500 Hz) in PostUpdate
+  const rclcpp::Duration gazebo_period(0, 1000000);
+  const rclcpp::Duration control_period(0, 1333333);
+  const auto effective = ComputeEffectivePeriod(control_period, gazebo_period);
+  ASSERT_EQ(effective.steps_per_update, 2);
+
+  rclcpp::Duration sim_time(0, 0);
+  rclcpp::Duration last_update(0, 0);
+  std::vector<int64_t> update_times_ms;
+  for (int step = 0; step < 10; ++step) {
+    sim_time = sim_time + gazebo_period;
+    if (ShouldUpdate(sim_time - last_update, control_period)) {
+      last_update = sim_time;
+      update_times_ms.push_back(sim_time.nanoseconds() / 1000000);
+    }
+  }
+  EXPECT_EQ(update_times_ms, (std::vector<int64_t>{2, 4, 6, 8, 10}));
 }
