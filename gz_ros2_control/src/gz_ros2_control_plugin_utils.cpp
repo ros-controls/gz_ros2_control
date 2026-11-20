@@ -16,6 +16,9 @@
 
 #include <rcl/arguments.h>
 
+#include <algorithm>
+#include <chrono>
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <string>
@@ -211,6 +214,37 @@ PeriodMismatch CheckPeriodMismatch(
     return PeriodMismatch::kControlSlower;
   }
   return PeriodMismatch::kNone;
+}
+
+//////////////////////////////////////////////////
+EffectivePeriodInfo ComputeEffectivePeriod(
+  const rclcpp::Duration & control_period,
+  const rclcpp::Duration & gazebo_period)
+{
+  EffectivePeriodInfo info;
+  const int64_t control_ns = control_period.nanoseconds();
+  const int64_t gazebo_ns = gazebo_period.nanoseconds();
+  if (control_ns <= 0 || gazebo_ns <= 0) {
+    return info;
+  }
+
+  // ShouldUpdate triggers on the first step with sim_period >= control_period,
+  // so updates occur every ceil(control_ns / gazebo_ns) physics steps.
+  const int64_t steps = (control_ns - 1) / gazebo_ns + 1;
+  const int64_t effective_ns = steps * gazebo_ns;
+  info.steps_per_update = steps;
+  info.effective_period = rclcpp::Duration(std::chrono::nanoseconds(effective_ns));
+  info.effective_rate_hz = 1e9 / static_cast<double>(effective_ns);
+
+  if (control_ns > gazebo_ns) {
+    const int64_t overshoot_ns = effective_ns - control_ns;
+    // Allow <= 1 ns per physics step (capped below large relative fractions for tiny test
+    // durations) to absorb integer nanosecond truncation of 1 / rate frequencies.
+    const int64_t rounding_tolerance_ns = std::min<int64_t>(steps, gazebo_ns / 1000);
+    info.not_multiple = overshoot_ns > rounding_tolerance_ns;
+  }
+
+  return info;
 }
 
 //////////////////////////////////////////////////

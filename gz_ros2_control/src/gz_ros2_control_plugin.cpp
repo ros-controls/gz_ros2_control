@@ -288,7 +288,7 @@ void GazeboSimROS2ControlPlugin::PreUpdate(
   if (!this->dataPtr->controller_manager_) {
     return;
   }
-  if (!this->dataPtr->period_mismatch_warned_) {
+  if (!this->dataPtr->period_mismatch_warned_ && _info.dt.count() > 0) {
     rclcpp::Duration gazebo_period(_info.dt);
 
     // Check the period against the simulation period
@@ -301,11 +301,26 @@ void GazeboSimROS2ControlPlugin::PreUpdate(
           " s) is faster than the gazebo simulation period (" <<
           gazebo_period.seconds() << " s).");
     } else if (mismatch == detail::PeriodMismatch::kControlSlower) {
-      RCLCPP_WARN_STREAM(
-        this->dataPtr->node_->get_logger(),
-        " Desired controller update period (" << this->dataPtr->control_period_.seconds() <<
-          " s) is slower than the gazebo simulation period (" <<
-          gazebo_period.seconds() << " s).");
+      const auto effective =
+        detail::ComputeEffectivePeriod(this->dataPtr->control_period_, gazebo_period);
+      if (effective.not_multiple) {
+        RCLCPP_WARN_STREAM(
+          this->dataPtr->node_->get_logger(),
+          "Desired controller update period (" << this->dataPtr->control_period_.seconds() <<
+            " s, " << this->dataPtr->update_rate <<
+            " Hz) is not an integer multiple of the gazebo simulation period (" <<
+            gazebo_period.seconds() << " s). Controllers will update every " <<
+            effective.steps_per_update <<
+            " simulation steps, giving an effective update rate of " <<
+            effective.effective_rate_hz << " Hz (" <<
+            effective.effective_period.seconds() << " s).");
+      } else {
+        RCLCPP_WARN_STREAM(
+          this->dataPtr->node_->get_logger(),
+          " Desired controller update period (" << this->dataPtr->control_period_.seconds() <<
+            " s) is slower than the gazebo simulation period (" <<
+            gazebo_period.seconds() << " s).");
+      }
     }
     this->dataPtr->period_mismatch_warned_ = true;
   }

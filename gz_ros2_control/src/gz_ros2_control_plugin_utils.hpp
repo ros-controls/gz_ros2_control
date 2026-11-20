@@ -15,6 +15,7 @@
 #ifndef GZ_ROS2_CONTROL_PLUGIN_UTILS_HPP_
 #define GZ_ROS2_CONTROL_PLUGIN_UTILS_HPP_
 
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <string>
@@ -89,6 +90,31 @@ enum class PeriodMismatch
 
 /// \brief Compare the controller period with the simulation period
 PeriodMismatch CheckPeriodMismatch(
+  const rclcpp::Duration & control_period,
+  const rclcpp::Duration & gazebo_period);
+
+/// \brief Effective controller timing resulting from discrete simulation steps
+struct EffectivePeriodInfo
+{
+  /// \brief True when control_period exceeds gazebo_period and is not an integer multiple
+  ///        (within 1 ns per simulation step rounding tolerance)
+  bool not_multiple{false};
+
+  /// \brief Number of simulation steps between consecutive controller updates
+  int64_t steps_per_update{0};
+
+  /// \brief Actual period between controller updates
+  rclcpp::Duration effective_period{0, 0};
+
+  /// \brief Effective controller update frequency in Hz
+  double effective_rate_hz{0.0};
+};
+
+/// \brief Compute the effective controller update period and rate given the simulation step
+/// \param[in] control_period Desired controller update period
+/// \param[in] gazebo_period Simulation physics step period
+/// \return Effective timing details; steps_per_update is 0 if either period is non-positive
+EffectivePeriodInfo ComputeEffectivePeriod(
   const rclcpp::Duration & control_period,
   const rclcpp::Duration & gazebo_period);
 
