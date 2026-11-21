@@ -79,7 +79,7 @@ def generate_launch_description():
             '--param-file',
             robot_controllers,
             '--controller-ros-args',
-            '-r /tricycle_controller/cmd_vel:=/cmd_vel'
+            '-r /tricycle_controller/reference:=/cmd_vel'
         ],
     )
 
